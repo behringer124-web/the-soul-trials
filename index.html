@@ -141,12 +141,34 @@ border:1px solid #625a48;
 color:#dfc47a
 }
 
-.feature{
-background:#171d2a;
-border:1px solid #393a42;
-border-radius:10px;
-padding:12px;
-margin:8px 0
+.awakening{
+background:linear-gradient(135deg,#17131f,#252033);
+border:1px solid #8b7038;
+border-radius:14px;
+padding:20px;
+margin-top:20px;
+box-shadow:0 0 25px rgba(223,196,122,.12)
+}
+
+.awakening h2{
+margin-top:0;
+text-align:center
+}
+
+.awakening-name{
+font-size:1.6rem;
+color:#dfc47a;
+font-family:Georgia,serif;
+text-align:center;
+margin:10px 0
+}
+
+.awakening-type{
+text-align:center;
+font-size:.8rem;
+letter-spacing:2px;
+text-transform:uppercase;
+color:#999
 }
 
 .warning{
@@ -300,7 +322,7 @@ CREATE MY D&D CHARACTER
 
 <p>
 Your Soul Trial determines your natural ability profile.
-Your character is then built using the D&D 5e ability-score system.
+Your unique awakening remains hidden until your character is created.
 </p>
 
 </div>
@@ -403,6 +425,10 @@ placeholder="Backstory"
 ></textarea>
 
 
+<button onclick="createCharacter()">
+CREATE CHARACTER
+</button>
+
 <button onclick="saveCharacter()">
 SAVE CHARACTER
 </button>
@@ -414,7 +440,7 @@ VIEW CHARACTER SHEET
 </section>
 
 
-<!-- SHEET -->
+<!-- CHARACTER SHEET -->
 
 <section id="sheet" class="hidden">
 
@@ -461,6 +487,23 @@ VIEW CHARACTER SHEET
 <h3 id="sheetBlessing"></h3>
 
 <p id="sheetBlessingDescription"></p>
+
+</div>
+
+
+<!-- HIDDEN UNTIL CHARACTER CREATION -->
+
+<div id="awakeningReveal" class="awakening hidden">
+
+<div class="awakening-type">
+Unique Soul Ability Awakened
+</div>
+
+<h2>Your Soul Has Awakened</h2>
+
+<div id="sheetAwakeningName" class="awakening-name"></div>
+
+<p id="sheetAwakeningDescription"></p>
 
 </div>
 
@@ -794,7 +837,7 @@ blessingDescription:"Once per long rest, you may gain advantage on one Charisma 
 
 
 /* =====================================================
-   CLASS DATA
+   CLASS DATA + UNIQUE AWAKENING ABILITIES
 ===================================================== */
 
 const classData={
@@ -805,7 +848,11 @@ hitDie:12,
 subclasses:[
 "Path of the Berserker",
 "Path of the Totem Warrior"
-]
+],
+awakening:{
+name:"Soul-Forged Fury",
+description:"Once per long rest, when you enter a rage, your soul erupts with power. Until the rage ends, the first time you hit with a melee weapon attack on each of your turns, the attack deals extra psychic damage equal to your proficiency bonus."
+}
 },
 
 Bard:{
@@ -814,7 +861,11 @@ hitDie:8,
 subclasses:[
 "College of Lore",
 "College of Valor"
-]
+],
+awakening:{
+name:"Resonance of the Soul",
+description:"Once per long rest, when you grant a creature Bardic Inspiration, you may awaken their spirit. That creature gains temporary hit points equal to your Charisma modifier and may immediately move up to 10 feet without provoking opportunity attacks."
+}
 },
 
 Cleric:{
@@ -828,7 +879,11 @@ subclasses:[
 "Tempest Domain",
 "Trickery Domain",
 "War Domain"
-]
+],
+awakening:{
+name:"Divine Echo",
+description:"Once per long rest, when you cast a spell that restores hit points to another creature, you may cause a faint echo of divine power to restore additional hit points equal to your Wisdom modifier."
+}
 },
 
 Druid:{
@@ -837,7 +892,11 @@ hitDie:8,
 subclasses:[
 "Circle of the Land",
 "Circle of the Moon"
-]
+],
+awakening:{
+name:"Primal Awakening",
+description:"Once per long rest, when you enter Wild Shape, you awaken an ancient instinct. Your first successful attack while transformed deals additional damage equal to your Wisdom modifier."
+}
 },
 
 Fighter:{
@@ -847,7 +906,11 @@ subclasses:[
 "Champion",
 "Battle Master",
 "Eldritch Knight"
-]
+],
+awakening:{
+name:"War Soul",
+description:"Once per long rest, when you use Action Surge, your next successful weapon attack before the end of your turn deals an additional 2d6 force damage."
+}
 },
 
 Monk:{
@@ -857,7 +920,11 @@ subclasses:[
 "Way of the Open Hand",
 "Way of Shadow",
 "Way of the Four Elements"
-]
+],
+awakening:{
+name:"Soul Step",
+description:"Once per short rest, immediately after using Flurry of Blows, you may teleport up to 15 feet to an unoccupied space you can see."
+}
 },
 
 Paladin:{
@@ -867,7 +934,11 @@ subclasses:[
 "Oath of Devotion",
 "Oath of the Ancients",
 "Oath of Vengeance"
-]
+],
+awakening:{
+name:"Soul Smite",
+description:"Once per long rest, when you hit a creature with a melee weapon attack, you may unleash your awakened soul to deal an additional 2d8 radiant damage."
+}
 },
 
 Ranger:{
@@ -876,7 +947,11 @@ hitDie:10,
 subclasses:[
 "Hunter",
 "Beast Master"
-]
+],
+awakening:{
+name:"Predator's Instinct",
+description:"Once per short rest, when you hit a creature with a weapon attack, you may mark it as your prey. For the next minute, you have advantage on your next attack against that creature each turn."
+}
 },
 
 Rogue:{
@@ -886,7 +961,11 @@ subclasses:[
 "Thief",
 "Assassin",
 "Arcane Trickster"
-]
+],
+awakening:{
+name:"Phantom Strike",
+description:"Once per short rest, when you successfully deal Sneak Attack damage, you may immediately become invisible until the start of your next turn or until you make another attack."
+}
 },
 
 Sorcerer:{
@@ -895,7 +974,11 @@ hitDie:6,
 subclasses:[
 "Draconic Bloodline",
 "Wild Magic"
-]
+],
+awakening:{
+name:"Soul Surge",
+description:"Once per long rest, when you cast a spell of 1st level or higher, you may empower it with your awakened soul. Add your Charisma modifier to one damage roll or one healing roll of the spell."
+}
 },
 
 Warlock:{
@@ -905,7 +988,11 @@ subclasses:[
 "The Archfey",
 "The Fiend",
 "The Great Old One"
-]
+],
+awakening:{
+name:"Forbidden Resonance",
+description:"Once per long rest, when you reduce a hostile creature to 0 hit points, your patron's power surges through you. You regain an expended spell slot of 1st level."
+}
 },
 
 Wizard:{
@@ -920,7 +1007,11 @@ subclasses:[
 "School of Illusion",
 "School of Necromancy",
 "School of Transmutation"
-]
+],
+awakening:{
+name:"Perfect Calculation",
+description:"Once per long rest, after seeing the result of a spell attack roll or Intelligence-based ability check, you may add your Intelligence modifier to the roll."
+}
 },
 
 Artificer:{
@@ -930,7 +1021,11 @@ subclasses:[
 "Alchemist",
 "Artillerist",
 "Battle Smith"
-]
+],
+awakening:{
+name:"Soul Mechanism",
+description:"Once per long rest, when one of your artificer creations or infusions would be destroyed, you may cause it to survive with 1 hit point instead."
+}
 }
 
 };
@@ -1008,6 +1103,8 @@ CHA:0
 
 questionIndex=0;
 
+character=null;
+
 showScreen("name");
 
 }
@@ -1027,7 +1124,8 @@ return;
 }
 
 character={
-name:name
+name:name,
+created:false
 };
 
 showScreen("quiz");
@@ -1211,33 +1309,21 @@ backgroundSelect.appendChild(option);
 
 });
 
-if(character.class){
-
+if(character.class)
 classSelect.value=character.class;
 
-}
-
-if(character.background){
-
+if(character.background)
 backgroundSelect.value=character.background;
-
-}
 
 updateClassInfo();
 
-if(character.subclass){
-
+if(character.subclass)
 document.getElementById("subclassSelect").value=
 character.subclass;
 
-}
-
-if(character.level){
-
+if(character.level)
 document.getElementById("level").value=
 character.level;
-
-}
 
 if(character.personality)
 document.getElementById("personality").value=
@@ -1258,6 +1344,10 @@ character.flaw;
 if(character.backstory)
 document.getElementById("backstory").value=
 character.backstory;
+
+if(character.ac)
+document.getElementById("armorClass").value=
+character.ac;
 
 updateCharacterStats();
 
@@ -1360,9 +1450,6 @@ conModifier
 document.getElementById("hpDisplay").textContent=
 Math.max(1,hp);
 
-document.getElementById("maxHP").value=
-Math.max(1,hp);
-
 document.getElementById("hitDieDisplay").textContent=
 "d"+data.hitDie;
 
@@ -1404,10 +1491,30 @@ ac;
 
 
 /* =====================================================
-   SAVE
+   CREATE CHARACTER
 ===================================================== */
 
-function saveCharacter(){
+function createCharacter(){
+
+saveCharacter(false);
+
+character.created=true;
+
+localStorage.setItem(
+"soulTrialCharacter",
+JSON.stringify(character)
+);
+
+viewSheet();
+
+}
+
+
+/* =====================================================
+   SAVE CHARACTER
+===================================================== */
+
+function saveCharacter(showMessage=true){
 
 character.class=
 document.getElementById("classSelect").value;
@@ -1422,7 +1529,7 @@ character.level=
 Number(document.getElementById("level").value)||1;
 
 character.hp=
-Number(document.getElementById("maxHP").value)||1;
+Number(document.getElementById("hpDisplay").textContent)||1;
 
 character.ac=
 Number(document.getElementById("armorClass").value)||10;
@@ -1447,18 +1554,22 @@ localStorage.setItem(
 JSON.stringify(character)
 );
 
+if(showMessage){
+
 alert("Character saved on this device.");
+
+}
 
 }
 
 
 /* =====================================================
-   SHEET
+   CHARACTER SHEET
 ===================================================== */
 
 function viewSheet(){
 
-saveCharacter();
+saveCharacter(false);
 
 document.getElementById("sheetName").textContent=
 character.name;
@@ -1487,15 +1598,10 @@ Math.floor((value-10)/2);
 
 return `
 <div class="stat">
-
 <strong>${value}</strong>
-
 ${stat}
-
 <br>
-
 ${modifier>=0?"+":""}${modifier}
-
 </div>
 `;
 
@@ -1543,6 +1649,35 @@ character.flaw||"—";
 
 document.getElementById("sheetBackstory").textContent=
 character.backstory||"—";
+
+
+/* =====================================================
+   AWAKENING REVEAL
+===================================================== */
+
+const awakening=
+classData[character.class];
+
+if(character.created && awakening){
+
+document.getElementById("awakeningReveal")
+.classList.remove("hidden");
+
+document.getElementById("sheetAwakeningName")
+.textContent=
+awakening.awakening.name;
+
+document.getElementById("sheetAwakeningDescription")
+.textContent=
+awakening.awakening.description;
+
+}else{
+
+document.getElementById("awakeningReveal")
+.classList.add("hidden");
+
+}
+
 
 showScreen("sheet");
 
