@@ -815,7 +815,7 @@ calculateSoul();
 
 }
 
-};
+};function
 
 answers.appendChild(button);
 
@@ -824,7 +824,7 @@ answers.appendChild(button);
 }
 
 
-function calculateSoul(){
+ function calculateSoul(){
 
 let highest=Object.keys(scores).sort(
 (a,b)=>scores[b]-scores[a]
@@ -832,29 +832,58 @@ let highest=Object.keys(scores).sort(
 
 const path=soulPaths[highest];
 
-const lowest=Math.min(...Object.values(scores));
+const orderedStats=Object.keys(scores).sort(
+(a,b)=>scores[b]-scores[a]
+);
 
-const highestScore=Math.max(...Object.values(scores));
+const standardArray=[15,14,13,12,10,8];
 
 let finalScores={};
 
-Object.keys(scores).forEach(stat=>{
-
-if(highestScore===lowest){
-
-finalScores[stat]=12;
-
-}else{
-
-finalScores[stat]=8+
-Math.round(
-((scores[stat]-lowest)/
-(highestScore-lowest))*10
-);
-
-}
-
+orderedStats.forEach((stat,index)=>{
+finalScores[stat]=standardArray[index];
 });
+
+character.race="Human";
+character.dominantStat=highest;
+character.soulPath=path.name;
+character.soulDescription=path.description;
+character.classes=path.classes;
+character.soulTrait=path.trait;
+character.traitDescription=path.traitDescription;
+character.blessing=path.blessing;
+character.blessingDescription=path.blessingDescription;
+character.scores=finalScores;
+
+document.getElementById("resultName").textContent=
+character.name;
+
+document.getElementById("soulPath").textContent=
+path.name;
+
+document.getElementById("soulDescription").textContent=
+path.description;
+
+document.getElementById("recommendedClasses").innerHTML=
+path.classes.map(c=>
+`<span class="tag">${c}</span>`
+).join("");
+
+document.getElementById("soulTrait").textContent=
+path.trait;
+
+document.getElementById("traitDescription").textContent=
+path.traitDescription;
+
+document.getElementById("awakeningBlessing").textContent=
+path.blessing;
+
+document.getElementById("blessingDescription").textContent=
+path.blessingDescription;
+
+showScreen("result");
+
+ }
 
 character.race="Human";
 character.dominantStat=highest;
