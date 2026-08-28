@@ -6,176 +6,36 @@
 <title>The Soul's Trial</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-    background:
-        radial-gradient(circle at top, #252033 0%, #090a10 55%);
-    color: #eeeeee;
-    font-family: system-ui, sans-serif;
-}
-
-.container {
-    width: 100%;
-    max-width: 850px;
-    margin: auto;
-    padding: 20px;
-}
-
-.panel {
-    background: rgba(20, 24, 36, 0.96);
-    border: 1px solid #625a48;
-    border-radius: 18px;
-    padding: 25px;
-    box-shadow: 0 15px 50px rgba(0,0,0,.45);
-}
-
-h1,
-h2,
-h3 {
-    font-family: Georgia, serif;
-    color: #dfc47a;
-}
-
-h1 {
-    text-align: center;
-    font-size: clamp(2.4rem, 9vw, 4.5rem);
-}
-
-h2 {
-    margin-top: 30px;
-}
-
-p {
-    line-height: 1.6;
-    color: #c4c4c4;
-}
-
-.center {
-    text-align: center;
-}
-
-.muted {
-    color: #999;
-}
-
-button,
-input,
-select,
-textarea {
-    width: 100%;
-    padding: 14px;
-    margin: 7px 0;
-    border-radius: 10px;
-    font: inherit;
-}
-
-button {
-    background: #70582a;
-    border: 1px solid #dfc47a;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #8b7038;
-}
-
-.choice {
-    background: #202737;
-    border-color: #514d43;
-    text-align: left;
-}
-
-.choice:hover {
-    border-color: #dfc47a;
-}
-
-input,
-select,
-textarea {
-    background: #0e131d;
-    color: white;
-    border: 1px solid #4a4a4a;
-}
-
-textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-
-.hidden {
-    display: none;
-}
-
-.progress {
-    height: 8px;
-    background: #292e38;
-    border-radius: 10px;
-    margin: 15px 0 25px;
-}
-
-.progress-bar {
-    height: 100%;
-    width: 0%;
-    background: #dfc47a;
-    border-radius: 10px;
-}
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-}
-
-.stat {
-    background: #0d121c;
-    border: 1px solid #403d35;
-    border-radius: 10px;
-    padding: 12px;
-    text-align: center;
-}
-
-.stat strong {
-    display: block;
-    color: #dfc47a;
-    font-size: 1.5rem;
-}
-
-.info {
-    background: #101520;
-    border: 1px solid #454238;
-    border-radius: 12px;
-    padding: 15px;
-    margin: 12px 0;
-}
-
-.tag {
-    display: inline-block;
-    padding: 7px 10px;
-    margin: 3px;
-    border-radius: 20px;
-    border: 1px solid #625a48;
-    color: #dfc47a;
-}
-
-@media (max-width: 600px) {
-    .container {
-        padding: 8px;
-    }
-
-    .panel {
-        padding: 18px 14px;
-    }
-
-    .stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#252033 0%,#090a10 55%);color:#eee;font-family:system-ui,sans-serif}
+.container{width:100%;max-width:900px;margin:auto;padding:20px}
+.panel{background:rgba(20,24,36,.96);border:1px solid #625a48;border-radius:18px;padding:25px;box-shadow:0 15px 50px rgba(0,0,0,.45)}
+h1,h2,h3{font-family:Georgia,serif;color:#dfc47a}
+h1{text-align:center;font-size:clamp(2.4rem,9vw,4.5rem)}
+h2{margin-top:30px}
+p{line-height:1.6;color:#c4c4c4}
+.center{text-align:center}
+.muted{color:#999}
+button,input,select,textarea{width:100%;padding:14px;margin:7px 0;border-radius:10px;font:inherit}
+button{background:#70582a;border:1px solid #dfc47a;color:white;font-weight:bold;cursor:pointer}
+button:hover{background:#8b7038}
+.choice{background:#202737;border-color:#514d43;text-align:left}
+.choice:hover{border-color:#dfc47a}
+input,select,textarea{background:#0e131d;color:white;border:1px solid #4a4a4a}
+textarea{min-height:100px;resize:vertical}
+.hidden{display:none}
+.progress{height:8px;background:#292e38;border-radius:10px;margin:15px 0 25px}
+.progress-bar{height:100%;width:0%;background:#dfc47a;border-radius:10px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:#0d121c;border:1px solid #403d35;border-radius:10px;padding:12px;text-align:center}
+.stat strong{display:block;color:#dfc47a;font-size:1.5rem}
+.info{background:#101520;border:1px solid #454238;border-radius:12px;padding:15px;margin:12px 0}
+.tag{display:inline-block;padding:7px 10px;margin:3px;border-radius:20px;border:1px solid #625a48;color:#dfc47a}
+.feature{background:#171d2a;border:1px solid #393a42;border-radius:10px;padding:12px;margin:8px 0}
+@media(max-width:600px){
+.container{padding:8px}
+.panel{padding:18px 14px}
+.stats{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
@@ -183,40 +43,29 @@ textarea {
 <body>
 
 <div class="container">
-
 <div class="panel">
-
-<!-- HOME -->
 
 <section id="home">
 
 <h1>The Soul's Trial</h1>
 
-<p class="center">
-<i>
+<p class="center"><i>
 "Before a soul can be given a new life,
 it must first reveal what it truly is."
-</i>
-</p>
+</i></p>
 
 <p class="center">
-Your life on Earth has ended.
-
-But death was not the end.
-
+Your life on Earth has ended.<br>
+But death was not the end.<br><br>
 Something beyond your world has taken notice of you.
 Before you can awaken in another world,
 your soul must first be judged.
 </p>
 
-<button onclick="beginTrial()">
-BEGIN THE TRIAL
-</button>
+<button onclick="beginTrial()">BEGIN THE TRIAL</button>
 
 </section>
 
-
-<!-- NAME -->
 
 <section id="name" class="hidden">
 
@@ -226,20 +75,12 @@ BEGIN THE TRIAL
 A name is the first thing a soul carries into the unknown.
 </p>
 
-<input
-id="playerName"
-maxlength="40"
-placeholder="Enter your name"
->
+<input id="playerName" maxlength="40" placeholder="Enter your name">
 
-<button onclick="startQuestions()">
-CONTINUE
-</button>
+<button onclick="startQuestions()">CONTINUE</button>
 
 </section>
 
-
-<!-- QUIZ -->
 
 <section id="quiz" class="hidden">
 
@@ -256,18 +97,14 @@ CONTINUE
 </section>
 
 
-<!-- RESULT -->
-
 <section id="result" class="hidden">
 
 <h1 id="resultName"></h1>
 
-<p class="center">
-<i>
-Your mortal life has been measured.
+<p class="center"><i>
+Your mortal life has been measured.<br>
 Your soul has spoken.
-</i>
-</p>
+</i></p>
 
 <div class="info">
 
@@ -275,13 +112,9 @@ Your soul has spoken.
 
 <p id="soulDescription"></p>
 
-<p>
-<strong>Race:</strong> Human
-</p>
+<p><strong>Race:</strong> Human</p>
 
-<p>
-<strong>Recommended Classes:</strong>
-</p>
+<p><strong>Recommended 2014 Classes:</strong></p>
 
 <div id="recommendedClasses"></div>
 
@@ -306,34 +139,36 @@ CREATE MY D&D CHARACTER
 </section>
 
 
-<!-- CHARACTER CREATOR -->
-
 <section id="creator" class="hidden">
 
 <h1 id="characterName"></h1>
 
 <div class="info">
 
-<p>
-<strong>Race:</strong> Human
-</p>
+<p><strong>Race:</strong> Human</p>
 
 <p>
-Your race is fixed by the campaign.
-Your Soul Trial determines your natural strengths.
+Your Soul Trial has determined your natural ability profile.
+Your final character uses the standard 2014 D&D ability score system.
 </p>
 
 </div>
 
 <h2>Class</h2>
 
-<select id="classSelect"></select>
+<select id="classSelect" onchange="updateClassInfo()"></select>
 
-<h2>Character Details</h2>
+<div id="classInfo" class="info"></div>
 
-<input id="subclass" placeholder="Subclass">
+<h2>Subclass</h2>
 
-<input id="background" placeholder="Background">
+<select id="subclassSelect"></select>
+
+<h2>Background</h2>
+
+<select id="backgroundSelect"></select>
+
+<h2>Level</h2>
 
 <input id="level" type="number" min="1" max="20" value="1">
 
@@ -343,7 +178,7 @@ Your Soul Trial determines your natural strengths.
 
 <h2>Combat</h2>
 
-<input id="maxHP" type="number" value="10" placeholder="Maximum HP">
+<input id="maxHP" type="number" placeholder="Maximum HP">
 
 <input id="armorClass" type="number" value="10" placeholder="Armor Class">
 
@@ -361,18 +196,12 @@ Your Soul Trial determines your natural strengths.
 
 <textarea id="backstory" placeholder="Backstory"></textarea>
 
-<button onclick="saveCharacter()">
-SAVE CHARACTER
-</button>
+<button onclick="saveCharacter()">SAVE CHARACTER</button>
 
-<button onclick="viewSheet()">
-VIEW CHARACTER SHEET
-</button>
+<button onclick="viewSheet()">VIEW CHARACTER SHEET</button>
 
 </section>
 
-
-<!-- CHARACTER SHEET -->
 
 <section id="sheet" class="hidden">
 
@@ -385,12 +214,12 @@ VIEW CHARACTER SHEET
 <strong>Hit Points:</strong>
 <span id="sheetHP"></span>
 
-<br>
+<br><br>
 
 <strong>Armor Class:</strong>
 <span id="sheetAC"></span>
 
-<br>
+<br><br>
 
 <strong>Speed:</strong>
 <span id="sheetSpeed"></span>
@@ -419,45 +248,40 @@ VIEW CHARACTER SHEET
 
 </div>
 
+<h2>Class</h2>
+
+<div class="info">
+
+<p><strong>Class:</strong> <span id="sheetClass"></span></p>
+
+<p><strong>Subclass:</strong> <span id="sheetSubclass"></span></p>
+
+<p><strong>Background:</strong> <span id="sheetBackground"></span></p>
+
+</div>
+
 <h2>Character</h2>
 
 <div class="info">
 
-<p>
-<strong>Personality</strong>
-</p>
-
+<p><strong>Personality</strong></p>
 <p id="sheetPersonality"></p>
 
-<p>
-<strong>Ideal</strong>
-</p>
-
+<p><strong>Ideal</strong></p>
 <p id="sheetIdeal"></p>
 
-<p>
-<strong>Bond</strong>
-</p>
-
+<p><strong>Bond</strong></p>
 <p id="sheetBond"></p>
 
-<p>
-<strong>Flaw</strong>
-</p>
-
+<p><strong>Flaw</strong></p>
 <p id="sheetFlaw"></p>
 
-<p>
-<strong>Backstory</strong>
-</p>
-
+<p><strong>Backstory</strong></p>
 <p id="sheetBackstory"></p>
 
 </div>
 
-<button onclick="openCharacterCreator()">
-EDIT CHARACTER
-</button>
+<button onclick="openCharacterCreator()">EDIT CHARACTER</button>
 
 </section>
 
@@ -467,212 +291,204 @@ EDIT CHARACTER
 
 <script>
 
-/* =========================
-   D&D 2014 SOUL TRIAL
-========================= */
-
 const questions = [
 
 [
 "You need to move something extremely heavy.",
 [
-["Lift it yourself.", {STR:2}],
-["Find a clever way around the problem.", {INT:2}],
-["Ask someone for help.", {CHA:2}],
-["Study the situation first.", {WIS:2}]
+["Lift it yourself.",{STR:2}],
+["Find a clever way around the problem.",{INT:2}],
+["Ask someone for help.",{CHA:2}],
+["Study the situation first.",{WIS:2}]
 ]
 ],
 
 [
 "You notice something valuable has been left unattended.",
 [
-["Take it.", {DEX:1,CHA:1}],
-["Leave it alone.", {WIS:2}],
-["Investigate who it belongs to.", {INT:2}],
-["Secure it somewhere safe.", {CON:1,WIS:1}]
+["Take it.",{DEX:1,CHA:1}],
+["Leave it alone.",{WIS:2}],
+["Investigate who it belongs to.",{INT:2}],
+["Secure it somewhere safe.",{CON:1,WIS:1}]
 ]
 ],
 
 [
 "Someone challenges you to a competition.",
 [
-["Accept immediately.", {STR:2}],
-["Study their strengths first.", {INT:2}],
-["Focus on speed and technique.", {DEX:2}],
-["Try to make it fun for everyone.", {CHA:2}]
+["Accept immediately.",{STR:2}],
+["Study their strengths first.",{INT:2}],
+["Focus on speed and technique.",{DEX:2}],
+["Try to make it fun for everyone.",{CHA:2}]
 ]
 ],
 
 [
 "Your friend is making a terrible decision.",
 [
-["Stop them.", {STR:1,CON:1}],
-["Explain the consequences.", {INT:2}],
-["Try to persuade them.", {CHA:2}],
-["Let them make their own choice.", {WIS:2}]
+["Stop them.",{STR:1,CON:1}],
+["Explain the consequences.",{INT:2}],
+["Try to persuade them.",{CHA:2}],
+["Let them make their own choice.",{WIS:2}]
 ]
 ],
 
 [
 "You suddenly find yourself lost.",
 [
-["Keep moving until you find your way.", {CON:2}],
-["Look for landmarks.", {WIS:2}],
-["Figure out the map.", {INT:2}],
-["Ask someone for directions.", {CHA:2}]
+["Keep moving until you find your way.",{CON:2}],
+["Look for landmarks.",{WIS:2}],
+["Figure out the map.",{INT:2}],
+["Ask someone for directions.",{CHA:2}]
 ]
 ],
 
 [
 "You see someone being threatened.",
 [
-["Step between them.", {STR:2}],
-["Look for an opening.", {DEX:2}],
-["Figure out what's really happening.", {WIS:2}],
-["Try talking the aggressor down.", {CHA:2}]
+["Step between them.",{STR:2}],
+["Look for an opening.",{DEX:2}],
+["Figure out what's really happening.",{WIS:2}],
+["Try talking the aggressor down.",{CHA:2}]
 ]
 ],
 
 [
 "You have failed at something important.",
 [
-["Try again immediately.", {CON:2}],
-["Figure out exactly what went wrong.", {INT:2}],
-["Ask someone experienced for advice.", {CHA:1,WIS:1}],
-["Take time to think about it.", {WIS:2}]
+["Try again immediately.",{CON:2}],
+["Figure out exactly what went wrong.",{INT:2}],
+["Ask someone experienced for advice.",{CHA:1,WIS:1}],
+["Take time to think about it.",{WIS:2}]
 ]
 ],
 
 [
 "You discover a strange locked door.",
 [
-["Break it open.", {STR:2}],
-["Search for a hidden mechanism.", {DEX:1,INT:1}],
-["Look for clues.", {WIS:2}],
-["Try to find someone who can open it.", {CHA:2}]
+["Break it open.",{STR:2}],
+["Search for a hidden mechanism.",{DEX:1,INT:1}],
+["Look for clues.",{WIS:2}],
+["Try to find someone who can open it.",{CHA:2}]
 ]
 ],
 
 [
 "You are given a difficult physical challenge.",
 [
-["Push yourself through it.", {CON:2}],
-["Find the fastest technique.", {DEX:2}],
-["Study how it works first.", {INT:2}],
-["Ask someone to teach you.", {CHA:1,WIS:1}]
+["Push yourself through it.",{CON:2}],
+["Find the fastest technique.",{DEX:2}],
+["Study how it works first.",{INT:2}],
+["Ask someone to teach you.",{CHA:1,WIS:1}]
 ]
 ],
 
 [
 "Someone insults you publicly.",
 [
-["Ignore them.", {WIS:2}],
-["Stand your ground.", {CON:1,CHA:1}],
-["Respond with something clever.", {INT:1,CHA:1}],
-["Challenge them.", {STR:2}]
+["Ignore them.",{WIS:2}],
+["Stand your ground.",{CON:1,CHA:1}],
+["Respond with something clever.",{INT:1,CHA:1}],
+["Challenge them.",{STR:2}]
 ]
 ],
 
 [
 "You have to learn something completely new.",
 [
-["Practice until you master it.", {CON:2}],
-["Read everything you can.", {INT:2}],
-["Watch someone else do it.", {WIS:2}],
-["Find a teacher.", {CHA:2}]
+["Practice until you master it.",{CON:2}],
+["Read everything you can.",{INT:2}],
+["Watch someone else do it.",{WIS:2}],
+["Find a teacher.",{CHA:2}]
 ]
 ],
 
 [
 "Your group has no leader.",
 [
-["Take command.", {CHA:2}],
-["Create a strategy.", {INT:2}],
-["Wait and observe.", {WIS:2}],
-["Volunteer to handle the dangerous part.", {STR:1,CON:1}]
+["Take command.",{CHA:2}],
+["Create a strategy.",{INT:2}],
+["Wait and observe.",{WIS:2}],
+["Volunteer to handle the dangerous part.",{STR:1,CON:1}]
 ]
 ],
 
 [
 "You suddenly hear something moving in the darkness.",
 [
-["Prepare to fight.", {STR:1,CON:1}],
-["Move silently toward it.", {DEX:2}],
-["Listen carefully.", {WIS:2}],
-["Figure out what could be making the sound.", {INT:2}]
+["Prepare to fight.",{STR:1,CON:1}],
+["Move silently toward it.",{DEX:2}],
+["Listen carefully.",{WIS:2}],
+["Figure out what could be making the sound.",{INT:2}]
 ]
 ],
 
 [
 "Someone needs help but helping them could put you at risk.",
 [
-["Help anyway.", {CON:1,WIS:1}],
-["Find a safer solution.", {INT:2}],
-["Convince others to help.", {CHA:2}],
-["Assess the danger first.", {WIS:2}]
+["Help anyway.",{CON:1,WIS:1}],
+["Find a safer solution.",{INT:2}],
+["Convince others to help.",{CHA:2}],
+["Assess the danger first.",{WIS:2}]
 ]
 ],
 
 [
 "You are suddenly placed in a leadership position.",
 [
-["Lead from the front.", {STR:1,CHA:1}],
-["Create a plan.", {INT:2}],
-["Make sure everyone is heard.", {WIS:1,CHA:1}],
-["Keep everyone moving.", {CHA:2}]
+["Lead from the front.",{STR:1,CHA:1}],
+["Create a plan.",{INT:2}],
+["Make sure everyone is heard.",{WIS:1,CHA:1}],
+["Keep everyone moving.",{CHA:2}]
 ]
 ],
 
 [
 "You find yourself in a fight.",
 [
-["Fight head-on.", {STR:2}],
-["Look for an opening.", {DEX:2}],
-["Protect everyone.", {CON:1,WIS:1}],
-["Look for a way to end the fight without killing.", {WIS:2}]
+["Fight head-on.",{STR:2}],
+["Look for an opening.",{DEX:2}],
+["Protect everyone.",{CON:1,WIS:1}],
+["Look for a way to end the fight without killing.",{WIS:2}]
 ]
 ],
 
 [
 "You discover that someone has been lying to you.",
 [
-["Confront them.", {STR:1,CHA:1}],
-["Figure out why they lied.", {INT:1,WIS:1}],
-["Pretend you believe them.", {DEX:1,CHA:1}],
-["Give them another chance.", {WIS:2}]
+["Confront them.",{STR:1,CHA:1}],
+["Figure out why they lied.",{INT:1,WIS:1}],
+["Pretend you believe them.",{DEX:1,CHA:1}],
+["Give them another chance.",{WIS:2}]
 ]
 ],
 
 [
 "You are offered incredible power.",
 [
-["Accept it.", {STR:1,CHA:1}],
-["Study it first.", {INT:2}],
-["Ask what it will cost.", {WIS:2}],
-["Refuse if the price is too high.", {CON:1,WIS:1}]
+["Accept it.",{STR:1,CHA:1}],
+["Study it first.",{INT:2}],
+["Ask what it will cost.",{WIS:2}],
+["Refuse if the price is too high.",{CON:1,WIS:1}]
 ]
 ],
 
 [
 "You awaken in another world.",
 [
-["Find out how strong you are.", {STR:1,CON:1}],
-["Learn everything about this world.", {INT:2}],
-["Find people you can trust.", {CHA:2}],
-["Observe before acting.", {WIS:2}]
+["Find out how strong you are.",{STR:1,CON:1}],
+["Learn everything about this world.",{INT:2}],
+["Find people you can trust.",{CHA:2}],
+["Observe before acting.",{WIS:2}]
 ]
 ]
 
 ];
 
 
-/* =========================
-   SOUL PATHS
-========================= */
-
 const soulPaths = {
 
-STR: {
+STR:{
 name:"The Vanguard",
 description:"Your soul responds to adversity with strength, courage, and decisive action.",
 classes:["Fighter","Barbarian","Paladin"],
@@ -682,7 +498,7 @@ blessing:"Titan's Resolve",
 blessingDescription:"Once per long rest, when reduced to 0 HP, you may remain at 1 HP instead."
 },
 
-DEX: {
+DEX:{
 name:"The Shadow",
 description:"Your soul favors speed, precision, awareness, and adaptability.",
 classes:["Rogue","Ranger","Monk"],
@@ -692,7 +508,7 @@ blessing:"Veilstep",
 blessingDescription:"Once per short rest, you may move 10 feet as a reaction when targeted by an attack."
 },
 
-CON: {
+CON:{
 name:"The Unbroken",
 description:"Your defining strength is endurance. You keep moving when others fall.",
 classes:["Barbarian","Fighter"],
@@ -702,7 +518,7 @@ blessing:"Last Stand",
 blessingDescription:"Once per long rest, gain temporary hit points when you fall below half your maximum HP."
 },
 
-INT: {
+INT:{
 name:"The Arcanist",
 description:"Your mind is your greatest weapon. Knowledge and understanding come naturally.",
 classes:["Wizard","Artificer"],
@@ -712,7 +528,7 @@ blessing:"Arcane Insight",
 blessingDescription:"Once per long rest, gain advantage on an Intelligence check involving magic, history, or arcana."
 },
 
-WIS: {
+WIS:{
 name:"The Seer",
 description:"You notice what others miss and trust instinct, patience, and judgment.",
 classes:["Cleric","Druid","Monk","Ranger"],
@@ -722,7 +538,7 @@ blessing:"Foresight",
 blessingDescription:"Once per long rest, after seeing a d20 result, add your Wisdom modifier to the roll."
 },
 
-CHA: {
+CHA:{
 name:"The Sovereign",
 description:"Your presence carries weight. People naturally notice, follow, or remember you.",
 classes:["Bard","Sorcerer","Warlock","Paladin"],
@@ -735,11 +551,94 @@ blessingDescription:"Once per long rest, gain advantage on a Charisma check made
 };
 
 
-/* =========================
-   VARIABLES
-========================= */
+const classData = {
 
-let scores = {
+Barbarian:{
+subclasses:["Path of the Berserker","Path of the Totem Warrior"],
+hitDie:12
+},
+
+Bard:{
+subclasses:["College of Lore","College of Valor"],
+hitDie:8
+},
+
+Cleric:{
+subclasses:["Knowledge Domain","Life Domain","Light Domain","Nature Domain","Tempest Domain","Trickery Domain","War Domain"],
+hitDie:8
+},
+
+Druid:{
+subclasses:["Circle of the Land","Circle of the Moon"],
+hitDie:8
+},
+
+Fighter:{
+subclasses:["Champion","Battle Master","Eldritch Knight"],
+hitDie:10
+},
+
+Monk:{
+subclasses:["Way of the Open Hand","Way of Shadow","Way of the Four Elements"],
+hitDie:8
+},
+
+Paladin:{
+subclasses:["Oath of Devotion","Oath of the Ancients","Oath of Vengeance"],
+hitDie:10
+},
+
+Ranger:{
+subclasses:["Hunter","Beast Master"],
+hitDie:10
+},
+
+Rogue:{
+subclasses:["Thief","Assassin","Arcane Trickster"],
+hitDie:8
+},
+
+Sorcerer:{
+subclasses:["Draconic Bloodline","Wild Magic"],
+hitDie:6
+},
+
+Warlock:{
+subclasses:["The Archfey","The Fiend","The Great Old One"],
+hitDie:8
+},
+
+Wizard:{
+subclasses:["School of Abjuration","School of Conjuration","School of Divination","School of Enchantment","School of Evocation","School of Illusion","School of Necromancy","School of Transmutation"],
+hitDie:6
+},
+
+Artificer:{
+subclasses:["Alchemist","Artillerist","Battle Smith"],
+hitDie:8
+}
+
+};
+
+
+const backgrounds = [
+"Acolyte",
+"Charlatan",
+"Criminal",
+"Entertainer",
+"Folk Hero",
+"Guild Artisan",
+"Hermit",
+"Noble",
+"Outlander",
+"Sage",
+"Sailor",
+"Soldier",
+"Urchin"
+];
+
+
+let scores={
 STR:0,
 DEX:0,
 CON:0,
@@ -748,419 +647,383 @@ WIS:0,
 CHA:0
 };
 
-let questionIndex = 0;
-let character = null;
+let questionIndex=0;
+let character=null;
 
 
-/* =========================
-   SCREEN CONTROL
-========================= */
+function showScreen(id){
 
-function showScreen(id) {
+document.querySelectorAll("section").forEach(section=>{
+section.classList.add("hidden");
+});
 
-    document.querySelectorAll("section").forEach(section => {
-        section.classList.add("hidden");
-    });
+document.getElementById(id).classList.remove("hidden");
 
-    document.getElementById(id).classList.remove("hidden");
-
-    window.scrollTo(0,0);
-}
-
-
-/* =========================
-   START TRIAL
-========================= */
-
-function beginTrial() {
-
-    scores = {
-        STR:0,
-        DEX:0,
-        CON:0,
-        INT:0,
-        WIS:0,
-        CHA:0
-    };
-
-    questionIndex = 0;
-
-    showScreen("name");
-}
-
-
-/* =========================
-   START QUESTIONS
-========================= */
-
-function startQuestions() {
-
-    const name =
-        document.getElementById("playerName").value.trim();
-
-    if (!name) {
-        alert("Your soul must have a name.");
-        return;
-    }
-
-    character = {
-        name:name
-    };
-
-    showScreen("quiz");
-
-    displayQuestion();
-}
-
-
-/* =========================
-   DISPLAY QUESTION
-========================= */
-
-function displayQuestion() {
-
-    const current = questions[questionIndex];
-
-    document.getElementById("questionNumber").textContent =
-        "Question " +
-        (questionIndex + 1) +
-        " of " +
-        questions.length;
-
-    document.getElementById("progressBar").style.width =
-        ((questionIndex / questions.length) * 100) + "%";
-
-    document.getElementById("question").textContent =
-        current[0];
-
-    const answers =
-        document.getElementById("answers");
-
-    answers.innerHTML = "";
-
-    current[1].forEach(option => {
-
-        const button =
-            document.createElement("button");
-
-        button.className = "choice";
-
-        button.textContent =
-            option[0];
-
-        button.onclick = function() {
-
-            Object.entries(option[1]).forEach(
-                ([stat,value]) => {
-
-                    scores[stat] += value;
-
-                }
-            );
-
-            questionIndex++;
-
-            if (questionIndex < questions.length) {
-
-                displayQuestion();
-
-            } else {
-
-                calculateSoul();
-
-            }
-
-        };
-
-        answers.appendChild(button);
-
-    });
+window.scrollTo(0,0);
 
 }
 
 
-/* =========================
-   CALCULATE SOUL
-========================= */
+function beginTrial(){
 
-function calculateSoul() {
+scores={
+STR:0,
+DEX:0,
+CON:0,
+INT:0,
+WIS:0,
+CHA:0
+};
 
-    let highest =
-        Object.keys(scores).sort(
-            (a,b) => scores[b] - scores[a]
-        )[0];
+questionIndex=0;
 
-    const path =
-        soulPaths[highest];
+showScreen("name");
 
-    const lowest =
-        Math.min(...Object.values(scores));
-
-    const highestScore =
-        Math.max(...Object.values(scores));
-
-    let finalScores = {};
-
-    Object.keys(scores).forEach(stat => {
-
-        if (highestScore === lowest) {
-
-            finalScores[stat] = 12;
-
-        } else {
-
-            finalScores[stat] =
-                8 +
-                Math.round(
-                    ((scores[stat] - lowest) /
-                    (highestScore - lowest)) * 10
-                );
-
-        }
-
-    });
-
-    character.race = "Human";
-    character.dominantStat = highest;
-    character.soulPath = path.name;
-    character.soulDescription = path.description;
-    character.classes = path.classes;
-    character.soulTrait = path.trait;
-    character.traitDescription = path.traitDescription;
-    character.blessing = path.blessing;
-    character.blessingDescription = path.blessingDescription;
-    character.scores = finalScores;
-
-    document.getElementById("resultName").textContent =
-        character.name;
-
-    document.getElementById("soulPath").textContent =
-        path.name;
-
-    document.getElementById("soulDescription").textContent =
-        path.description;
-
-    document.getElementById("recommendedClasses").innerHTML =
-        path.classes.map(
-            c => `<span class="tag">${c}</span>`
-        ).join("");
-
-    document.getElementById("soulTrait").textContent =
-        path.trait;
-
-    document.getElementById("traitDescription").textContent =
-        path.traitDescription;
-
-    document.getElementById("awakeningBlessing").textContent =
-        path.blessing;
-
-    document.getElementById("blessingDescription").textContent =
-        path.blessingDescription;
-
-    showScreen("result");
 }
 
 
-/* =========================
-   CHARACTER CREATOR
-========================= */
+function startQuestions(){
 
-function openCharacterCreator() {
+const name=document.getElementById("playerName").value.trim();
 
-    document.getElementById("characterName").textContent =
-        character.name;
+if(!name){
 
-    const classSelect =
-        document.getElementById("classSelect");
+alert("Your soul must have a name.");
 
-    classSelect.innerHTML = "";
+return;
 
-    character.classes.forEach(className => {
+}
 
-        const option =
-            document.createElement("option");
+character={
+name:name
+};
 
-        option.value = className;
-        option.textContent = className;
+showScreen("quiz");
 
-        classSelect.appendChild(option);
+displayQuestion();
 
-    });
-
-    document.getElementById("abilityScores").innerHTML =
-        Object.entries(character.scores).map(
-            ([stat,value]) =>
-            `<div class="stat">
-                <strong>${value}</strong>
-                ${stat}
-            </div>`
-        ).join("");
-
-    showScreen("creator");
 }
 
 
-/* =========================
-   SAVE CHARACTER
-========================= */
+function displayQuestion(){
 
-function saveCharacter() {
+const current=questions[questionIndex];
 
-    character.class =
-        document.getElementById("classSelect").value;
+document.getElementById("questionNumber").textContent=
+"Question "+(questionIndex+1)+" of "+questions.length;
 
-    character.subclass =
-        document.getElementById("subclass").value;
+document.getElementById("progressBar").style.width=
+(((questionIndex+1)/questions.length)*100)+"%";
 
-    character.background =
-        document.getElementById("background").value;
+document.getElementById("question").textContent=current[0];
 
-    character.level =
-        Number(document.getElementById("level").value);
+const answers=document.getElementById("answers");
 
-    character.hp =
-        Number(document.getElementById("maxHP").value);
+answers.innerHTML="";
 
-    character.ac =
-        Number(document.getElementById("armorClass").value);
+current[1].forEach(option=>{
 
-    character.speed =
-        document.getElementById("speed").value;
+const button=document.createElement("button");
 
-    character.personality =
-        document.getElementById("personality").value;
+button.className="choice";
 
-    character.ideal =
-        document.getElementById("ideal").value;
+button.textContent=option[0];
 
-    character.bond =
-        document.getElementById("bond").value;
+button.onclick=function(){
 
-    character.flaw =
-        document.getElementById("flaw").value;
+Object.entries(option[1]).forEach(([stat,value])=>{
+scores[stat]+=value;
+});
 
-    character.backstory =
-        document.getElementById("backstory").value;
+questionIndex++;
 
-    localStorage.setItem(
-        "soulTrialCharacter",
-        JSON.stringify(character)
-    );
+if(questionIndex<questions.length){
 
-    alert("Character saved on this device.");
+displayQuestion();
+
+}else{
+
+calculateSoul();
+
+}
+
+};
+
+answers.appendChild(button);
+
+});
+
 }
 
 
-/* =========================
-   CHARACTER SHEET
-========================= */
+function calculateSoul(){
 
-function viewSheet() {
+let highest=Object.keys(scores).sort(
+(a,b)=>scores[b]-scores[a]
+)[0];
 
-    saveCharacter();
+const path=soulPaths[highest];
 
-    document.getElementById("sheetName").textContent =
-        character.name;
+const lowest=Math.min(...Object.values(scores));
 
-    document.getElementById("sheetIdentity").textContent =
-        character.race +
-        " • " +
-        character.class +
-        " • Level " +
-        character.level +
-        " • " +
-        (character.background || "No Background");
+const highestScore=Math.max(...Object.values(scores));
 
-    document.getElementById("sheetHP").textContent =
-        character.hp;
+let finalScores={};
 
-    document.getElementById("sheetAC").textContent =
-        character.ac;
+Object.keys(scores).forEach(stat=>{
 
-    document.getElementById("sheetSpeed").textContent =
-        character.speed;
+if(highestScore===lowest){
 
-    document.getElementById("sheetStats").innerHTML =
-        Object.entries(character.scores).map(
-            ([stat,value]) => {
+finalScores[stat]=12;
 
-                const modifier =
-                    Math.floor((value - 10) / 2);
+}else{
 
-                return `
-                <div class="stat">
+finalScores[stat]=8+
+Math.round(
+((scores[stat]-lowest)/
+(highestScore-lowest))*10
+);
 
-                    <strong>${value}</strong>
+}
 
-                    ${stat}
+});
 
-                    <br>
+character.race="Human";
+character.dominantStat=highest;
+character.soulPath=path.name;
+character.soulDescription=path.description;
+character.classes=path.classes;
+character.soulTrait=path.trait;
+character.traitDescription=path.traitDescription;
+character.blessing=path.blessing;
+character.blessingDescription=path.blessingDescription;
+character.scores=finalScores;
 
-                    ${modifier >= 0 ? "+" : ""}
-                    ${modifier}
+document.getElementById("resultName").textContent=character.name;
+document.getElementById("soulPath").textContent=path.name;
+document.getElementById("soulDescription").textContent=path.description;
 
-                </div>
-                `;
+document.getElementById("recommendedClasses").innerHTML=
+path.classes.map(c=>`<span class="tag">${c}</span>`).join("");
 
-            }
-        ).join("");
+document.getElementById("soulTrait").textContent=path.trait;
+document.getElementById("traitDescription").textContent=path.traitDescription;
+document.getElementById("awakeningBlessing").textContent=path.blessing;
+document.getElementById("blessingDescription").textContent=path.blessingDescription;
 
-    document.getElementById("sheetPath").textContent =
-        character.soulPath;
+showScreen("result");
 
-    document.getElementById("sheetPathDescription").textContent =
-        character.soulDescription;
-
-    document.getElementById("sheetTrait").textContent =
-        character.soulTrait;
-
-    document.getElementById("sheetTraitDescription").textContent =
-        character.traitDescription;
-
-    document.getElementById("sheetBlessing").textContent =
-        character.blessing;
-
-    document.getElementById("sheetBlessingDescription").textContent =
-        character.blessingDescription;
-
-    document.getElementById("sheetPersonality").textContent =
-        character.personality || "—";
-
-    document.getElementById("sheetIdeal").textContent =
-        character.ideal || "—";
-
-    document.getElementById("sheetBond").textContent =
-        character.bond || "—";
-
-    document.getElementById("sheetFlaw").textContent =
-        character.flaw || "—";
-
-    document.getElementById("sheetBackstory").textContent =
-        character.backstory || "—";
-
-    showScreen("sheet");
 }
 
 
-/* =========================
-   LOAD SAVED CHARACTER
-========================= */
+function openCharacterCreator(){
 
-const savedCharacter =
-    localStorage.getItem("soulTrialCharacter");
+document.getElementById("characterName").textContent=character.name;
 
-if (savedCharacter) {
+const classSelect=document.getElementById("classSelect");
 
-    try {
+classSelect.innerHTML="";
 
-        character =
-            JSON.parse(savedCharacter);
+character.classes.forEach(className=>{
 
-    } catch(error) {
+const option=document.createElement("option");
 
-        character = null;
+option.value=className;
+option.textContent=className;
 
-    }
+classSelect.appendChild(option);
+
+});
+
+updateClassInfo();
+
+const backgroundSelect=document.getElementById("backgroundSelect");
+
+backgroundSelect.innerHTML="";
+
+backgrounds.forEach(background=>{
+
+const option=document.createElement("option");
+
+option.value=background;
+option.textContent=background;
+
+backgroundSelect.appendChild(option);
+
+});
+
+document.getElementById("abilityScores").innerHTML=
+Object.entries(character.scores).map(([stat,value])=>
+`<div class="stat"><strong>${value}</strong>${stat}</div>`
+).join("");
+
+const className=classSelect.value;
+
+if(classData[className]){
+
+document.getElementById("maxHP").value=
+classData[className].hitDie+
+Math.floor((character.scores.CON-10)/2);
+
+}
+
+showScreen("creator");
+
+}
+
+
+function updateClassInfo(){
+
+const className=document.getElementById("classSelect").value;
+
+const data=classData[className];
+
+const subclassSelect=document.getElementById("subclassSelect");
+
+subclassSelect.innerHTML="";
+
+if(data){
+
+data.subclasses.forEach(subclass=>{
+
+const option=document.createElement("option");
+
+option.value=subclass;
+option.textContent=subclass;
+
+subclassSelect.appendChild(option);
+
+});
+
+document.getElementById("classInfo").innerHTML=
+"<h3>"+className+"</h3>"+
+"<p>2014 D&D class.</p>"+
+"<p><strong>Hit Die:</strong> d"+data.hitDie+"</p>";
+
+}
+
+}
+
+
+function saveCharacter(){
+
+character.class=
+document.getElementById("classSelect").value;
+
+character.subclass=
+document.getElementById("subclassSelect").value;
+
+character.background=
+document.getElementById("backgroundSelect").value;
+
+character.level=
+Number(document.getElementById("level").value);
+
+character.hp=
+Number(document.getElementById("maxHP").value);
+
+character.ac=
+Number(document.getElementById("armorClass").value);
+
+character.speed=
+document.getElementById("speed").value;
+
+character.personality=
+document.getElementById("personality").value;
+
+character.ideal=
+document.getElementById("ideal").value;
+
+character.bond=
+document.getElementById("bond").value;
+
+character.flaw=
+document.getElementById("flaw").value;
+
+character.backstory=
+document.getElementById("backstory").value;
+
+localStorage.setItem(
+"soulTrialCharacter",
+JSON.stringify(character)
+);
+
+alert("Character saved on this device.");
+
+}
+
+
+function viewSheet(){
+
+saveCharacter();
+
+document.getElementById("sheetName").textContent=character.name;
+
+document.getElementById("sheetIdentity").textContent=
+character.race+
+" • "+
+character.class+
+" • Level "+
+character.level+
+" • "+
+(character.background||"No Background");
+
+document.getElementById("sheetHP").textContent=character.hp;
+document.getElementById("sheetAC").textContent=character.ac;
+document.getElementById("sheetSpeed").textContent=character.speed;
+
+document.getElementById("sheetStats").innerHTML=
+Object.entries(character.scores).map(([stat,value])=>{
+
+const modifier=Math.floor((value-10)/2);
+
+return `
+<div class="stat">
+<strong>${value}</strong>
+${stat}
+<br>
+${modifier>=0?"+":""}${modifier}
+</div>
+`;
+
+}).join("");
+
+document.getElementById("sheetPath").textContent=character.soulPath;
+document.getElementById("sheetPathDescription").textContent=character.soulDescription;
+document.getElementById("sheetTrait").textContent=character.soulTrait;
+document.getElementById("sheetTraitDescription").textContent=character.traitDescription;
+document.getElementById("sheetBlessing").textContent=character.blessing;
+document.getElementById("sheetBlessingDescription").textContent=character.blessingDescription;
+
+document.getElementById("sheetClass").textContent=character.class||"—";
+document.getElementById("sheetSubclass").textContent=character.subclass||"—";
+document.getElementById("sheetBackground").textContent=character.background||"—";
+
+document.getElementById("sheetPersonality").textContent=character.personality||"—";
+document.getElementById("sheetIdeal").textContent=character.ideal||"—";
+document.getElementById("sheetBond").textContent=character.bond||"—";
+document.getElementById("sheetFlaw").textContent=character.flaw||"—";
+document.getElementById("sheetBackstory").textContent=character.backstory||"—";
+
+showScreen("sheet");
+
+}
+
+
+const savedCharacter=
+localStorage.getItem("soulTrialCharacter");
+
+if(savedCharacter){
+
+try{
+
+character=JSON.parse(savedCharacter);
+
+}catch(error){
+
+character=null;
+
+}
 
 }
 
