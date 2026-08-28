@@ -1,94 +1,1170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Soul's Trial</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Soul's Trial</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* {
+    box-sizing: border-box;
+}
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #080a10;
-      color: #eeeeee;
-      font-family: system-ui, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top, #252033 0%, #090a10 55%);
+    color: #eeeeee;
+    font-family: system-ui, sans-serif;
+}
 
+.container {
+    width: 100%;
+    max-width: 850px;
+    margin: auto;
+    padding: 20px;
+}
+
+.panel {
+    background: rgba(20, 24, 36, 0.96);
+    border: 1px solid #625a48;
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 15px 50px rgba(0,0,0,.45);
+}
+
+h1,
+h2,
+h3 {
+    font-family: Georgia, serif;
+    color: #dfc47a;
+}
+
+h1 {
+    text-align: center;
+    font-size: clamp(2.4rem, 9vw, 4.5rem);
+}
+
+h2 {
+    margin-top: 30px;
+}
+
+p {
+    line-height: 1.6;
+    color: #c4c4c4;
+}
+
+.center {
+    text-align: center;
+}
+
+.muted {
+    color: #999;
+}
+
+button,
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 14px;
+    margin: 7px 0;
+    border-radius: 10px;
+    font: inherit;
+}
+
+button {
+    background: #70582a;
+    border: 1px solid #dfc47a;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #8b7038;
+}
+
+.choice {
+    background: #202737;
+    border-color: #514d43;
+    text-align: left;
+}
+
+.choice:hover {
+    border-color: #dfc47a;
+}
+
+input,
+select,
+textarea {
+    background: #0e131d;
+    color: white;
+    border: 1px solid #4a4a4a;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.hidden {
+    display: none;
+}
+
+.progress {
+    height: 8px;
+    background: #292e38;
+    border-radius: 10px;
+    margin: 15px 0 25px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #dfc47a;
+    border-radius: 10px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.stat {
+    background: #0d121c;
+    border: 1px solid #403d35;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+}
+
+.stat strong {
+    display: block;
+    color: #dfc47a;
+    font-size: 1.5rem;
+}
+
+.info {
+    background: #101520;
+    border: 1px solid #454238;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 12px 0;
+}
+
+.tag {
+    display: inline-block;
+    padding: 7px 10px;
+    margin: 3px;
+    border-radius: 20px;
+    border: 1px solid #625a48;
+    color: #dfc47a;
+}
+
+@media (max-width: 600px) {
     .container {
-      width: 100%;
-      max-width: 800px;
-      background: #141a26;
-      border: 1px solid #5b5446;
-      border-radius: 20px;
-      padding: 35px 25px;
-      text-align: center;
+        padding: 8px;
     }
 
-    h1 {
-      color: #dfc47a;
-      font-family: Georgia, serif;
-      font-size: clamp(2.5rem, 10vw, 5rem);
-      margin-bottom: 10px;
+    .panel {
+        padding: 18px 14px;
     }
 
-    p {
-      color: #bbbbbb;
-      line-height: 1.6;
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
     }
-
-    button {
-      width: 100%;
-      max-width: 400px;
-      padding: 16px;
-      margin-top: 25px;
-      border-radius: 12px;
-      border: 1px solid #dfc47a;
-      background: #725b2b;
-      color: white;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #8b7038;
-    }
-  </style>
+}
+</style>
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>The Soul's Trial</h1>
+<div class="container">
 
-    <p>
-      "Before a soul can be given a new life,
-      it must first reveal what it truly is."
-    </p>
+<div class="panel">
 
-    <p>
-      Your mortal life has ended.
-      What awaits you beyond the veil?
-    </p>
+<!-- HOME -->
 
-    <button onclick="beginTrial()">
-      BEGIN THE TRIAL
-    </button>
-  </div>
+<section id="home">
 
-  <script>
-    function beginTrial() {
-      alert("The Trial begins...");
+<h1>The Soul's Trial</h1>
+
+<p class="center">
+<i>
+"Before a soul can be given a new life,
+it must first reveal what it truly is."
+</i>
+</p>
+
+<p class="center">
+Your life on Earth has ended.
+
+But death was not the end.
+
+Something beyond your world has taken notice of you.
+Before you can awaken in another world,
+your soul must first be judged.
+</p>
+
+<button onclick="beginTrial()">
+BEGIN THE TRIAL
+</button>
+
+</section>
+
+
+<!-- NAME -->
+
+<section id="name" class="hidden">
+
+<h1>Before the Trial</h1>
+
+<p class="center">
+A name is the first thing a soul carries into the unknown.
+</p>
+
+<input
+id="playerName"
+maxlength="40"
+placeholder="Enter your name"
+>
+
+<button onclick="startQuestions()">
+CONTINUE
+</button>
+
+</section>
+
+
+<!-- QUIZ -->
+
+<section id="quiz" class="hidden">
+
+<p id="questionNumber" class="muted"></p>
+
+<div class="progress">
+<div id="progressBar" class="progress-bar"></div>
+</div>
+
+<h2 id="question"></h2>
+
+<div id="answers"></div>
+
+</section>
+
+
+<!-- RESULT -->
+
+<section id="result" class="hidden">
+
+<h1 id="resultName"></h1>
+
+<p class="center">
+<i>
+Your mortal life has been measured.
+Your soul has spoken.
+</i>
+</p>
+
+<div class="info">
+
+<h2 id="soulPath"></h2>
+
+<p id="soulDescription"></p>
+
+<p>
+<strong>Race:</strong> Human
+</p>
+
+<p>
+<strong>Recommended Classes:</strong>
+</p>
+
+<div id="recommendedClasses"></div>
+
+</div>
+
+<div class="info">
+
+<h3 id="soulTrait"></h3>
+
+<p id="traitDescription"></p>
+
+<h3 id="awakeningBlessing"></h3>
+
+<p id="blessingDescription"></p>
+
+</div>
+
+<button onclick="openCharacterCreator()">
+CREATE MY D&D CHARACTER
+</button>
+
+</section>
+
+
+<!-- CHARACTER CREATOR -->
+
+<section id="creator" class="hidden">
+
+<h1 id="characterName"></h1>
+
+<div class="info">
+
+<p>
+<strong>Race:</strong> Human
+</p>
+
+<p>
+Your race is fixed by the campaign.
+Your Soul Trial determines your natural strengths.
+</p>
+
+</div>
+
+<h2>Class</h2>
+
+<select id="classSelect"></select>
+
+<h2>Character Details</h2>
+
+<input id="subclass" placeholder="Subclass">
+
+<input id="background" placeholder="Background">
+
+<input id="level" type="number" min="1" max="20" value="1">
+
+<h2>Ability Scores</h2>
+
+<div id="abilityScores" class="stats"></div>
+
+<h2>Combat</h2>
+
+<input id="maxHP" type="number" value="10" placeholder="Maximum HP">
+
+<input id="armorClass" type="number" value="10" placeholder="Armor Class">
+
+<input id="speed" value="30 ft" placeholder="Speed">
+
+<h2>Character Information</h2>
+
+<textarea id="personality" placeholder="Personality"></textarea>
+
+<textarea id="ideal" placeholder="Ideal"></textarea>
+
+<textarea id="bond" placeholder="Bond"></textarea>
+
+<textarea id="flaw" placeholder="Flaw"></textarea>
+
+<textarea id="backstory" placeholder="Backstory"></textarea>
+
+<button onclick="saveCharacter()">
+SAVE CHARACTER
+</button>
+
+<button onclick="viewSheet()">
+VIEW CHARACTER SHEET
+</button>
+
+</section>
+
+
+<!-- CHARACTER SHEET -->
+
+<section id="sheet" class="hidden">
+
+<h1 id="sheetName"></h1>
+
+<p class="center" id="sheetIdentity"></p>
+
+<div class="info">
+
+<strong>Hit Points:</strong>
+<span id="sheetHP"></span>
+
+<br>
+
+<strong>Armor Class:</strong>
+<span id="sheetAC"></span>
+
+<br>
+
+<strong>Speed:</strong>
+<span id="sheetSpeed"></span>
+
+</div>
+
+<h2>Ability Scores</h2>
+
+<div id="sheetStats" class="stats"></div>
+
+<h2>Soul</h2>
+
+<div class="info">
+
+<h2 id="sheetPath"></h2>
+
+<p id="sheetPathDescription"></p>
+
+<h3 id="sheetTrait"></h3>
+
+<p id="sheetTraitDescription"></p>
+
+<h3 id="sheetBlessing"></h3>
+
+<p id="sheetBlessingDescription"></p>
+
+</div>
+
+<h2>Character</h2>
+
+<div class="info">
+
+<p>
+<strong>Personality</strong>
+</p>
+
+<p id="sheetPersonality"></p>
+
+<p>
+<strong>Ideal</strong>
+</p>
+
+<p id="sheetIdeal"></p>
+
+<p>
+<strong>Bond</strong>
+</p>
+
+<p id="sheetBond"></p>
+
+<p>
+<strong>Flaw</strong>
+</p>
+
+<p id="sheetFlaw"></p>
+
+<p>
+<strong>Backstory</strong>
+</p>
+
+<p id="sheetBackstory"></p>
+
+</div>
+
+<button onclick="openCharacterCreator()">
+EDIT CHARACTER
+</button>
+
+</section>
+
+</div>
+</div>
+
+
+<script>
+
+/* =========================
+   D&D 2014 SOUL TRIAL
+========================= */
+
+const questions = [
+
+[
+"You need to move something extremely heavy.",
+[
+["Lift it yourself.", {STR:2}],
+["Find a clever way around the problem.", {INT:2}],
+["Ask someone for help.", {CHA:2}],
+["Study the situation first.", {WIS:2}]
+]
+],
+
+[
+"You notice something valuable has been left unattended.",
+[
+["Take it.", {DEX:1,CHA:1}],
+["Leave it alone.", {WIS:2}],
+["Investigate who it belongs to.", {INT:2}],
+["Secure it somewhere safe.", {CON:1,WIS:1}]
+]
+],
+
+[
+"Someone challenges you to a competition.",
+[
+["Accept immediately.", {STR:2}],
+["Study their strengths first.", {INT:2}],
+["Focus on speed and technique.", {DEX:2}],
+["Try to make it fun for everyone.", {CHA:2}]
+]
+],
+
+[
+"Your friend is making a terrible decision.",
+[
+["Stop them.", {STR:1,CON:1}],
+["Explain the consequences.", {INT:2}],
+["Try to persuade them.", {CHA:2}],
+["Let them make their own choice.", {WIS:2}]
+]
+],
+
+[
+"You suddenly find yourself lost.",
+[
+["Keep moving until you find your way.", {CON:2}],
+["Look for landmarks.", {WIS:2}],
+["Figure out the map.", {INT:2}],
+["Ask someone for directions.", {CHA:2}]
+]
+],
+
+[
+"You see someone being threatened.",
+[
+["Step between them.", {STR:2}],
+["Look for an opening.", {DEX:2}],
+["Figure out what's really happening.", {WIS:2}],
+["Try talking the aggressor down.", {CHA:2}]
+]
+],
+
+[
+"You have failed at something important.",
+[
+["Try again immediately.", {CON:2}],
+["Figure out exactly what went wrong.", {INT:2}],
+["Ask someone experienced for advice.", {CHA:1,WIS:1}],
+["Take time to think about it.", {WIS:2}]
+]
+],
+
+[
+"You discover a strange locked door.",
+[
+["Break it open.", {STR:2}],
+["Search for a hidden mechanism.", {DEX:1,INT:1}],
+["Look for clues.", {WIS:2}],
+["Try to find someone who can open it.", {CHA:2}]
+]
+],
+
+[
+"You are given a difficult physical challenge.",
+[
+["Push yourself through it.", {CON:2}],
+["Find the fastest technique.", {DEX:2}],
+["Study how it works first.", {INT:2}],
+["Ask someone to teach you.", {CHA:1,WIS:1}]
+]
+],
+
+[
+"Someone insults you publicly.",
+[
+["Ignore them.", {WIS:2}],
+["Stand your ground.", {CON:1,CHA:1}],
+["Respond with something clever.", {INT:1,CHA:1}],
+["Challenge them.", {STR:2}]
+]
+],
+
+[
+"You have to learn something completely new.",
+[
+["Practice until you master it.", {CON:2}],
+["Read everything you can.", {INT:2}],
+["Watch someone else do it.", {WIS:2}],
+["Find a teacher.", {CHA:2}]
+]
+],
+
+[
+"Your group has no leader.",
+[
+["Take command.", {CHA:2}],
+["Create a strategy.", {INT:2}],
+["Wait and observe.", {WIS:2}],
+["Volunteer to handle the dangerous part.", {STR:1,CON:1}]
+]
+],
+
+[
+"You suddenly hear something moving in the darkness.",
+[
+["Prepare to fight.", {STR:1,CON:1}],
+["Move silently toward it.", {DEX:2}],
+["Listen carefully.", {WIS:2}],
+["Figure out what could be making the sound.", {INT:2}]
+]
+],
+
+[
+"Someone needs help but helping them could put you at risk.",
+[
+["Help anyway.", {CON:1,WIS:1}],
+["Find a safer solution.", {INT:2}],
+["Convince others to help.", {CHA:2}],
+["Assess the danger first.", {WIS:2}]
+]
+],
+
+[
+"You are suddenly placed in a leadership position.",
+[
+["Lead from the front.", {STR:1,CHA:1}],
+["Create a plan.", {INT:2}],
+["Make sure everyone is heard.", {WIS:1,CHA:1}],
+["Keep everyone moving.", {CHA:2}]
+]
+],
+
+[
+"You find yourself in a fight.",
+[
+["Fight head-on.", {STR:2}],
+["Look for an opening.", {DEX:2}],
+["Protect everyone.", {CON:1,WIS:1}],
+["Look for a way to end the fight without killing.", {WIS:2}]
+]
+],
+
+[
+"You discover that someone has been lying to you.",
+[
+["Confront them.", {STR:1,CHA:1}],
+["Figure out why they lied.", {INT:1,WIS:1}],
+["Pretend you believe them.", {DEX:1,CHA:1}],
+["Give them another chance.", {WIS:2}]
+]
+],
+
+[
+"You are offered incredible power.",
+[
+["Accept it.", {STR:1,CHA:1}],
+["Study it first.", {INT:2}],
+["Ask what it will cost.", {WIS:2}],
+["Refuse if the price is too high.", {CON:1,WIS:1}]
+]
+],
+
+[
+"You awaken in another world.",
+[
+["Find out how strong you are.", {STR:1,CON:1}],
+["Learn everything about this world.", {INT:2}],
+["Find people you can trust.", {CHA:2}],
+["Observe before acting.", {WIS:2}]
+]
+]
+
+];
+
+
+/* =========================
+   SOUL PATHS
+========================= */
+
+const soulPaths = {
+
+STR: {
+name:"The Vanguard",
+description:"Your soul responds to adversity with strength, courage, and decisive action.",
+classes:["Fighter","Barbarian","Paladin"],
+trait:"Unyielding",
+traitDescription:"You refuse to back down when others would surrender.",
+blessing:"Titan's Resolve",
+blessingDescription:"Once per long rest, when reduced to 0 HP, you may remain at 1 HP instead."
+},
+
+DEX: {
+name:"The Shadow",
+description:"Your soul favors speed, precision, awareness, and adaptability.",
+classes:["Rogue","Ranger","Monk"],
+trait:"Quickstep",
+traitDescription:"You instinctively recognize openings and react quickly.",
+blessing:"Veilstep",
+blessingDescription:"Once per short rest, you may move 10 feet as a reaction when targeted by an attack."
+},
+
+CON: {
+name:"The Unbroken",
+description:"Your defining strength is endurance. You keep moving when others fall.",
+classes:["Barbarian","Fighter"],
+trait:"Iron Will",
+traitDescription:"Pain and exhaustion rarely convince you to surrender.",
+blessing:"Last Stand",
+blessingDescription:"Once per long rest, gain temporary hit points when you fall below half your maximum HP."
+},
+
+INT: {
+name:"The Arcanist",
+description:"Your mind is your greatest weapon. Knowledge and understanding come naturally.",
+classes:["Wizard","Artificer"],
+trait:"Analytical Mind",
+traitDescription:"You instinctively break complicated problems into patterns.",
+blessing:"Arcane Insight",
+blessingDescription:"Once per long rest, gain advantage on an Intelligence check involving magic, history, or arcana."
+},
+
+WIS: {
+name:"The Seer",
+description:"You notice what others miss and trust instinct, patience, and judgment.",
+classes:["Cleric","Druid","Monk","Ranger"],
+trait:"Instinctive Awareness",
+traitDescription:"Your instincts often notice danger before your conscious mind does.",
+blessing:"Foresight",
+blessingDescription:"Once per long rest, after seeing a d20 result, add your Wisdom modifier to the roll."
+},
+
+CHA: {
+name:"The Sovereign",
+description:"Your presence carries weight. People naturally notice, follow, or remember you.",
+classes:["Bard","Sorcerer","Warlock","Paladin"],
+trait:"Commanding Presence",
+traitDescription:"You possess a presence that is difficult for others to ignore.",
+blessing:"Voice of the Soul",
+blessingDescription:"Once per long rest, gain advantage on a Charisma check made to influence another creature."
+}
+
+};
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+let scores = {
+STR:0,
+DEX:0,
+CON:0,
+INT:0,
+WIS:0,
+CHA:0
+};
+
+let questionIndex = 0;
+let character = null;
+
+
+/* =========================
+   SCREEN CONTROL
+========================= */
+
+function showScreen(id) {
+
+    document.querySelectorAll("section").forEach(section => {
+        section.classList.add("hidden");
+    });
+
+    document.getElementById(id).classList.remove("hidden");
+
+    window.scrollTo(0,0);
+}
+
+
+/* =========================
+   START TRIAL
+========================= */
+
+function beginTrial() {
+
+    scores = {
+        STR:0,
+        DEX:0,
+        CON:0,
+        INT:0,
+        WIS:0,
+        CHA:0
+    };
+
+    questionIndex = 0;
+
+    showScreen("name");
+}
+
+
+/* =========================
+   START QUESTIONS
+========================= */
+
+function startQuestions() {
+
+    const name =
+        document.getElementById("playerName").value.trim();
+
+    if (!name) {
+        alert("Your soul must have a name.");
+        return;
     }
-  </script>
+
+    character = {
+        name:name
+    };
+
+    showScreen("quiz");
+
+    displayQuestion();
+}
+
+
+/* =========================
+   DISPLAY QUESTION
+========================= */
+
+function displayQuestion() {
+
+    const current = questions[questionIndex];
+
+    document.getElementById("questionNumber").textContent =
+        "Question " +
+        (questionIndex + 1) +
+        " of " +
+        questions.length;
+
+    document.getElementById("progressBar").style.width =
+        ((questionIndex / questions.length) * 100) + "%";
+
+    document.getElementById("question").textContent =
+        current[0];
+
+    const answers =
+        document.getElementById("answers");
+
+    answers.innerHTML = "";
+
+    current[1].forEach(option => {
+
+        const button =
+            document.createElement("button");
+
+        button.className = "choice";
+
+        button.textContent =
+            option[0];
+
+        button.onclick = function() {
+
+            Object.entries(option[1]).forEach(
+                ([stat,value]) => {
+
+                    scores[stat] += value;
+
+                }
+            );
+
+            questionIndex++;
+
+            if (questionIndex < questions.length) {
+
+                displayQuestion();
+
+            } else {
+
+                calculateSoul();
+
+            }
+
+        };
+
+        answers.appendChild(button);
+
+    });
+
+}
+
+
+/* =========================
+   CALCULATE SOUL
+========================= */
+
+function calculateSoul() {
+
+    let highest =
+        Object.keys(scores).sort(
+            (a,b) => scores[b] - scores[a]
+        )[0];
+
+    const path =
+        soulPaths[highest];
+
+    const lowest =
+        Math.min(...Object.values(scores));
+
+    const highestScore =
+        Math.max(...Object.values(scores));
+
+    let finalScores = {};
+
+    Object.keys(scores).forEach(stat => {
+
+        if (highestScore === lowest) {
+
+            finalScores[stat] = 12;
+
+        } else {
+
+            finalScores[stat] =
+                8 +
+                Math.round(
+                    ((scores[stat] - lowest) /
+                    (highestScore - lowest)) * 10
+                );
+
+        }
+
+    });
+
+    character.race = "Human";
+    character.dominantStat = highest;
+    character.soulPath = path.name;
+    character.soulDescription = path.description;
+    character.classes = path.classes;
+    character.soulTrait = path.trait;
+    character.traitDescription = path.traitDescription;
+    character.blessing = path.blessing;
+    character.blessingDescription = path.blessingDescription;
+    character.scores = finalScores;
+
+    document.getElementById("resultName").textContent =
+        character.name;
+
+    document.getElementById("soulPath").textContent =
+        path.name;
+
+    document.getElementById("soulDescription").textContent =
+        path.description;
+
+    document.getElementById("recommendedClasses").innerHTML =
+        path.classes.map(
+            c => `<span class="tag">${c}</span>`
+        ).join("");
+
+    document.getElementById("soulTrait").textContent =
+        path.trait;
+
+    document.getElementById("traitDescription").textContent =
+        path.traitDescription;
+
+    document.getElementById("awakeningBlessing").textContent =
+        path.blessing;
+
+    document.getElementById("blessingDescription").textContent =
+        path.blessingDescription;
+
+    showScreen("result");
+}
+
+
+/* =========================
+   CHARACTER CREATOR
+========================= */
+
+function openCharacterCreator() {
+
+    document.getElementById("characterName").textContent =
+        character.name;
+
+    const classSelect =
+        document.getElementById("classSelect");
+
+    classSelect.innerHTML = "";
+
+    character.classes.forEach(className => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = className;
+        option.textContent = className;
+
+        classSelect.appendChild(option);
+
+    });
+
+    document.getElementById("abilityScores").innerHTML =
+        Object.entries(character.scores).map(
+            ([stat,value]) =>
+            `<div class="stat">
+                <strong>${value}</strong>
+                ${stat}
+            </div>`
+        ).join("");
+
+    showScreen("creator");
+}
+
+
+/* =========================
+   SAVE CHARACTER
+========================= */
+
+function saveCharacter() {
+
+    character.class =
+        document.getElementById("classSelect").value;
+
+    character.subclass =
+        document.getElementById("subclass").value;
+
+    character.background =
+        document.getElementById("background").value;
+
+    character.level =
+        Number(document.getElementById("level").value);
+
+    character.hp =
+        Number(document.getElementById("maxHP").value);
+
+    character.ac =
+        Number(document.getElementById("armorClass").value);
+
+    character.speed =
+        document.getElementById("speed").value;
+
+    character.personality =
+        document.getElementById("personality").value;
+
+    character.ideal =
+        document.getElementById("ideal").value;
+
+    character.bond =
+        document.getElementById("bond").value;
+
+    character.flaw =
+        document.getElementById("flaw").value;
+
+    character.backstory =
+        document.getElementById("backstory").value;
+
+    localStorage.setItem(
+        "soulTrialCharacter",
+        JSON.stringify(character)
+    );
+
+    alert("Character saved on this device.");
+}
+
+
+/* =========================
+   CHARACTER SHEET
+========================= */
+
+function viewSheet() {
+
+    saveCharacter();
+
+    document.getElementById("sheetName").textContent =
+        character.name;
+
+    document.getElementById("sheetIdentity").textContent =
+        character.race +
+        " • " +
+        character.class +
+        " • Level " +
+        character.level +
+        " • " +
+        (character.background || "No Background");
+
+    document.getElementById("sheetHP").textContent =
+        character.hp;
+
+    document.getElementById("sheetAC").textContent =
+        character.ac;
+
+    document.getElementById("sheetSpeed").textContent =
+        character.speed;
+
+    document.getElementById("sheetStats").innerHTML =
+        Object.entries(character.scores).map(
+            ([stat,value]) => {
+
+                const modifier =
+                    Math.floor((value - 10) / 2);
+
+                return `
+                <div class="stat">
+
+                    <strong>${value}</strong>
+
+                    ${stat}
+
+                    <br>
+
+                    ${modifier >= 0 ? "+" : ""}
+                    ${modifier}
+
+                </div>
+                `;
+
+            }
+        ).join("");
+
+    document.getElementById("sheetPath").textContent =
+        character.soulPath;
+
+    document.getElementById("sheetPathDescription").textContent =
+        character.soulDescription;
+
+    document.getElementById("sheetTrait").textContent =
+        character.soulTrait;
+
+    document.getElementById("sheetTraitDescription").textContent =
+        character.traitDescription;
+
+    document.getElementById("sheetBlessing").textContent =
+        character.blessing;
+
+    document.getElementById("sheetBlessingDescription").textContent =
+        character.blessingDescription;
+
+    document.getElementById("sheetPersonality").textContent =
+        character.personality || "—";
+
+    document.getElementById("sheetIdeal").textContent =
+        character.ideal || "—";
+
+    document.getElementById("sheetBond").textContent =
+        character.bond || "—";
+
+    document.getElementById("sheetFlaw").textContent =
+        character.flaw || "—";
+
+    document.getElementById("sheetBackstory").textContent =
+        character.backstory || "—";
+
+    showScreen("sheet");
+}
+
+
+/* =========================
+   LOAD SAVED CHARACTER
+========================= */
+
+const savedCharacter =
+    localStorage.getItem("soulTrialCharacter");
+
+if (savedCharacter) {
+
+    try {
+
+        character =
+            JSON.parse(savedCharacter);
+
+    } catch(error) {
+
+        character = null;
+
+    }
+
+}
+
+</script>
 
 </body>
 </html>
