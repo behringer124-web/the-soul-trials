@@ -913,58 +913,52 @@ showScreen("result");
 }
 
 
-function openCharacterCreator(){
+function updateCharacterStats(){
 
-document.getElementById("characterName").textContent=character.name;
+const className=
+document.getElementById("classSelect").value;
 
-const classSelect=document.getElementById("classSelect");
+const data=classData[className];
 
-classSelect.innerHTML="";
+const con=
+character.scores.CON;
 
-character.classes.forEach(className=>{
+const conModifier=
+Math.floor((con-10)/2);
 
-const option=document.createElement("option");
+if(data){
 
-option.value=className;
-option.textContent=className;
+const level=
+Number(document.getElementById("level").value)||1;
 
-classSelect.appendChild(option);
-
-});
-
-updateClassInfo();
-
-const backgroundSelect=document.getElementById("backgroundSelect");
-
-backgroundSelect.innerHTML="";
-
-backgrounds.forEach(background=>{
-
-const option=document.createElement("option");
-
-option.value=background;
-option.textContent=background;
-
-backgroundSelect.appendChild(option);
-
-});
-
-document.getElementById("abilityScores").innerHTML=
-Object.entries(character.scores).map(([stat,value])=>
-`<div class="stat"><strong>${value}</strong>${stat}</div>`
-).join("");
-
-const className=classSelect.value;
-
-if(classData[className]){
+const hp=
+data.hitDie+
+conModifier+
+((level-1)*(Math.floor(data.hitDie/2)+1+conModifier));
 
 document.getElementById("maxHP").value=
-classData[className].hitDie+
-Math.floor((character.scores.CON-10)/2);
+Math.max(1,hp);
 
 }
 
-showScreen("creator");
+document.getElementById("abilityScores").innerHTML=
+Object.entries(character.scores).map(
+([stat,value])=>{
+
+const modifier=
+Math.floor((value-10)/2);
+
+return `
+<div class="stat">
+<strong>${value}</strong>
+${stat}
+<br>
+${modifier>=0?"+":""}${modifier}
+</div>
+`;
+
+}
+).join("");
 
 }
 
