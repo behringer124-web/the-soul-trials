@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Soul's Trial</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #080a10;
+      color: #eeeeee;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: #141a26;
+      border: 1px solid #5b5446;
+      border-radius: 20px;
+      padding: 35px 25px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #dfc47a;
+      font-family: Georgia, serif;
+      font-size: clamp(2.5rem, 10vw, 5rem);
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #bbbbbb;
+      line-height: 1.6;
+    }
+
+    button {
+      width: 100%;
+      max-width: 400px;
+      padding: 16px;
+      margin-top: 25px;
+      border-radius: 12px;
+      border: 1px solid #dfc47a;
+      background: #725b2b;
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #8b7038;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>The Soul's Trial</h1>
+
+    <p>
+      "Before a soul can be given a new life,
+      it must first reveal what it truly is."
+    </p>
+
+    <p>
+      Your mortal life has ended.
+      What awaits you beyond the veil?
+    </p>
+
+    <button onclick="beginTrial()">
+      BEGIN THE TRIAL
+    </button>
+  </div>
+
+  <script>
+    function beginTrial() {
+      alert("The Trial begins...");
+    }
+  </script>
+
+</body>
+</html>
