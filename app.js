@@ -1,16 +1,11 @@
 "use strict";
 
-/* =========================================================
-THE SOUL'S TRIAL
-MAIN APPLICATION
-========================================================= */
+let character=null;
+let currentCampaign=null;
 
-let character = null;
-let currentCampaign = null;
+let questionIndex=0;
 
-let questionIndex = 0;
-
-let scores = {
+let scores={
 STR:0,
 DEX:0,
 CON:0,
@@ -19,11 +14,11 @@ WIS:0,
 CHA:0
 };
 
-let selectedEquipment = [];
+let selectedEquipment=[];
 
 
 /* =========================================================
-DOM HELPER
+DOM
 ========================================================= */
 
 function $(id){
@@ -37,26 +32,15 @@ SCREEN CONTROL
 
 function showScreen(id){
 
-document.querySelectorAll("section").forEach(
-function(section){
+document.querySelectorAll("section").forEach(function(section){
 section.classList.add("hidden");
-}
-);
+});
 
 const target=$(id);
 
-if(!target){
-
-console.error(
-"Screen not found:",
-id
-);
-
-return;
-
-}
-
+if(target){
 target.classList.remove("hidden");
+}
 
 window.scrollTo({
 top:0,
@@ -67,74 +51,10 @@ behavior:"smooth"
 
 
 /* =========================================================
-MESSAGES
-========================================================= */
-
-function showAuthMessage(
-message,
-success=false
-){
-
-const box=$("authMessage");
-
-if(!box){
-return;
-}
-
-box.textContent=message;
-
-box.classList.remove("hidden");
-
-box.classList.toggle(
-"success",
-success
-);
-
-box.classList.toggle(
-"error",
-!success
-);
-
-}
-
-
-function showCampaignMessage(
-message,
-success=false
-){
-
-const box=$("campaignMessage");
-
-if(!box){
-return;
-}
-
-box.textContent=message;
-
-box.classList.remove("hidden");
-
-box.classList.toggle(
-"success",
-success
-);
-
-box.classList.toggle(
-"error",
-!success
-);
-
-}
-
-
-/* =========================================================
 BEGIN TRIAL
 ========================================================= */
 
 function beginTrial(){
-
-console.log(
-"The Soul's Trial: Beginning trial."
-);
 
 scores={
 STR:0,
@@ -146,25 +66,12 @@ CHA:0
 };
 
 questionIndex=0;
-
-character=null;
-
 selectedEquipment=[];
+character=null;
 
 $("playerName").value="";
 
 showScreen("name");
-
-}
-
-
-/* =========================================================
-LOGIN SCREEN
-========================================================= */
-
-function showLogin(){
-
-showScreen("login");
 
 }
 
@@ -175,18 +82,12 @@ START QUESTIONS
 
 function startQuestions(){
 
-console.log(
-"The Soul's Trial: Starting questions."
-);
-
-const name =
+const name=
 $("playerName").value.trim();
 
 if(!name){
 
-alert(
-"Your soul must have a name."
-);
+alert("Your soul must have a name.");
 
 return;
 
@@ -195,17 +96,6 @@ return;
 character={
 name:name,
 level:1
-};
-
-questionIndex=0;
-
-scores={
-STR:0,
-DEX:0,
-CON:0,
-INT:0,
-WIS:0,
-CHA:0
 };
 
 showScreen("quiz");
@@ -221,145 +111,46 @@ DISPLAY QUESTION
 
 function displayQuestion(){
 
-console.log(
-"Displaying question:",
-questionIndex+1
-);
-
-if(
-typeof questions==="undefined"
-){
-
-console.error(
-"questions is undefined. Check data.js."
-);
-
-alert(
-"The quiz data could not be loaded. Make sure data.js is uploaded to GitHub and is spelled exactly: data.js"
-);
-
-return;
-
-}
-
-if(
-!Array.isArray(questions) ||
-questions.length===0
-){
-
-console.error(
-"questions is empty."
-);
-
-alert(
-"No quiz questions were loaded."
-);
-
-return;
-
-}
-
-if(
-questionIndex<0 ||
-questionIndex>=questions.length
-){
-
-console.error(
-"Invalid question index:",
-questionIndex
-);
-
-return;
-
-}
-
-const current =
+const current=
 questions[questionIndex];
 
-$("questionNumber").textContent =
+$("questionNumber").textContent=
 "Question "+
 (questionIndex+1)+
 " of "+
 questions.length;
 
-$("progressBar").style.width =
-(
-(questionIndex/questions.length)*100
-)+"%";
+$("progressBar").style.width=
+((questionIndex/questions.length)*100)+"%";
 
-$("question").textContent =
-current[0];
+$("question").textContent=current[0];
 
-$("questionFlavor").textContent =
-current[1];
+$("questionFlavor").textContent=current[1];
 
-const answers =
-$("answers");
+const answers=$("answers");
 
 answers.innerHTML="";
 
-current[2].forEach(
-function(option){
+current[2].forEach(function(option){
 
-const button =
+const button=
 document.createElement("button");
 
 button.type="button";
-
 button.className="choice";
+button.textContent=option[0];
 
-button.textContent=
-option[0];
+button.addEventListener("click",function(){
 
-button.addEventListener(
-"click",
-function(){
+Object.entries(option[1]).forEach(function(entry){
 
-selectAnswer(option[1]);
+scores[entry[0]]+=entry[1];
 
-}
-);
-
-answers.appendChild(button);
-
-}
-);
-
-}
-
-
-/* =========================================================
-SELECT ANSWER
-========================================================= */
-
-function selectAnswer(answerScores){
-
-Object.entries(answerScores)
-.forEach(
-function(entry){
-
-const stat=entry[0];
-const value=entry[1];
-
-if(
-Object.prototype.hasOwnProperty.call(
-scores,
-stat
-)
-){
-
-scores[stat]+=value;
-
-}
-
-}
-);
+});
 
 questionIndex++;
 
-if(
-questionIndex<questions.length
-){
+if(questionIndex<questions.length){
 
 displayQuestion();
 
@@ -368,6 +159,23 @@ displayQuestion();
 calculateSoul();
 
 }
+
+});
+
+answers.appendChild(button);
+
+});
+
+}
+
+
+/* =========================================================
+MODIFIER
+========================================================= */
+
+function modifier(score){
+
+return Math.floor((Number(score)-10)/2);
 
 }
 
@@ -378,15 +186,8 @@ CALCULATE SOUL
 
 function calculateSoul(){
 
-console.log(
-"Calculating soul path.",
-scores
-);
-
-const sorted =
-Object.entries(scores)
-.sort(
-function(a,b){
+const sorted=
+Object.entries(scores).sort(function(a,b){
 
 if(b[1]!==a[1]){
 return b[1]-a[1];
@@ -394,29 +195,11 @@ return b[1]-a[1];
 
 return a[0].localeCompare(b[0]);
 
-}
-);
+});
 
-const highest =
-sorted[0][0];
+const highest=sorted[0][0];
 
-const path =
-soulPaths[highest];
-
-if(!path){
-
-console.error(
-"Soul path missing:",
-highest
-);
-
-alert(
-"Unable to determine your soul path."
-);
-
-return;
-
-}
+const path=soulPaths[highest];
 
 const standard=[
 16,
@@ -436,63 +219,46 @@ WIS:10,
 CHA:10
 };
 
-sorted.forEach(
-function(entry,index){
+sorted.forEach(function(entry,index){
 
-finalScores[entry[0]] =
-standard[index];
+finalScores[entry[0]]=standard[index];
 
-}
-);
+});
 
-const chosenClass =
+const chosenClass=
 path.classes[0];
 
-const subclass =
+const subclass=
 path.subclasses[chosenClass];
 
-const race =
+const race=
 determineRace(scores);
 
-const data =
+const data=
 classData[chosenClass];
 
 character.race=race;
-
 character.dominantStat=highest;
-
 character.soulPath=path.name;
+character.soulDescription=path.description;
+character.class=chosenClass;
+character.subclass=subclass;
+character.background=path.background;
 
-character.soulDescription=
-path.description;
+character.soulTrait=path.trait;
+character.traitDescription=path.traitDescription;
 
-character.class=
-chosenClass;
+character.blessing=path.blessing;
+character.blessingDescription=path.blessingDescription;
 
-character.subclass=
-subclass;
-
-character.background=
-path.background;
-
-character.soulTrait=
-path.trait;
-
-character.traitDescription=
-path.traitDescription;
-
-character.blessing=
-path.blessing;
-
-character.blessingDescription=
-path.blessingDescription;
-
-character.scores=
-finalScores;
+character.scores=finalScores;
 
 character.max_hp=
 data.hp+
 modifier(finalScores.CON);
+
+character.current_hp=
+character.max_hp;
 
 character.armor_class=
 data.ac;
@@ -501,89 +267,18 @@ character.speed=
 data.speed;
 
 character.hit_dice=
-"1d"+
-data.hitDie;
+"1d"+data.hitDie;
 
 character.proficiency_bonus=2;
 
+character.experience_points=0;
+character.inspiration=false;
+
 character.equipment=[];
 
+saveLocalCharacter();
+
 renderResult();
-
-}
-
-
-/* =========================================================
-RACE
-========================================================= */
-
-function determineRace(scores){
-
-const sorted =
-Object.entries(scores)
-.sort(
-function(a,b){
-return b[1]-a[1];
-}
-);
-
-const primary=sorted[0][0];
-
-const secondary=sorted[1][0];
-
-if(primary==="STR" && secondary==="CON"){
-return "Half-Orc";
-}
-
-if(primary==="STR" && secondary==="CHA"){
-return "Dragonborn";
-}
-
-if(primary==="DEX" && secondary==="CHA"){
-return "Half-Elf";
-}
-
-if(primary==="DEX" && secondary==="INT"){
-return "Elf";
-}
-
-if(primary==="DEX" && secondary==="CON"){
-return "Halfling";
-}
-
-if(primary==="CON" && secondary==="WIS"){
-return "Dwarf";
-}
-
-if(primary==="CON" && secondary==="STR"){
-return "Half-Orc";
-}
-
-if(primary==="INT" && secondary==="DEX"){
-return "Gnome";
-}
-
-if(primary==="INT" && secondary==="CHA"){
-return "Tiefling";
-}
-
-if(primary==="WIS" && secondary==="CON"){
-return "Dwarf";
-}
-
-if(primary==="WIS" && secondary==="CHA"){
-return "Half-Elf";
-}
-
-if(primary==="CHA" && secondary==="INT"){
-return "Tiefling";
-}
-
-if(primary==="CHA" && secondary==="STR"){
-return "Dragonborn";
-}
-
-return "Human";
 
 }
 
@@ -594,11 +289,9 @@ RESULT
 
 function renderResult(){
 
-$("resultName").textContent=
-character.name;
+$("resultName").textContent=character.name;
 
-$("soulPath").textContent=
-character.soulPath;
+$("soulPath").textContent=character.soulPath;
 
 $("soulDescription").textContent=
 character.soulDescription;
@@ -643,9 +336,7 @@ function openCharacterCreator(){
 
 if(!character){
 
-alert(
-"No character exists yet."
-);
+alert("No character exists yet.");
 
 return;
 
@@ -714,33 +405,25 @@ EQUIPMENT
 
 function renderEquipmentOptions(){
 
-const data =
+const data=
 classData[character.class];
 
-if(!data){
-return;
-}
-
-const container =
+const container=
 $("equipmentOptions");
 
 container.innerHTML="";
 
-data.equipment.forEach(
-function(item){
+data.equipment.forEach(function(item){
 
-const wrapper =
+const wrapper=
 document.createElement("label");
 
 wrapper.className="card";
 
-wrapper.style.cursor="pointer";
-
-const checkbox =
+const checkbox=
 document.createElement("input");
 
 checkbox.type="checkbox";
-
 checkbox.value=item;
 
 checkbox.checked=
@@ -748,48 +431,52 @@ selectedEquipment.includes(item);
 
 checkbox.style.width="auto";
 
-checkbox.style.marginRight="8px";
-
 wrapper.appendChild(checkbox);
 
 wrapper.appendChild(
-document.createTextNode(item)
+document.createTextNode(" "+item)
 );
 
-checkbox.addEventListener(
-"change",
-function(){
+checkbox.addEventListener("change",function(){
 
 if(checkbox.checked){
 
-if(
-!selectedEquipment.includes(item)
-){
-
+if(!selectedEquipment.includes(item)){
 selectedEquipment.push(item);
-
 }
 
 }else{
 
-selectedEquipment =
-selectedEquipment.filter(
-function(x){
+selectedEquipment=
+selectedEquipment.filter(function(x){
 return x!==item;
-}
-);
+});
 
 }
 
-}
-);
+});
 
 container.appendChild(wrapper);
 
-}
-);
+});
 
 }
+
+
+/* =========================================================
+SAVE LOCAL
+========================================================= */
+
+function saveLocalCharacter(){
+
+if(!character){
+return;
+}
+
+localStorage.setItem(
+"soulTrialCharacter",
+JSON.stringify(character)
+);
 
 
 /* =========================================================
@@ -818,46 +505,151 @@ character.backstory=
 $("backstory").value.trim();
 
 character.equipment=
-Array.from(
-new Set(selectedEquipment)
-);
+Array.from(new Set(selectedEquipment));
 
-localStorage.setItem(
-"soulTrialCharacter",
-JSON.stringify(character)
-);
-
-if(currentUser){
+saveLocalCharacter();
 
 try{
 
-await saveCharacterToSupabase(
-character
-);
+await initializeSupabase();
+
+await saveCharacterToSupabase();
+
+$("syncStatus").textContent=
+"Character saved and synced with the Soul's Trial realm.";
+
+$("syncStatus").classList.add("success");
 
 alert(
-"Character saved successfully to your account."
+"Character saved successfully."
 );
 
 }catch(error){
 
 console.error(error);
 
+$("syncStatus").textContent=
+"Character saved on this device. Online sync is currently unavailable.";
+
+$("syncStatus").classList.add("error");
+
 alert(
-"Character saved on this device, but account synchronization failed.\n\n"+
+"Character saved locally, but online synchronization failed:\n\n"+
 error.message
 );
 
 }
 
-}else{
+}
 
-alert(
-"Character saved on this device.\n\n"+
-"Sign in later to sync it with your account."
+
+/* =========================================================
+SAVE CHARACTER TO SUPABASE
+========================================================= */
+
+async function saveCharacterToSupabase(){
+
+const payload={
+
+player_id:currentUser.id,
+
+name:character.name,
+
+race:character.race,
+
+class:character.class,
+
+subclass:character.subclass,
+
+background:character.background,
+
+level:character.level,
+
+strength:character.scores.STR,
+
+dexterity:character.scores.DEX,
+
+constitution:character.scores.CON,
+
+intelligence:character.scores.INT,
+
+wisdom:character.scores.WIS,
+
+charisma:character.scores.CHA,
+
+max_hp:character.max_hp,
+
+current_hp:character.current_hp||character.max_hp,
+
+armor_class:character.armor_class,
+
+speed:character.speed,
+
+proficiency_bonus:character.proficiency_bonus,
+
+hit_dice:character.hit_dice,
+
+soul_path:character.soulPath,
+
+soul_trait:character.soulTrait,
+
+soul_blessing:character.blessing,
+
+personality:character.personality,
+
+ideal:character.ideal,
+
+bond:character.bond,
+
+flaw:character.flaw,
+
+backstory:character.backstory
+
+};
+
+const existing=
+await supabaseRequest(
+"characters",
+"GET",
+null,
+"?player_id=eq."+
+encodeURIComponent(currentUser.id)+
+"&select=id"+
+"&order=updated_at.desc"+
+"&limit=1"
 );
 
+if(existing&&existing.length){
+
+await supabaseRequest(
+"characters",
+"PATCH",
+payload,
+"?id=eq."+encodeURIComponent(existing[0].id)
+);
+
+character.supabaseId=
+existing[0].id;
+
+}else{
+
+const created=
+await supabaseRequest(
+"characters",
+"POST",
+payload
+);
+
+if(created&&created.length){
+
+character.supabaseId=
+created[0].id;
+
 }
+
+}
+
+saveLocalCharacter();
 
 }
 
@@ -870,9 +662,7 @@ function viewSheet(){
 
 if(!character){
 
-alert(
-"Create a character first."
-);
+alert("Create a character first.");
 
 return;
 
@@ -893,7 +683,7 @@ character.level+
 character.background;
 
 $("sheetHP").textContent=
-character.max_hp;
+character.current_hp||character.max_hp;
 
 $("sheetAC").textContent=
 character.armor_class;
@@ -905,8 +695,7 @@ $("sheetLevel").textContent=
 character.level;
 
 $("sheetProficiency").textContent=
-"+"+
-character.proficiency_bonus;
+"+"+character.proficiency_bonus;
 
 $("sheetHitDice").textContent=
 character.hit_dice;
@@ -963,6 +752,8 @@ function renderSheetEquipment(){
 const container=
 $("sheetEquipment");
 
+container.innerHTML="";
+
 const equipment=
 character.equipment||[];
 
@@ -975,12 +766,9 @@ return;
 
 }
 
-container.innerHTML="";
+equipment.forEach(function(item){
 
-equipment.forEach(
-function(item){
-
-const span =
+const span=
 document.createElement("span");
 
 span.className="tag";
@@ -989,8 +777,7 @@ span.textContent=item;
 
 container.appendChild(span);
 
-}
-);
+});
 
 }
 
@@ -1001,51 +788,54 @@ CAMPAIGNS
 
 async function openCampaigns(){
 
-if(!currentUser){
-
-showScreen("login");
-
-showAuthMessage(
-"Sign in before using campaign features."
-);
-
-return;
-
-}
-
-$("campaignAccountNotice").textContent=
-"Signed in as "+
-(currentUser.email||"player");
-
 showScreen("campaigns");
 
+$("campaignAccountNotice").textContent=
+"Connecting your Soul to the campaign realm...";
+
+try{
+
+await initializeSupabase();
+
+$("campaignAccountNotice").textContent=
+"You are connected anonymously. No login is required.";
+
 await loadCampaigns();
+
+}catch(error){
+
+console.error(error);
+
+$("campaignAccountNotice").textContent=
+"Campaign connection failed: "+error.message;
+
+}
 
 }
 
 
 /* =========================================================
-CAMPAIGN UI
+CREATE CAMPAIGN UI
 ========================================================= */
 
 function showCreateCampaign(){
 
-$("campaignCreate")
-.classList.remove("hidden");
+$("campaignCreate").classList.remove("hidden");
 
-$("campaignJoin")
-.classList.add("hidden");
+$("campaignJoin").classList.add("hidden");
 
 }
 
 
+/* =========================================================
+JOIN CAMPAIGN UI
+========================================================= */
+
 function showJoinCampaign(){
 
-$("campaignJoin")
-.classList.remove("hidden");
+$("campaignJoin").classList.remove("hidden");
 
-$("campaignCreate")
-.classList.add("hidden");
+$("campaignCreate").classList.add("hidden");
 
 }
 
@@ -1055,6 +845,10 @@ CREATE CAMPAIGN
 ========================================================= */
 
 async function createCampaign(){
+
+try{
+
+await initializeSupabase();
 
 const name=
 $("campaignName").value.trim();
@@ -1072,16 +866,39 @@ return;
 
 }
 
-try{
+const created=
+await supabaseRequest(
+"campaigns",
+"POST",
+{
+name:name,
+description:description,
+dm_id:currentUser.id
+}
+);
 
-const campaign =
-await createCampaignInSupabase(
-name,
-description
+if(!created||!created.length){
+
+throw new Error(
+"Campaign was not created."
+);
+
+}
+
+const campaign=
+created[0];
+
+await supabaseRequest(
+"campaign_members",
+"POST",
+{
+campaign_id:campaign.id,
+player_id:currentUser.id,
+role:"dm"
+}
 );
 
 $("campaignName").value="";
-
 $("campaignDescription").value="";
 
 showCampaignMessage(
@@ -1090,10 +907,6 @@ true
 );
 
 await loadCampaigns();
-
-if(campaign){
-await openCampaign(campaign);
-}
 
 }catch(error){
 
@@ -1123,20 +936,24 @@ container.innerHTML=
 
 try{
 
-const campaigns =
-await getCampaigns();
+const campaigns=
+await supabaseRequest(
+"campaigns",
+"GET",
+null,
+"?select=*&order=created_at.desc"
+);
 
-if(
-!campaigns||
-campaigns.length===0
-){
+container.innerHTML="";
+
+if(!campaigns||campaigns.length===0){
 
 container.innerHTML=
 `
 <div class="info">
 <h2>No Campaigns Yet</h2>
 <p>
-Create a campaign as a DM or join one using a campaign ID.
+Create a campaign as a DM or join one using the ID provided by your DM.
 </p>
 </div>
 `;
@@ -1145,51 +962,45 @@ return;
 
 }
 
-container.innerHTML="";
+campaigns.forEach(function(campaign){
 
-campaigns.forEach(
-function(campaign){
-
-const card =
+const card=
 document.createElement("div");
 
 card.className="card";
 
-const title =
+const title=
 document.createElement("h3");
 
 title.textContent=
-campaign.name||
-"Unnamed Campaign";
+campaign.name||"Unnamed Campaign";
 
-const description =
+const description=
 document.createElement("p");
 
 description.textContent=
 campaign.description||
 "No description.";
 
-const idText =
+const idText=
 document.createElement("p");
 
 idText.innerHTML=
 "<strong>Campaign ID:</strong> ";
 
-const idSpan =
+const idSpan=
 document.createElement("span");
 
 idSpan.textContent=
-String(campaign.id);
+campaign.id;
 
 idText.appendChild(idSpan);
 
-const button =
+const button=
 document.createElement("button");
 
 button.type="button";
-
-button.textContent=
-"OPEN CAMPAIGN";
+button.textContent="OPEN CAMPAIGN";
 
 button.addEventListener(
 "click",
@@ -1199,28 +1010,22 @@ openCampaign(campaign);
 );
 
 card.appendChild(title);
-
 card.appendChild(description);
-
 card.appendChild(idText);
-
 card.appendChild(button);
 
 container.appendChild(card);
 
-}
-);
+});
 
 }catch(error){
 
 console.error(error);
 
 container.innerHTML=
-'<div class="notice error"></div>';
-
-container.firstElementChild.textContent=
-"Unable to load campaigns: "+
-error.message;
+'<div class="notice error">'+
+escapeHtml(error.message)+
+'</div>';
 
 }
 
@@ -1233,42 +1038,91 @@ JOIN CAMPAIGN
 
 async function joinCampaign(){
 
+try{
+
+await initializeSupabase();
+
 const code=
 $("campaignCode").value.trim();
 
 if(!code){
 
 showCampaignMessage(
-"Enter a campaign ID."
+"Enter a campaign ID or join code."
 );
 
 return;
 
 }
 
-try{
-
-const campaign =
-await joinCampaignInSupabase(
-code
+let campaigns=
+await supabaseRequest(
+"campaigns",
+"GET",
+null,
+"?id=eq."+
+encodeURIComponent(code)+
+"&select=*"
 );
 
-if(character){
+if(!campaigns||campaigns.length===0){
 
-try{
-
-await attachCharacterToCampaignInSupabase(
-campaign.id
-);
-
-}catch(error){
-
-console.warn(
-"Character attachment failed:",
-error
+campaigns=
+await supabaseRequest(
+"campaigns",
+"GET",
+null,
+"?join_code=eq."+
+encodeURIComponent(code)+
+"&select=*"
 );
 
 }
+
+if(!campaigns||campaigns.length===0){
+
+showCampaignMessage(
+"Campaign not found."
+);
+
+return;
+
+}
+
+const campaign=
+campaigns[0];
+
+const members=
+await supabaseRequest(
+"campaign_members",
+"GET",
+null,
+"?campaign_id=eq."+
+encodeURIComponent(campaign.id)+
+"&player_id=eq."+
+encodeURIComponent(currentUser.id)+
+"&select=id"
+);
+
+if(!members||members.length===0){
+
+await supabaseRequest(
+"campaign_members",
+"POST",
+{
+campaign_id:campaign.id,
+player_id:currentUser.id,
+role:"player"
+}
+);
+
+}
+
+if(character){
+
+await attachCharacterToCampaign(
+campaign.id
+);
 
 }
 
@@ -1296,20 +1150,80 @@ error.message||
 
 
 /* =========================================================
+ATTACH CHARACTER
+========================================================= */
+
+async function attachCharacterToCampaign(campaignId){
+
+if(!character){
+return;
+}
+
+await initializeSupabase();
+
+let characterId=
+character.supabaseId;
+
+if(!characterId){
+
+const rows=
+await supabaseRequest(
+"characters",
+"GET",
+null,
+"?player_id=eq."+
+encodeURIComponent(currentUser.id)+
+"&select=id"+
+"&order=updated_at.desc"+
+"&limit=1"
+);
+
+if(rows&&rows.length){
+characterId=rows[0].id;
+}
+
+}
+
+if(!characterId){
+
+await saveCharacterToSupabase();
+
+characterId=
+character.supabaseId;
+
+}
+
+if(characterId){
+
+await supabaseRequest(
+"characters",
+"PATCH",
+{
+campaign_id:campaignId
+},
+"?id=eq."+encodeURIComponent(characterId)
+);
+
+character.campaignId=
+campaignId;
+
+saveLocalCharacter();
+
+}
+
+}
+
+
+/* =========================================================
 OPEN CAMPAIGN
 ========================================================= */
 
 async function openCampaign(campaign){
 
-if(!campaign){
-return;
-}
-
 currentCampaign=campaign;
 
 $("campaignTitle").textContent=
-campaign.name||
-"Campaign";
+campaign.name||"Campaign";
 
 $("campaignDescription").textContent=
 campaign.description||
@@ -1340,56 +1254,62 @@ container.innerHTML=
 
 try{
 
-const members =
-await getCampaignMembers(
-currentCampaign.id
+const members=
+await supabaseRequest(
+"campaign_members",
+"GET",
+null,
+"?campaign_id=eq."+
+encodeURIComponent(currentCampaign.id)+
+"&select=*"+
+"&order=joined_at.asc"
+);
+
+const characters=
+await supabaseRequest(
+"characters",
+"GET",
+null,
+"?campaign_id=eq."+
+encodeURIComponent(currentCampaign.id)+
+"&select=*"+
+"&order=created_at.asc"
 );
 
 container.innerHTML="";
 
-const header =
+const header=
 document.createElement("div");
 
 header.className="info";
 
-const heading =
+const heading=
 document.createElement("h2");
 
 heading.textContent=
 "Campaign Roster";
 
-const campaignId =
+const id=
 document.createElement("p");
 
-campaignId.innerHTML=
-"<strong>Campaign ID:</strong> ";
-
-const idSpan =
-document.createElement("span");
-
-idSpan.textContent=
-String(currentCampaign.id);
-
-campaignId.appendChild(idSpan);
+id.innerHTML=
+"<strong>Campaign ID:</strong> "+
+escapeHtml(currentCampaign.id);
 
 header.appendChild(heading);
-
-header.appendChild(campaignId);
+header.appendChild(id);
 
 container.appendChild(header);
 
-if(
-!members||
-members.length===0
-){
+if(!characters||characters.length===0){
 
-const empty =
+const empty=
 document.createElement("div");
 
 empty.className="card";
 
-empty.textContent=
-"No players have joined this campaign yet.";
+empty.innerHTML=
+"<p>No characters have joined this campaign yet.</p>";
 
 container.appendChild(empty);
 
@@ -1397,69 +1317,61 @@ return;
 
 }
 
-members.forEach(
-function(member,index){
+characters.forEach(function(char){
 
-const card =
+const card=
 document.createElement("div");
 
 card.className="card";
 
-const title =
+const title=
 document.createElement("h3");
 
 title.textContent=
-"Member "+(index+1);
+char.name||"Unnamed Character";
 
-const player =
+const identity=
 document.createElement("p");
 
-player.innerHTML=
-"<strong>Player ID:</strong> ";
+identity.textContent=
+[
+char.race,
+char.class,
+char.subclass,
+"Level "+char.level
+].filter(Boolean).join(" • ");
 
-const playerId =
-document.createElement("span");
-
-playerId.textContent=
-String(member.player_id);
-
-player.appendChild(playerId);
-
-const role =
+const soul=
 document.createElement("p");
 
-role.innerHTML=
-"<strong>Role:</strong> ";
+soul.innerHTML=
+"<strong>Soul:</strong> "+
+escapeHtml(char.soul_path||"Unknown");
 
-const roleText =
-document.createElement("span");
+const background=
+document.createElement("p");
 
-roleText.textContent=
-member.role||"player";
-
-role.appendChild(roleText);
+background.innerHTML=
+"<strong>Background:</strong> "+
+escapeHtml(char.background||"Unknown");
 
 card.appendChild(title);
-
-card.appendChild(player);
-
-card.appendChild(role);
+card.appendChild(identity);
+card.appendChild(soul);
+card.appendChild(background);
 
 container.appendChild(card);
 
-}
-);
+});
 
 }catch(error){
 
 console.error(error);
 
 container.innerHTML=
-'<div class="notice error"></div>';
-
-container.firstElementChild.textContent=
-"Unable to load players: "+
-error.message;
+'<div class="notice error">'+
+escapeHtml(error.message)+
+'</div>';
 
 }
 
@@ -1481,46 +1393,51 @@ $("campaignDashboardContent");
 
 container.innerHTML="";
 
-const info =
+const info=
 document.createElement("div");
 
 info.className="info";
 
-const title =
+const title=
 document.createElement("h2");
 
 title.textContent=
-currentCampaign.name||
-"Campaign";
+currentCampaign.name;
 
-const description =
+const description=
 document.createElement("p");
 
 description.textContent=
 currentCampaign.description||
 "No description.";
 
-const id =
+const id=
 document.createElement("div");
 
 id.className="notice";
 
 id.innerHTML=
-"<strong>Campaign ID:</strong> ";
-
-const idText =
-document.createElement("span");
-
-idText.textContent=
-String(currentCampaign.id);
-
-id.appendChild(idText);
+"<strong>Campaign ID:</strong> "+
+escapeHtml(currentCampaign.id);
 
 info.appendChild(title);
-
 info.appendChild(description);
-
 info.appendChild(id);
+
+if(currentCampaign.join_code){
+
+const joinCode=
+document.createElement("div");
+
+joinCode.className="notice";
+
+joinCode.innerHTML=
+"<strong>Join Code:</strong> "+
+escapeHtml(currentCampaign.join_code);
+
+info.appendChild(joinCode);
+
+}
 
 container.appendChild(info);
 
@@ -1528,27 +1445,33 @@ container.appendChild(info);
 
 
 /* =========================================================
-UTILITIES
+MESSAGES
 ========================================================= */
 
-function modifier(score){
+function showCampaignMessage(message,success=false){
 
-return Math.floor(
-(Number(score)-10)/2
-);
+const box=
+$("campaignMessage");
+
+box.textContent=message;
+
+box.classList.remove("hidden");
+
+box.classList.toggle("success",success);
+box.classList.toggle("error",!success);
 
 }
 
 
+/* =========================================================
+STATS
+========================================================= */
+
 function renderStats(statScores){
 
-return Object.entries(
-statScores
-).map(
-function(entry){
+return Object.entries(statScores).map(function(entry){
 
 const stat=entry[0];
-
 const value=entry[1];
 
 const mod=modifier(value);
@@ -1564,11 +1487,14 @@ ${mod>=0?"+":""}${mod}
 </div>
 `;
 
-}
-).join("");
+}).join("");
 
 }
 
+
+/* =========================================================
+ESCAPE HTML
+========================================================= */
 
 function escapeHtml(value){
 
@@ -1588,7 +1514,7 @@ LOCAL CHARACTER
 
 function loadLocalCharacter(){
 
-const saved =
+const saved=
 localStorage.getItem(
 "soulTrialCharacter"
 );
@@ -1599,19 +1525,13 @@ return;
 
 try{
 
-character =
+character=
 JSON.parse(saved);
-
-console.log(
-"Local character loaded:",
-character.name
-);
 
 }catch(error){
 
 console.warn(
-"Saved character could not be loaded.",
-error
+"Saved character could not be loaded."
 );
 
 character=null;
@@ -1622,377 +1542,116 @@ character=null;
 
 
 /* =========================================================
-LOGIN
-========================================================= */
-
-async function login(){
-
-const email =
-$("loginEmail").value.trim();
-
-const password =
-$("loginPassword").value;
-
-if(!email){
-
-showAuthMessage(
-"Enter your email."
-);
-
-return;
-
-}
-
-if(!password){
-
-showAuthMessage(
-"Enter your password."
-);
-
-return;
-
-}
-
-try{
-
-await loginUser(
-email,
-password
-);
-
-await ensureProfile();
-
-showAuthMessage(
-"Signed in successfully.",
-true
-);
-
-const cloudCharacter =
-await loadCharacterFromSupabase();
-
-if(cloudCharacter){
-
-character=cloudCharacter;
-
-localStorage.setItem(
-"soulTrialCharacter",
-JSON.stringify(character)
-);
-
-}
-
-setTimeout(
-function(){
-
-if(character){
-
-viewSheet();
-
-}else{
-
-showScreen("home");
-
-}
-
-},
-500
-);
-
-}catch(error){
-
-console.error(error);
-
-showAuthMessage(
-error.message||
-"Login failed."
-);
-
-}
-
-}
-
-
-/* =========================================================
-SIGN UP
-========================================================= */
-
-async function signup(){
-
-const email =
-$("loginEmail").value.trim();
-
-const password =
-$("loginPassword").value;
-
-if(!email){
-
-showAuthMessage(
-"Enter an email address."
-);
-
-return;
-
-}
-
-if(password.length<6){
-
-showAuthMessage(
-"Password must be at least 6 characters."
-);
-
-return;
-
-}
-
-try{
-
-await signupUser(
-email,
-password
-);
-
-if(currentUser){
-
-await ensureProfile();
-
-showAuthMessage(
-"Account created successfully. You are signed in.",
-true
-);
-
-setTimeout(
-function(){
-showScreen("home");
-},
-800
-);
-
-}else{
-
-showAuthMessage(
-"Account created. Check your email if confirmation is enabled.",
-true
-);
-
-}
-
-}catch(error){
-
-console.error(error);
-
-showAuthMessage(
-error.message||
-"Unable to create account."
-);
-
-}
-
-}
-
-
-/* =========================================================
-BUTTON WIRING
+BUTTONS
 ========================================================= */
 
 function wireButtons(){
 
-console.log(
-"The Soul's Trial: Wiring buttons."
-);
-
-const requiredButtons=[
-
-"beginButton",
-"loginButton",
-"backFromLogin",
-"signInButton",
-"signUpButton",
-"continueName",
-"backFromName",
-"continueToCreator",
-"saveCharacterButton",
-"viewSheetButton",
-"editCharacterButton",
-"campaignsButton",
-"sheetHomeButton",
-"createCampaignButton",
-"joinCampaignButton",
-"campaignCharacterButton",
-"confirmCreateCampaign",
-"confirmJoinCampaign",
-"playersButton",
-"campaignInfoButton",
-"backCampaignsButton"
-
-];
-
-for(
-const id of requiredButtons
-){
-
-if(!$(`${id}`)){
-
-console.error(
-"Missing button:",
-id
-);
-
-}
-
-}
-
-
-/* HOME */
-
-$("beginButton")
-.addEventListener(
+$("beginButton").addEventListener(
 "click",
 beginTrial
 );
 
-$("loginButton")
-.addEventListener(
-"click",
-showLogin
-);
-
-
-/* LOGIN */
-
-$("backFromLogin")
-.addEventListener(
-"click",
-function(){
-showScreen("home");
-}
-);
-
-$("signInButton")
-.addEventListener(
-"click",
-login
-);
-
-$("signUpButton")
-.addEventListener(
-"click",
-signup
-);
-
-
-/* NAME */
-
-$("continueName")
-.addEventListener(
-"click",
-startQuestions
-);
-
-$("backFromName")
-.addEventListener(
-"click",
-function(){
-showScreen("home");
-}
-);
-
-
-/* RESULT */
-
-$("continueToCreator")
-.addEventListener(
-"click",
-openCharacterCreator
-);
-
-
-/* CREATOR */
-
-$("saveCharacterButton")
-.addEventListener(
-"click",
-saveCharacter
-);
-
-$("viewSheetButton")
-.addEventListener(
-"click",
-viewSheet
-);
-
-
-/* SHEET */
-
-$("editCharacterButton")
-.addEventListener(
-"click",
-openCharacterCreator
-);
-
-$("campaignsButton")
-.addEventListener(
+$("campaignHomeButton").addEventListener(
 "click",
 openCampaigns
 );
 
-$("sheetHomeButton")
-.addEventListener(
+$("continueName").addEventListener(
+"click",
+startQuestions
+);
+
+$("backFromName").addEventListener(
 "click",
 function(){
 showScreen("home");
 }
 );
 
-
-/* CAMPAIGNS */
-
-$("createCampaignButton")
-.addEventListener(
+$("continueToCreator").addEventListener(
 "click",
-showCreateCampaign
+openCharacterCreator
 );
 
-$("joinCampaignButton")
-.addEventListener(
+$("saveCharacterButton").addEventListener(
 "click",
-showJoinCampaign
+saveCharacter
 );
 
-$("campaignCharacterButton")
-.addEventListener(
+$("viewSheetButton").addEventListener(
 "click",
 viewSheet
 );
 
-$("confirmCreateCampaign")
-.addEventListener(
+$("editCharacterButton").addEventListener(
+"click",
+openCharacterCreator
+);
+
+$("campaignsButton").addEventListener(
+"click",
+openCampaigns
+);
+
+$("sheetHomeButton").addEventListener(
+"click",
+function(){
+showScreen("home");
+}
+);
+
+$("createCampaignButton").addEventListener(
+"click",
+showCreateCampaign
+);
+
+$("joinCampaignButton").addEventListener(
+"click",
+showJoinCampaign
+);
+
+$("campaignCharacterButton").addEventListener(
+"click",
+function(){
+
+if(character){
+viewSheet();
+}else{
+beginTrial();
+}
+
+}
+);
+
+$("campaignHomeButton2").addEventListener(
+"click",
+function(){
+showScreen("home");
+}
+);
+
+$("confirmCreateCampaign").addEventListener(
 "click",
 createCampaign
 );
 
-$("confirmJoinCampaign")
-.addEventListener(
+$("confirmJoinCampaign").addEventListener(
 "click",
 joinCampaign
 );
 
-
-/* CAMPAIGN DASHBOARD */
-
-$("playersButton")
-.addEventListener(
+$("playersButton").addEventListener(
 "click",
 loadCampaignMembers
 );
 
-$("campaignInfoButton")
-.addEventListener(
+$("campaignInfoButton").addEventListener(
 "click",
 showCampaignInfo
 );
 
-$("backCampaignsButton")
-.addEventListener(
+$("backCampaignsButton").addEventListener(
 "click",
 openCampaigns
 );
@@ -2001,14 +1660,10 @@ openCampaigns
 
 
 /* =========================================================
-INITIALIZE
+START APP
 ========================================================= */
 
-async function initialize(){
-
-console.log(
-"The Soul's Trial: Initializing."
-);
+function initialize(){
 
 loadLocalCharacter();
 
@@ -2016,58 +1671,9 @@ wireButtons();
 
 showScreen("home");
 
-/*
-Supabase loads AFTER the application is already working.
-A database failure therefore cannot stop the quiz.
-*/
-
-try{
-
-await restoreSupabaseSession();
-
-if(currentUser){
-
-await ensureProfile();
-
-const cloudCharacter =
-await loadCharacterFromSupabase();
-
-if(cloudCharacter){
-
-character=cloudCharacter;
-
-localStorage.setItem(
-"soulTrialCharacter",
-JSON.stringify(character)
-);
-
 }
 
-}
-
-}catch(error){
-
-console.warn(
-"Supabase initialization warning:",
-error
-);
-
-}
-
-console.log(
-"The Soul's Trial: Ready."
-);
-
-}
-
-
-/* =========================================================
-START APPLICATION
-========================================================= */
-
-if(
-document.readyState==="loading"
-){
+if(document.readyState==="loading"){
 
 document.addEventListener(
 "DOMContentLoaded",
@@ -2078,4 +1684,4 @@ initialize
 
 initialize();
 
-}
+  }
