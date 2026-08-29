@@ -463,10 +463,6 @@ container.appendChild(wrapper);
 }
 
 
-/* =========================================================
-SAVE LOCAL
-========================================================= */
-
 function saveLocalCharacter(){
 
 if(!character){
@@ -490,7 +486,6 @@ async function saveCharacter(){
 if(!character){
 return;
 }
-
 character.personality=
 $("personality").value.trim();
 
