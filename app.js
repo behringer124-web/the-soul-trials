@@ -3,16 +3,43 @@
 /* =========================================================
    THE SOUL'S TRIAL
    COMPLETE APPLICATION SCRIPT
+
+   FLOW:
+
+   PLAYER:
+   Begin as Player
+   -> Enter Character Name
+   -> Take Soul's Trial
+   -> Character Created
+   -> Character Sheet
+
+   DM:
+   Begin as DM
+   -> Campaign Screen
+   -> Create Campaign
+   -> Supabase generates persistent 3-day Join Code
+   -> Campaign Dashboard
+
+   PLAYER CAMPAIGN:
+   -> Enter Join Code
+   -> Join Campaign
+   -> Character attaches to campaign
    ========================================================= */
+
 
 /* =========================================================
    GLOBAL STATE
    ========================================================= */
 
 let character = null;
+
 let currentCampaign = null;
 
 let questionIndex = 0;
+
+let currentMode = null;
+
+let selectedEquipment = [];
 
 let scores = {
     STR: 0,
@@ -23,9 +50,20 @@ let scores = {
     CHA: 0
 };
 
-let selectedEquipment = [];
 
-let currentMode = null;
+/* =========================================================
+   SUPABASE
+   ========================================================= */
+
+const SUPABASE_URL =
+    "https://hcvofqqbtppycgqxzaoi.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_5NMRF_b1yMCDPr4LwYa_Ow_cveLPlLI";
+
+let supabaseSession = null;
+
+let currentUser = null;
 
 
 /* =========================================================
@@ -33,7 +71,9 @@ let currentMode = null;
    ========================================================= */
 
 function $(id) {
+
     return document.getElementById(id);
+
 }
 
 
@@ -43,23 +83,345 @@ function $(id) {
 
 function showScreen(id) {
 
-    document.querySelectorAll("section").forEach(function(section) {
-        section.classList.add("hidden");
-    });
+    document
+        .querySelectorAll("section")
+        .forEach(function(section) {
+
+            section.classList.add("hidden");
+
+        });
+
 
     const target = $(id);
 
+
     if (!target) {
-        console.error("Screen not found:", id);
+
+        console.error(
+            "Screen not found:",
+            id
+        );
+
         return;
+
     }
 
+
     target.classList.remove("hidden");
+
 
     window.scrollTo({
         top: 0,
         behavior: "smooth"
     });
+
+}
+
+
+/* =========================================================
+   SUPABASE REQUEST
+   ========================================================= */
+
+async function supabaseRequest(
+    table,
+    method = "GET",
+    body = null,
+    query = ""
+) {
+
+    if (!supabaseSession) {
+
+        await initializeSupabase();
+
+    }
+
+
+    if (!supabaseSession) {
+
+        throw new Error(
+            "Supabase session is unavailable."
+        );
+
+    }
+
+
+    const headers = {
+
+        "apikey":
+            SUPABASE_KEY,
+
+        "Authorization":
+            "Bearer " +
+            supabaseSession.access_token,
+
+        "Content-Type":
+            "application/json",
+
+        "Prefer":
+            "return=representation"
+
+    };
+
+
+    const options = {
+
+        method: method,
+
+        headers: headers
+
+    };
+
+
+    if (body !== null) {
+
+        options.body =
+            JSON.stringify(body);
+
+    }
+
+
+    const response =
+        await fetch(
+            SUPABASE_URL +
+            "/rest/v1/" +
+            table +
+            query,
+            options
+        );
+
+
+    const text =
+        await response.text();
+
+
+    let data = null;
+
+
+    if (text) {
+
+        try {
+
+            data =
+                JSON.parse(text);
+
+        } catch {
+
+            data =
+                text;
+
+        }
+
+    }
+
+
+    if (!response.ok) {
+
+        let message =
+            "Supabase request failed.";
+
+
+        if (data) {
+
+            if (
+                typeof data ===
+                "object"
+            ) {
+
+                message =
+                    data.message ||
+                    data.msg ||
+                    data.hint ||
+                    data.error_description ||
+                    JSON.stringify(data);
+
+            } else {
+
+                message =
+                    String(data);
+
+            }
+
+        }
+
+
+        throw new Error(
+            message
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+/* =========================================================
+   CREATE ANONYMOUS USER
+   ========================================================= */
+
+async function createAnonymousSession() {
+
+    const response =
+        await fetch(
+            SUPABASE_URL +
+            "/auth/v1/signup",
+            {
+                method: "POST",
+
+                headers: {
+
+                    "apikey":
+                        SUPABASE_KEY,
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body:
+                    JSON.stringify({})
+
+            }
+        );
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.msg ||
+            data.message ||
+            data.error_description ||
+            "Unable to create anonymous session. Make sure Anonymous Sign-Ins are enabled in Supabase."
+        );
+
+    }
+
+
+    if (!data.access_token) {
+
+        throw new Error(
+            "Supabase did not return an anonymous access token."
+        );
+
+    }
+
+
+    supabaseSession =
+        data;
+
+
+    currentUser =
+        data.user;
+
+
+    localStorage.setItem(
+        "soulTrialSupabaseSession",
+        JSON.stringify(data)
+    );
+
+
+    return data;
+
+}
+
+
+/* =========================================================
+   INITIALIZE SUPABASE
+   ========================================================= */
+
+async function initializeSupabase() {
+
+    if (
+        supabaseSession &&
+        currentUser
+    ) {
+
+        return supabaseSession;
+
+    }
+
+
+    const saved =
+        localStorage.getItem(
+            "soulTrialSupabaseSession"
+        );
+
+
+    if (saved) {
+
+        try {
+
+            const parsed =
+                JSON.parse(saved);
+
+
+            if (
+                parsed.access_token
+            ) {
+
+                const response =
+                    await fetch(
+                        SUPABASE_URL +
+                        "/auth/v1/user",
+                        {
+                            headers: {
+
+                                "apikey":
+                                    SUPABASE_KEY,
+
+                                "Authorization":
+                                    "Bearer " +
+                                    parsed.access_token
+
+                            }
+                        }
+                    );
+
+
+                if (response.ok) {
+
+                    const user =
+                        await response.json();
+
+
+                    supabaseSession =
+                        parsed;
+
+
+                    currentUser =
+                        user;
+
+
+                    return parsed;
+
+                }
+
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "Stored Supabase session could not be restored:",
+                error.message
+            );
+
+        }
+
+
+        localStorage.removeItem(
+            "soulTrialSupabaseSession"
+        );
+
+    }
+
+
+    return await createAnonymousSession();
+
 }
 
 
@@ -69,32 +431,55 @@ function showScreen(id) {
 
 function beginPlayerFlow() {
 
-    console.log("BEGIN AS PLAYER");
+    console.log(
+        "BEGIN AS PLAYER"
+    );
 
-    currentMode = "player";
 
-    questionIndex = 0;
+    currentMode =
+        "player";
+
+
+    questionIndex =
+        0;
+
 
     scores = {
+
         STR: 0,
         DEX: 0,
         CON: 0,
         INT: 0,
         WIS: 0,
         CHA: 0
+
     };
 
-    selectedEquipment = [];
 
-    character = null;
+    selectedEquipment =
+        [];
 
-    const nameInput = $("playerName");
+
+    character =
+        null;
+
+
+    const nameInput =
+        $("playerName");
+
 
     if (nameInput) {
-        nameInput.value = "";
+
+        nameInput.value =
+            "";
+
     }
 
-    showScreen("name");
+
+    showScreen(
+        "name"
+    );
+
 }
 
 
@@ -104,47 +489,75 @@ function beginPlayerFlow() {
 
 async function beginDMFlow() {
 
-    console.log("BEGIN AS DM");
+    console.log(
+        "BEGIN AS DM"
+    );
 
-    currentMode = "dm";
 
-    showScreen("campaigns");
+    currentMode =
+        "dm";
 
-    const notice = $("campaignAccountNotice");
+
+    showScreen(
+        "campaigns"
+    );
+
+
+    const notice =
+        $("campaignAccountNotice");
+
 
     if (notice) {
+
         notice.textContent =
             "Connecting you to the campaign realm...";
+
     }
+
 
     try {
 
         await initializeSupabase();
 
+
         if (!currentUser) {
+
             throw new Error(
                 "Anonymous session could not be created."
             );
+
         }
 
+
         if (notice) {
+
             notice.textContent =
                 "You are connected anonymously. No login is required.";
+
         }
+
 
         await loadCampaigns();
 
+
     } catch (error) {
 
-        console.error("DM connection error:", error);
+        console.error(
+            "DM connection error:",
+            error
+        );
+
 
         if (notice) {
+
             notice.textContent =
                 "Campaign connection failed: " +
                 (error.message || error);
+
         }
 
     }
+
 }
 
 
@@ -160,19 +573,29 @@ function beginTrial() {
 
 
 /* =========================================================
-   START QUIZ
+   START QUESTIONS
    ========================================================= */
 
 function startQuestions() {
 
-    const nameInput = $("playerName");
+    const nameInput =
+        $("playerName");
+
 
     if (!nameInput) {
-        alert("Character name input could not be found.");
+
+        alert(
+            "Character name input could not be found."
+        );
+
         return;
+
     }
 
-    const name = nameInput.value.trim();
+
+    const name =
+        nameInput.value.trim();
+
 
     if (!name) {
 
@@ -180,21 +603,35 @@ function startQuestions() {
             "Your soul must have a name."
         );
 
+
         nameInput.focus();
 
+
         return;
+
     }
 
+
     character = {
+
         name: name,
+
         level: 1
+
     };
 
-    questionIndex = 0;
 
-    showScreen("quiz");
+    questionIndex =
+        0;
+
+
+    showScreen(
+        "quiz"
+    );
+
 
     displayQuestion();
+
 }
 
 
@@ -204,29 +641,62 @@ function startQuestions() {
 
 function displayQuestion() {
 
-    if (!questions || !questions.length) {
+    if (
+        typeof questions ===
+        "undefined" ||
+        !questions ||
+        !questions.length
+    ) {
 
-        console.error("No questions found in data.js.");
+        console.error(
+            "No questions found in data.js."
+        );
+
 
         alert(
             "The Soul's Trial questions could not be loaded."
         );
 
+
         return;
+
     }
 
-    const current = questions[questionIndex];
+
+    const current =
+        questions[
+            questionIndex
+        ];
+
 
     if (!current) {
+
         calculateSoul();
+
         return;
+
     }
 
-    const questionNumber = $("questionNumber");
-    const progressBar = $("progressBar");
-    const question = $("question");
-    const flavor = $("questionFlavor");
-    const answers = $("answers");
+
+    const questionNumber =
+        $("questionNumber");
+
+
+    const progressBar =
+        $("progressBar");
+
+
+    const question =
+        $("question");
+
+
+    const flavor =
+        $("questionFlavor");
+
+
+    const answers =
+        $("answers");
+
 
     if (questionNumber) {
 
@@ -238,77 +708,134 @@ function displayQuestion() {
 
     }
 
+
     if (progressBar) {
 
         progressBar.style.width =
-            ((questionIndex / questions.length) * 100) +
+            (
+                (questionIndex /
+                questions.length) *
+                100
+            ) +
             "%";
 
     }
 
+
     if (question) {
-        question.textContent = current[0];
+
+        question.textContent =
+            current[0];
+
     }
+
 
     if (flavor) {
-        flavor.textContent = current[1];
+
+        flavor.textContent =
+            current[1];
+
     }
+
 
     if (!answers) {
-        console.error("Answers container not found.");
+
+        console.error(
+            "Answers container not found."
+        );
+
         return;
+
     }
 
-    answers.innerHTML = "";
 
-    current[2].forEach(function(option) {
+    answers.innerHTML =
+        "";
 
-        const button =
-            document.createElement("button");
 
-        button.type = "button";
-        button.className = "choice";
-        button.textContent = option[0];
+    current[2].forEach(
+        function(option) {
 
-        button.addEventListener("click", function() {
+            const button =
+                document.createElement(
+                    "button"
+                );
 
-            Object.entries(option[1]).forEach(
-                function(entry) {
 
-                    const stat = entry[0];
-                    const amount = entry[1];
+            button.type =
+                "button";
+
+
+            button.className =
+                "choice";
+
+
+            button.textContent =
+                option[0];
+
+
+            button.addEventListener(
+                "click",
+                function() {
+
+
+                    Object.entries(
+                        option[1]
+                    ).forEach(
+                        function(entry) {
+
+                            const stat =
+                                entry[0];
+
+
+                            const amount =
+                                entry[1];
+
+
+                            if (
+                                Object.prototype
+                                .hasOwnProperty
+                                .call(
+                                    scores,
+                                    stat
+                                )
+                            ) {
+
+                                scores[stat] +=
+                                    amount;
+
+                            }
+
+                        }
+                    );
+
+
+                    questionIndex++;
+
 
                     if (
-                        Object.prototype.hasOwnProperty.call(
-                            scores,
-                            stat
-                        )
+                        questionIndex <
+                        questions.length
                     ) {
 
-                        scores[stat] += amount;
+                        displayQuestion();
+
+                    } else {
+
+                        calculateSoul();
 
                     }
 
                 }
             );
 
-            questionIndex++;
 
-            if (questionIndex < questions.length) {
+            answers.appendChild(
+                button
+            );
 
-                displayQuestion();
-
-            } else {
-
-                calculateSoul();
-
-            }
-
-        });
-
-        answers.appendChild(button);
-
-    });
+        }
+    );
 
 }
 
@@ -333,23 +860,42 @@ function modifier(score) {
 function calculateSoul() {
 
     const sorted =
-        Object.entries(scores).sort(
+        Object.entries(
+            scores
+        ).sort(
             function(a, b) {
 
-                if (b[1] !== a[1]) {
-                    return b[1] - a[1];
+                if (
+                    b[1] !==
+                    a[1]
+                ) {
+
+                    return (
+                        b[1] -
+                        a[1]
+                    );
+
                 }
 
-                return a[0].localeCompare(b[0]);
+
+                return a[0]
+                    .localeCompare(
+                        b[0]
+                    );
 
             }
         );
 
+
     const highest =
         sorted[0][0];
 
+
     const path =
-        soulPaths[highest];
+        soulPaths[
+            highest
+        ];
+
 
     if (!path) {
 
@@ -358,51 +904,74 @@ function calculateSoul() {
             highest
         );
 
+
         alert(
             "The Soul's Trial could not determine your path."
         );
 
+
         return;
+
     }
 
+
     const standard = [
+
         16,
         14,
         13,
         12,
         10,
         8
+
     ];
 
+
     const finalScores = {
+
         STR: 10,
         DEX: 10,
         CON: 10,
         INT: 10,
         WIS: 10,
         CHA: 10
+
     };
+
 
     sorted.forEach(
         function(entry, index) {
 
-            finalScores[entry[0]] =
+            finalScores[
+                entry[0]
+            ] =
                 standard[index];
 
         }
     );
 
+
     const chosenClass =
         path.classes[0];
 
+
     const subclass =
-        path.subclasses[chosenClass];
+        path.subclasses[
+            chosenClass
+        ];
+
 
     const race =
-        determineRace(scores);
+        determineRace(
+            scores
+        );
+
 
     const data =
-        classData[chosenClass];
+        classData[
+            chosenClass
+        ];
+
 
     if (!data) {
 
@@ -411,75 +980,110 @@ function calculateSoul() {
             chosenClass
         );
 
+
         alert(
             "Character class data could not be loaded."
         );
 
+
         return;
+
     }
 
-    character.race = race;
+
+    character.race =
+        race;
+
 
     character.dominantStat =
         highest;
 
+
     character.soulPath =
         path.name;
+
 
     character.soulDescription =
         path.description;
 
+
     character.class =
         chosenClass;
+
 
     character.subclass =
         subclass;
 
+
     character.background =
         path.background;
+
 
     character.soulTrait =
         path.trait;
 
+
     character.traitDescription =
         path.traitDescription;
+
 
     character.blessing =
         path.blessing;
 
+
     character.blessingDescription =
         path.blessingDescription;
+
 
     character.scores =
         finalScores;
 
+
     character.max_hp =
         data.hp +
-        modifier(finalScores.CON);
+        modifier(
+            finalScores.CON
+        );
+
 
     character.current_hp =
         character.max_hp;
 
+
     character.armor_class =
         data.ac;
+
 
     character.speed =
         data.speed;
 
+
     character.hit_dice =
-        "1d" + data.hitDie;
+        "1d" +
+        data.hitDie;
 
-    character.proficiency_bonus = 2;
 
-    character.experience_points = 0;
+    character.proficiency_bonus =
+        2;
 
-    character.inspiration = false;
 
-    character.equipment = [];
+    character.experience_points =
+        0;
+
+
+    character.inspiration =
+        false;
+
+
+    character.equipment =
+        [];
+
 
     saveLocalCharacter();
 
+
     renderResult();
+
 }
 
 
@@ -490,70 +1094,114 @@ function calculateSoul() {
 function renderResult() {
 
     if (!character) {
+
         return;
+
     }
+
 
     if ($("resultName")) {
+
         $("resultName").textContent =
             character.name;
+
     }
+
 
     if ($("soulPath")) {
+
         $("soulPath").textContent =
             character.soulPath;
+
     }
+
 
     if ($("soulDescription")) {
+
         $("soulDescription").textContent =
             character.soulDescription;
+
     }
+
 
     if ($("resultRace")) {
+
         $("resultRace").textContent =
             character.race;
+
     }
+
 
     if ($("resultClass")) {
+
         $("resultClass").textContent =
             character.class;
+
     }
+
 
     if ($("resultSubclass")) {
+
         $("resultSubclass").textContent =
             character.subclass;
+
     }
+
 
     if ($("resultBackground")) {
+
         $("resultBackground").textContent =
             character.background;
+
     }
+
 
     if ($("resultStats")) {
+
         $("resultStats").innerHTML =
-            renderStats(character.scores);
+            renderStats(
+                character.scores
+            );
+
     }
+
 
     if ($("soulTrait")) {
+
         $("soulTrait").textContent =
             character.soulTrait;
+
     }
+
 
     if ($("traitDescription")) {
+
         $("traitDescription").textContent =
             character.traitDescription;
+
     }
+
 
     if ($("awakeningBlessing")) {
+
         $("awakeningBlessing").textContent =
             character.blessing;
+
     }
+
 
     if ($("blessingDescription")) {
+
         $("blessingDescription").textContent =
             character.blessingDescription;
+
     }
 
-    showScreen("result");
+
+    showScreen(
+        "result"
+    );
+
 }
 
 
@@ -569,92 +1217,155 @@ function openCharacterCreator() {
             "No character exists yet."
         );
 
+
         return;
+
     }
+
 
     if ($("characterName")) {
+
         $("characterName").textContent =
             character.name;
+
     }
+
 
     if ($("creatorRace")) {
+
         $("creatorRace").textContent =
             character.race;
+
     }
+
 
     if ($("creatorClass")) {
+
         $("creatorClass").textContent =
             character.class;
+
     }
+
 
     if ($("creatorSubclass")) {
+
         $("creatorSubclass").textContent =
             character.subclass;
+
     }
+
 
     if ($("creatorBackground")) {
+
         $("creatorBackground").textContent =
             character.background;
+
     }
+
 
     if ($("creatorLevel")) {
+
         $("creatorLevel").textContent =
             character.level;
+
     }
+
 
     if ($("abilityScores")) {
+
         $("abilityScores").innerHTML =
-            renderStats(character.scores);
+            renderStats(
+                character.scores
+            );
+
     }
+
 
     if ($("creatorHP")) {
+
         $("creatorHP").textContent =
             character.max_hp;
+
     }
+
 
     if ($("creatorAC")) {
+
         $("creatorAC").textContent =
             character.armor_class;
+
     }
+
 
     if ($("creatorSpeed")) {
+
         $("creatorSpeed").textContent =
-            character.speed + " ft";
+            character.speed +
+            " ft";
+
     }
+
 
     if ($("personality")) {
+
         $("personality").value =
-            character.personality || "";
+            character.personality ||
+            "";
+
     }
+
 
     if ($("ideal")) {
+
         $("ideal").value =
-            character.ideal || "";
+            character.ideal ||
+            "";
+
     }
+
 
     if ($("bond")) {
+
         $("bond").value =
-            character.bond || "";
+            character.bond ||
+            "";
+
     }
+
 
     if ($("flaw")) {
+
         $("flaw").value =
-            character.flaw || "";
+            character.flaw ||
+            "";
+
     }
+
 
     if ($("backstory")) {
+
         $("backstory").value =
-            character.backstory || "";
+            character.backstory ||
+            "";
+
     }
 
+
     selectedEquipment =
-        Array.isArray(character.equipment)
+        Array.isArray(
+            character.equipment
+        )
             ? character.equipment.slice()
             : [];
 
+
     renderEquipmentOptions();
 
-    showScreen("creator");
+
+    showScreen(
+        "creator"
+    );
+
 }
 
 
@@ -665,78 +1376,130 @@ function openCharacterCreator() {
 function renderEquipmentOptions() {
 
     if (!character) {
+
         return;
+
     }
 
+
     const data =
-        classData[character.class];
+        classData[
+            character.class
+        ];
+
 
     const container =
         $("equipmentOptions");
 
-    if (!container || !data) {
+
+    if (
+        !container ||
+        !data
+    ) {
+
         return;
+
     }
 
-    container.innerHTML = "";
 
-    data.equipment.forEach(function(item) {
+    container.innerHTML =
+        "";
 
-        const wrapper =
-            document.createElement("label");
 
-        wrapper.className = "card";
+    data.equipment.forEach(
+        function(item) {
 
-        const checkbox =
-            document.createElement("input");
+            const wrapper =
+                document.createElement(
+                    "label"
+                );
 
-        checkbox.type = "checkbox";
-        checkbox.value = item;
 
-        checkbox.checked =
-            selectedEquipment.includes(item);
+            wrapper.className =
+                "card";
 
-        checkbox.style.width = "auto";
 
-        wrapper.appendChild(checkbox);
+            const checkbox =
+                document.createElement(
+                    "input"
+                );
 
-        wrapper.appendChild(
-            document.createTextNode(
-                " " + item
-            )
-        );
 
-        checkbox.addEventListener(
-            "change",
-            function() {
+            checkbox.type =
+                "checkbox";
 
-                if (checkbox.checked) {
+
+            checkbox.value =
+                item;
+
+
+            checkbox.checked =
+                selectedEquipment.includes(
+                    item
+                );
+
+
+            checkbox.style.width =
+                "auto";
+
+
+            wrapper.appendChild(
+                checkbox
+            );
+
+
+            wrapper.appendChild(
+                document.createTextNode(
+                    " " + item
+                )
+            );
+
+
+            checkbox.addEventListener(
+                "change",
+                function() {
 
                     if (
-                        !selectedEquipment.includes(item)
+                        checkbox.checked
                     ) {
 
-                        selectedEquipment.push(item);
+                        if (
+                            !selectedEquipment
+                            .includes(item)
+                        ) {
+
+                            selectedEquipment.push(
+                                item
+                            );
+
+                        }
+
+                    } else {
+
+                        selectedEquipment =
+                            selectedEquipment.filter(
+                                function(x) {
+
+                                    return (
+                                        x !==
+                                        item
+                                    );
+
+                                }
+                            );
 
                     }
 
-                } else {
-
-                    selectedEquipment =
-                        selectedEquipment.filter(
-                            function(x) {
-                                return x !== item;
-                            }
-                        );
-
                 }
+            );
 
-            }
-        );
 
-        container.appendChild(wrapper);
+            container.appendChild(
+                wrapper
+            );
 
-    });
+        }
+    );
 
 }
 
@@ -748,14 +1511,19 @@ function renderEquipmentOptions() {
 function saveLocalCharacter() {
 
     if (!character) {
+
         return;
+
     }
+
 
     try {
 
         localStorage.setItem(
             "soulTrialCharacter",
-            JSON.stringify(character)
+            JSON.stringify(
+                character
+            )
         );
 
     } catch (error) {
@@ -782,63 +1550,107 @@ async function saveCharacter() {
             "Create a character first."
         );
 
+
         return;
+
     }
+
 
     if ($("personality")) {
+
         character.personality =
-            $("personality").value.trim();
+            $("personality")
+            .value
+            .trim();
+
     }
+
 
     if ($("ideal")) {
+
         character.ideal =
-            $("ideal").value.trim();
+            $("ideal")
+            .value
+            .trim();
+
     }
+
 
     if ($("bond")) {
+
         character.bond =
-            $("bond").value.trim();
+            $("bond")
+            .value
+            .trim();
+
     }
+
 
     if ($("flaw")) {
+
         character.flaw =
-            $("flaw").value.trim();
+            $("flaw")
+            .value
+            .trim();
+
     }
 
+
     if ($("backstory")) {
+
         character.backstory =
-            $("backstory").value.trim();
+            $("backstory")
+            .value
+            .trim();
+
     }
+
 
     character.equipment =
         Array.from(
-            new Set(selectedEquipment)
+            new Set(
+                selectedEquipment
+            )
         );
 
+
     saveLocalCharacter();
+
 
     try {
 
         await initializeSupabase();
 
+
         await saveCharacterToSupabase();
+
 
         const status =
             $("syncStatus");
+
 
         if (status) {
 
             status.textContent =
                 "Character saved and synced with the Soul's Trial realm.";
 
-            status.classList.remove("error");
-            status.classList.add("success");
+
+            status.classList.remove(
+                "error"
+            );
+
+
+            status.classList.add(
+                "success"
+            );
 
         }
+
 
         alert(
             "Character saved successfully."
         );
+
 
     } catch (error) {
 
@@ -847,18 +1659,28 @@ async function saveCharacter() {
             error
         );
 
+
         const status =
             $("syncStatus");
+
 
         if (status) {
 
             status.textContent =
-                "Character saved on this device. Online sync is currently unavailable.";
+                "Character saved on this device. Online synchronization is currently unavailable.";
 
-            status.classList.remove("success");
-            status.classList.add("error");
+
+            status.classList.remove(
+                "success"
+            );
+
+
+            status.classList.add(
+                "error"
+            );
 
         }
+
 
         alert(
             "Character saved locally, but online synchronization failed:\n\n" +
@@ -877,48 +1699,69 @@ async function saveCharacter() {
 async function saveCharacterToSupabase() {
 
     if (!character) {
+
         throw new Error(
             "No character exists."
         );
+
     }
+
 
     await initializeSupabase();
 
+
     if (!currentUser) {
+
         throw new Error(
             "Anonymous session unavailable."
         );
+
     }
+
 
     const payload = {
 
-        player_id: currentUser.id,
+        player_id:
+            currentUser.id,
 
-        name: character.name,
+        name:
+            character.name,
 
-        race: character.race,
+        race:
+            character.race,
 
-        class: character.class,
+        class:
+            character.class,
 
-        subclass: character.subclass,
+        subclass:
+            character.subclass,
 
-        background: character.background,
+        background:
+            character.background,
 
-        level: character.level,
+        level:
+            character.level,
 
-        strength: character.scores.STR,
+        strength:
+            character.scores.STR,
 
-        dexterity: character.scores.DEX,
+        dexterity:
+            character.scores.DEX,
 
-        constitution: character.scores.CON,
+        constitution:
+            character.scores.CON,
 
-        intelligence: character.scores.INT,
+        intelligence:
+            character.scores.INT,
 
-        wisdom: character.scores.WIS,
+        wisdom:
+            character.scores.WIS,
 
-        charisma: character.scores.CHA,
+        charisma:
+            character.scores.CHA,
 
-        max_hp: character.max_hp,
+        max_hp:
+            character.max_hp,
 
         current_hp:
             character.current_hp ||
@@ -946,21 +1789,27 @@ async function saveCharacterToSupabase() {
             character.blessing,
 
         personality:
-            character.personality || "",
+            character.personality ||
+            "",
 
         ideal:
-            character.ideal || "",
+            character.ideal ||
+            "",
 
         bond:
-            character.bond || "",
+            character.bond ||
+            "",
 
         flaw:
-            character.flaw || "",
+            character.flaw ||
+            "",
 
         backstory:
-            character.backstory || ""
+            character.backstory ||
+            ""
 
     };
+
 
     const existing =
         await supabaseRequest(
@@ -968,11 +1817,14 @@ async function saveCharacterToSupabase() {
             "GET",
             null,
             "?player_id=eq." +
-            encodeURIComponent(currentUser.id) +
+            encodeURIComponent(
+                currentUser.id
+            ) +
             "&select=id" +
             "&order=updated_at.desc" +
             "&limit=1"
         );
+
 
     if (
         existing &&
@@ -989,6 +1841,7 @@ async function saveCharacterToSupabase() {
             )
         );
 
+
         character.supabaseId =
             existing[0].id;
 
@@ -1000,6 +1853,7 @@ async function saveCharacterToSupabase() {
                 "POST",
                 payload
             );
+
 
         if (
             created &&
@@ -1013,7 +1867,9 @@ async function saveCharacterToSupabase() {
 
     }
 
+
     saveLocalCharacter();
+
 }
 
 
@@ -1029,13 +1885,19 @@ function viewSheet() {
             "Create a character first."
         );
 
+
         return;
+
     }
 
+
     if ($("sheetName")) {
+
         $("sheetName").textContent =
             character.name;
+
     }
+
 
     if ($("sheetIdentity")) {
 
@@ -1052,101 +1914,168 @@ function viewSheet() {
 
     }
 
+
     if ($("sheetHP")) {
+
         $("sheetHP").textContent =
             character.current_hp ||
             character.max_hp;
+
     }
+
 
     if ($("sheetAC")) {
+
         $("sheetAC").textContent =
             character.armor_class;
+
     }
+
 
     if ($("sheetSpeed")) {
+
         $("sheetSpeed").textContent =
-            character.speed + " ft";
+            character.speed +
+            " ft";
+
     }
+
 
     if ($("sheetLevel")) {
+
         $("sheetLevel").textContent =
             character.level;
+
     }
 
+
     if ($("sheetProficiency")) {
+
         $("sheetProficiency").textContent =
             "+" +
             character.proficiency_bonus;
+
     }
+
 
     if ($("sheetHitDice")) {
+
         $("sheetHitDice").textContent =
             character.hit_dice;
+
     }
+
 
     if ($("sheetStats")) {
+
         $("sheetStats").innerHTML =
-            renderStats(character.scores);
+            renderStats(
+                character.scores
+            );
+
     }
+
 
     if ($("sheetPath")) {
+
         $("sheetPath").textContent =
             character.soulPath;
+
     }
+
 
     if ($("sheetPathDescription")) {
+
         $("sheetPathDescription").textContent =
             character.soulDescription;
+
     }
+
 
     if ($("sheetTrait")) {
+
         $("sheetTrait").textContent =
             character.soulTrait;
+
     }
+
 
     if ($("sheetTraitDescription")) {
+
         $("sheetTraitDescription").textContent =
             character.traitDescription;
+
     }
+
 
     if ($("sheetBlessing")) {
+
         $("sheetBlessing").textContent =
             character.blessing;
+
     }
+
 
     if ($("sheetBlessingDescription")) {
+
         $("sheetBlessingDescription").textContent =
             character.blessingDescription;
+
     }
+
 
     if ($("sheetPersonality")) {
+
         $("sheetPersonality").textContent =
-            character.personality || "—";
+            character.personality ||
+            "—";
+
     }
+
 
     if ($("sheetIdeal")) {
+
         $("sheetIdeal").textContent =
-            character.ideal || "—";
+            character.ideal ||
+            "—";
+
     }
+
 
     if ($("sheetBond")) {
+
         $("sheetBond").textContent =
-            character.bond || "—";
+            character.bond ||
+            "—";
+
     }
+
 
     if ($("sheetFlaw")) {
+
         $("sheetFlaw").textContent =
-            character.flaw || "—";
+            character.flaw ||
+            "—";
+
     }
 
+
     if ($("sheetBackstory")) {
+
         $("sheetBackstory").textContent =
-            character.backstory || "—";
+            character.backstory ||
+            "—";
+
     }
+
 
     renderSheetEquipment();
 
-    showScreen("sheet");
+
+    showScreen(
+        "sheet"
+    );
+
 }
 
 
@@ -1159,52 +2088,79 @@ function renderSheetEquipment() {
     const container =
         $("sheetEquipment");
 
+
     if (!container) {
+
         return;
+
     }
 
-    container.innerHTML = "";
+
+    container.innerHTML =
+        "";
+
 
     const equipment =
         character &&
-        Array.isArray(character.equipment)
+        Array.isArray(
+            character.equipment
+        )
             ? character.equipment
             : [];
+
 
     if (!equipment.length) {
 
         container.innerHTML =
             '<div class="card">No equipment selected.</div>';
 
+
         return;
+
     }
 
-    equipment.forEach(function(item) {
 
-        const span =
-            document.createElement("span");
+    equipment.forEach(
+        function(item) {
 
-        span.className = "tag";
+            const span =
+                document.createElement(
+                    "span"
+                );
 
-        span.textContent = item;
 
-        container.appendChild(span);
+            span.className =
+                "tag";
 
-    });
+
+            span.textContent =
+                item;
+
+
+            container.appendChild(
+                span
+            );
+
+        }
+    );
 
 }
 
 
 /* =========================================================
-   CAMPAIGN SCREEN
+   CAMPAIGNS SCREEN
    ========================================================= */
 
 async function openCampaigns() {
 
-    showScreen("campaigns");
+    showScreen(
+        "campaigns"
+    );
+
 
     const notice =
         $("campaignAccountNotice");
+
 
     if (notice) {
 
@@ -1213,9 +2169,11 @@ async function openCampaigns() {
 
     }
 
+
     try {
 
         await initializeSupabase();
+
 
         if (!currentUser) {
 
@@ -1225,6 +2183,7 @@ async function openCampaigns() {
 
         }
 
+
         if (notice) {
 
             notice.textContent =
@@ -1232,7 +2191,9 @@ async function openCampaigns() {
 
         }
 
+
         await loadCampaigns();
+
 
     } catch (error) {
 
@@ -1240,6 +2201,7 @@ async function openCampaigns() {
             "Campaign connection failed:",
             error
         );
+
 
         if (notice) {
 
@@ -1264,11 +2226,14 @@ function showCreateCampaign() {
         "CREATE CAMPAIGN MENU OPENED"
     );
 
+
     const createBox =
         $("campaignCreate");
 
+
     const joinBox =
         $("campaignJoin");
+
 
     if (!createBox) {
 
@@ -1276,23 +2241,37 @@ function showCreateCampaign() {
             "campaignCreate element not found."
         );
 
+
         return;
+
     }
+
 
     if (joinBox) {
-        joinBox.classList.add("hidden");
+
+        joinBox.classList.add(
+            "hidden"
+        );
+
     }
 
-    createBox.classList.remove("hidden");
+
+    createBox.classList.remove(
+        "hidden"
+    );
+
 
     const nameInput =
         $("campaignName");
+
 
     if (nameInput) {
 
         setTimeout(
             function() {
+
                 nameInput.focus();
+
             },
             100
         );
@@ -1312,11 +2291,14 @@ function showJoinCampaign() {
         "JOIN CAMPAIGN MENU OPENED"
     );
 
+
     const joinBox =
         $("campaignJoin");
 
+
     const createBox =
         $("campaignCreate");
+
 
     if (!joinBox) {
 
@@ -1324,23 +2306,37 @@ function showJoinCampaign() {
             "campaignJoin element not found."
         );
 
+
         return;
+
     }
+
 
     if (createBox) {
-        createBox.classList.add("hidden");
+
+        createBox.classList.add(
+            "hidden"
+        );
+
     }
 
-    joinBox.classList.remove("hidden");
+
+    joinBox.classList.remove(
+        "hidden"
+    );
+
 
     const codeInput =
         $("campaignCode");
+
 
     if (codeInput) {
 
         setTimeout(
             function() {
+
                 codeInput.focus();
+
             },
             100
         );
@@ -1360,11 +2356,14 @@ async function createCampaign() {
         "CREATE CAMPAIGN BUTTON PRESSED"
     );
 
+
     const nameInput =
         $("campaignName");
 
+
     const descriptionInput =
         $("campaignDescription");
+
 
     if (!nameInput) {
 
@@ -1372,20 +2371,26 @@ async function createCampaign() {
             "Campaign name input was not found."
         );
 
+
         console.error(
             "campaignName element missing."
         );
 
+
         return;
+
     }
+
 
     const name =
         nameInput.value.trim();
+
 
     const description =
         descriptionInput
             ? descriptionInput.value.trim()
             : "";
+
 
     if (!name) {
 
@@ -1393,47 +2398,71 @@ async function createCampaign() {
             "Please enter a campaign name."
         );
 
+
         nameInput.focus();
 
+
         return;
+
     }
+
 
     try {
 
         await initializeSupabase();
 
+
         if (!currentUser) {
 
             throw new Error(
-                "Anonymous player session was not created."
+                "Anonymous session was not created."
             );
 
         }
 
+
         console.log(
-            "Authenticated as:",
+            "Creating campaign for:",
             currentUser.id
         );
+
+
+        /*
+         * IMPORTANT:
+         *
+         * We do NOT generate the join code here.
+         *
+         * The Supabase trigger automatically creates:
+         *
+         * join_code
+         * join_code_expires_at
+         *
+         * and makes the code valid for 3 days.
+         */
+
 
         const campaignResult =
             await supabaseRequest(
                 "campaigns",
                 "POST",
                 {
-                    name: name,
-                    description: description,
-                    dm_id: currentUser.id
+                    name:
+                        name,
+
+                    description:
+                        description,
+
+                    dm_id:
+                        currentUser.id
                 }
             );
 
-        console.log(
-            "Campaign creation result:",
-            campaignResult
-        );
 
         if (
             !campaignResult ||
-            !Array.isArray(campaignResult) ||
+            !Array.isArray(
+                campaignResult
+            ) ||
             !campaignResult.length
         ) {
 
@@ -1443,41 +2472,88 @@ async function createCampaign() {
 
         }
 
+
         const campaign =
             campaignResult[0];
+
+
+        console.log(
+            "Campaign created:",
+            campaign
+        );
+
+
+        /*
+         * ADD DM TO CAMPAIGN
+         */
 
         await supabaseRequest(
             "campaign_members",
             "POST",
             {
-                campaign_id: campaign.id,
-                player_id: currentUser.id,
-                role: "dm"
+                campaign_id:
+                    campaign.id,
+
+                player_id:
+                    currentUser.id,
+
+                role:
+                    "dm"
             }
         );
 
-        nameInput.value = "";
+
+        /*
+         * CLEAR FORM
+         */
+
+        nameInput.value =
+            "";
+
 
         if (descriptionInput) {
-            descriptionInput.value = "";
+
+            descriptionInput.value =
+                "";
+
         }
+
 
         const createBox =
             $("campaignCreate");
 
+
         if (createBox) {
-            createBox.classList.add("hidden");
+
+            createBox.classList.add(
+                "hidden"
+            );
+
         }
 
+
+        /*
+         * SUCCESS
+         */
+
         showCampaignMessage(
-            "Campaign created successfully! Campaign ID: " +
-            campaign.id,
+            "Campaign created successfully! Your 3-day join code is " +
+            (
+                campaign.join_code ||
+                "available in Campaign Info"
+            ),
             true
         );
+
+
+        /*
+         * OPEN CAMPAIGN
+         */
 
         await openCampaign(
             campaign
         );
+
 
     } catch (error) {
 
@@ -1486,15 +2562,23 @@ async function createCampaign() {
             error
         );
 
+
         showCampaignMessage(
             "Unable to create campaign: " +
-            (error.message || error),
+            (
+                error.message ||
+                error
+            ),
             false
         );
 
+
         alert(
             "Campaign creation failed:\n\n" +
-            (error.message || error)
+            (
+                error.message ||
+                error
+            )
         );
 
     }
@@ -1511,12 +2595,22 @@ async function loadCampaigns() {
     const container =
         $("campaignList");
 
+
     if (!container) {
+
+        console.warn(
+            "campaignList element not found."
+        );
+
+
         return;
+
     }
+
 
     container.innerHTML =
         '<div class="card">Loading campaigns...</div>';
+
 
     try {
 
@@ -1528,7 +2622,10 @@ async function loadCampaigns() {
                 "?select=*&order=created_at.desc"
             );
 
-        container.innerHTML = "";
+
+        container.innerHTML =
+            "";
+
 
         if (
             !campaigns ||
@@ -1539,61 +2636,141 @@ async function loadCampaigns() {
                 <div class="info">
                     <h2>No Campaigns Yet</h2>
                     <p>
-                        Create a campaign as a DM or join one using the ID provided by your DM.
+                        Create a campaign as a DM or join one using a join code from your DM.
                     </p>
                 </div>
             `;
 
+
             return;
+
         }
+
 
         campaigns.forEach(
             function(campaign) {
 
                 const card =
-                    document.createElement("div");
+                    document.createElement(
+                        "div"
+                    );
 
-                card.className = "card";
+
+                card.className =
+                    "card";
+
 
                 const title =
-                    document.createElement("h3");
+                    document.createElement(
+                        "h3"
+                    );
+
 
                 title.textContent =
                     campaign.name ||
                     "Unnamed Campaign";
 
+
                 const description =
-                    document.createElement("p");
+                    document.createElement(
+                        "p"
+                    );
+
 
                 description.textContent =
                     campaign.description ||
                     "No description.";
 
-                const idText =
-                    document.createElement("p");
+
+                /*
+                 * JOIN CODE
+                 */
+
+                const joinCode =
+                    document.createElement(
+                        "p"
+                    );
+
 
                 const strong =
-                    document.createElement("strong");
+                    document.createElement(
+                        "strong"
+                    );
+
 
                 strong.textContent =
-                    "Campaign ID: ";
+                    "Join Code: ";
 
-                const idSpan =
-                    document.createElement("span");
 
-                idSpan.textContent =
-                    campaign.id;
+                joinCode.appendChild(
+                    strong
+                );
 
-                idText.appendChild(strong);
-                idText.appendChild(idSpan);
+
+                joinCode.appendChild(
+                    document.createTextNode(
+                        campaign.join_code ||
+                        "Not available"
+                    )
+                );
+
+
+                /*
+                 * EXPIRATION
+                 */
+
+                const expirationText =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                if (
+                    campaign.join_code_expires_at
+                ) {
+
+                    const expiration =
+                        new Date(
+                            campaign.join_code_expires_at
+                        );
+
+
+                    if (
+                        expiration.getTime() >
+                        Date.now()
+                    ) {
+
+                        expirationText.textContent =
+                            "Code expires: " +
+                            expiration.toLocaleString();
+
+                    } else {
+
+                        expirationText.textContent =
+                            "Join code has expired.";
+
+                    }
+
+                }
+
+
+                /*
+                 * OPEN BUTTON
+                 */
 
                 const button =
-                    document.createElement("button");
+                    document.createElement(
+                        "button"
+                    );
 
-                button.type = "button";
+
+                button.type =
+                    "button";
+
 
                 button.textContent =
                     "OPEN CAMPAIGN";
+
 
                 button.addEventListener(
                     "click",
@@ -1606,15 +2783,45 @@ async function loadCampaigns() {
                     }
                 );
 
-                card.appendChild(title);
-                card.appendChild(description);
-                card.appendChild(idText);
-                card.appendChild(button);
 
-                container.appendChild(card);
+                card.appendChild(
+                    title
+                );
+
+
+                card.appendChild(
+                    description
+                );
+
+
+                card.appendChild(
+                    joinCode
+                );
+
+
+                if (
+                    expirationText.textContent
+                ) {
+
+                    card.appendChild(
+                        expirationText
+                    );
+
+                }
+
+
+                card.appendChild(
+                    button
+                );
+
+
+                container.appendChild(
+                    card
+                );
 
             }
         );
+
 
     } catch (error) {
 
@@ -1623,10 +2830,12 @@ async function loadCampaigns() {
             error
         );
 
+
         container.innerHTML =
             '<div class="notice error">' +
             escapeHtml(
-                error.message || error
+                error.message ||
+                error
             ) +
             '</div>';
 
@@ -1645,9 +2854,11 @@ async function joinCampaign() {
         "JOIN CAMPAIGN BUTTON PRESSED"
     );
 
+
     try {
 
         await initializeSupabase();
+
 
         if (!currentUser) {
 
@@ -1657,8 +2868,10 @@ async function joinCampaign() {
 
         }
 
+
         const codeInput =
             $("campaignCode");
+
 
         if (!codeInput) {
 
@@ -1668,46 +2881,44 @@ async function joinCampaign() {
 
         }
 
+
         const code =
-            codeInput.value.trim();
+            codeInput.value
+                .trim()
+                .toUpperCase();
+
 
         if (!code) {
 
             showCampaignMessage(
-                "Enter a campaign ID or join code."
+                "Enter your campaign join code."
             );
+
 
             codeInput.focus();
 
+
             return;
+
         }
 
-        let campaigns =
+
+        /*
+         * FIND CAMPAIGN
+         */
+
+        const campaigns =
             await supabaseRequest(
                 "campaigns",
                 "GET",
                 null,
-                "?id=eq." +
-                encodeURIComponent(code) +
+                "?join_code=eq." +
+                encodeURIComponent(
+                    code
+                ) +
                 "&select=*"
             );
 
-        if (
-            !campaigns ||
-            campaigns.length === 0
-        ) {
-
-            campaigns =
-                await supabaseRequest(
-                    "campaigns",
-                    "GET",
-                    null,
-                    "?join_code=eq." +
-                    encodeURIComponent(code) +
-                    "&select=*"
-                );
-
-        }
 
         if (
             !campaigns ||
@@ -1715,14 +2926,61 @@ async function joinCampaign() {
         ) {
 
             showCampaignMessage(
-                "Campaign not found."
+                "Invalid campaign join code."
             );
 
+
             return;
+
         }
+
 
         const campaign =
             campaigns[0];
+
+
+        /*
+         * CHECK EXPIRATION
+         */
+
+        if (
+            !campaign.join_code_expires_at
+        ) {
+
+            showCampaignMessage(
+                "This campaign does not have a valid join code."
+            );
+
+
+            return;
+
+        }
+
+
+        const expiration =
+            new Date(
+                campaign.join_code_expires_at
+            );
+
+
+        if (
+            expiration.getTime() <=
+            Date.now()
+        ) {
+
+            showCampaignMessage(
+                "This campaign join code has expired. Ask the DM for a new code."
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+         * CHECK MEMBERSHIP
+         */
 
         const members =
             await supabaseRequest(
@@ -1739,6 +2997,11 @@ async function joinCampaign() {
                 ) +
                 "&select=id"
             );
+
+
+        /*
+         * ADD PLAYER
+         */
 
         if (
             !members ||
@@ -1762,6 +3025,11 @@ async function joinCampaign() {
 
         }
 
+
+        /*
+         * ATTACH CHARACTER
+         */
+
         if (character) {
 
             await attachCharacterToCampaign(
@@ -1770,18 +3038,23 @@ async function joinCampaign() {
 
         }
 
-        codeInput.value = "";
+
+        codeInput.value =
+            "";
+
 
         showCampaignMessage(
             "You joined " +
             campaign.name +
-            ".",
+            " successfully!",
             true
         );
+
 
         await openCampaign(
             campaign
         );
+
 
     } catch (error) {
 
@@ -1790,9 +3063,14 @@ async function joinCampaign() {
             error
         );
 
+
         showCampaignMessage(
-            error.message ||
-            "Unable to join campaign."
+            "Unable to join campaign: " +
+            (
+                error.message ||
+                error
+            ),
+            false
         );
 
     }
@@ -1809,10 +3087,14 @@ async function attachCharacterToCampaign(
 ) {
 
     if (!character) {
+
         return;
+
     }
 
+
     await initializeSupabase();
+
 
     if (!currentUser) {
 
@@ -1822,8 +3104,14 @@ async function attachCharacterToCampaign(
 
     }
 
+
     let characterId =
         character.supabaseId;
+
+
+    /*
+     * FIND EXISTING CHARACTER
+     */
 
     if (!characterId) {
 
@@ -1841,6 +3129,7 @@ async function attachCharacterToCampaign(
                 "&limit=1"
             );
 
+
         if (
             rows &&
             rows.length
@@ -1853,14 +3142,25 @@ async function attachCharacterToCampaign(
 
     }
 
+
+    /*
+     * SAVE CHARACTER IF NECESSARY
+     */
+
     if (!characterId) {
 
         await saveCharacterToSupabase();
+
 
         characterId =
             character.supabaseId;
 
     }
+
+
+    /*
+     * ATTACH
+     */
 
     if (characterId) {
 
@@ -1877,8 +3177,10 @@ async function attachCharacterToCampaign(
             )
         );
 
+
         character.campaignId =
             campaignId;
+
 
         saveLocalCharacter();
 
@@ -1896,11 +3198,15 @@ async function openCampaign(
 ) {
 
     if (!campaign) {
+
         return;
+
     }
+
 
     currentCampaign =
         campaign;
+
 
     if ($("campaignTitle")) {
 
@@ -1910,6 +3216,7 @@ async function openCampaign(
 
     }
 
+
     if ($("campaignDescription")) {
 
         $("campaignDescription").textContent =
@@ -1918,9 +3225,11 @@ async function openCampaign(
 
     }
 
+
     showScreen(
         "campaignDashboard"
     );
+
 
     await loadCampaignMembers();
 
@@ -1934,18 +3243,26 @@ async function openCampaign(
 async function loadCampaignMembers() {
 
     if (!currentCampaign) {
+
         return;
+
     }
+
 
     const container =
         $("campaignDashboardContent");
 
+
     if (!container) {
+
         return;
+
     }
+
 
     container.innerHTML =
         '<div class="card">Loading campaign roster...</div>';
+
 
     try {
 
@@ -1962,6 +3279,7 @@ async function loadCampaignMembers() {
                 "&order=joined_at.asc"
             );
 
+
         const characters =
             await supabaseRequest(
                 "characters",
@@ -1975,42 +3293,185 @@ async function loadCampaignMembers() {
                 "&order=created_at.asc"
             );
 
-        container.innerHTML = "";
+
+        container.innerHTML =
+            "";
+
+
+        /*
+         * CAMPAIGN HEADER
+         */
 
         const header =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         header.className =
             "info";
 
+
         const heading =
-            document.createElement("h2");
+            document.createElement(
+                "h2"
+            );
+
 
         heading.textContent =
             "Campaign Roster";
 
+
         const id =
-            document.createElement("p");
+            document.createElement(
+                "p"
+            );
 
-        const strong =
-            document.createElement("strong");
 
-        strong.textContent =
+        const idStrong =
+            document.createElement(
+                "strong"
+            );
+
+
+        idStrong.textContent =
             "Campaign ID: ";
 
-        const idValue =
-            document.createElement("span");
 
-        idValue.textContent =
-            currentCampaign.id;
+        id.appendChild(
+            idStrong
+        );
 
-        id.appendChild(strong);
-        id.appendChild(idValue);
 
-        header.appendChild(heading);
-        header.appendChild(id);
+        id.appendChild(
+            document.createTextNode(
+                currentCampaign.id
+            )
+        );
 
-        container.appendChild(header);
+
+        header.appendChild(
+            heading
+        );
+
+
+        header.appendChild(
+            id
+        );
+
+
+        /*
+         * JOIN CODE
+         */
+
+        if (
+            currentCampaign.join_code
+        ) {
+
+            const code =
+                document.createElement(
+                    "p"
+                );
+
+
+            const codeStrong =
+                document.createElement(
+                    "strong"
+                );
+
+
+            codeStrong.textContent =
+                "PLAYER JOIN CODE: ";
+
+
+            code.appendChild(
+                codeStrong
+            );
+
+
+            const codeValue =
+                document.createElement(
+                    "span"
+                );
+
+
+            codeValue.textContent =
+                currentCampaign.join_code;
+
+
+            codeValue.style.fontWeight =
+                "bold";
+
+
+            codeValue.style.fontSize =
+                "1.25em";
+
+
+            code.appendChild(
+                codeValue
+            );
+
+
+            header.appendChild(
+                code
+            );
+
+        }
+
+
+        /*
+         * EXPIRATION
+         */
+
+        if (
+            currentCampaign.join_code_expires_at
+        ) {
+
+            const expiration =
+                new Date(
+                    currentCampaign
+                    .join_code_expires_at
+                );
+
+
+            const expirationText =
+                document.createElement(
+                    "p"
+                );
+
+
+            if (
+                expiration.getTime() >
+                Date.now()
+            ) {
+
+                expirationText.textContent =
+                    "Join code expires: " +
+                    expiration.toLocaleString();
+
+            } else {
+
+                expirationText.textContent =
+                    "Join code EXPIRED.";
+
+            }
+
+
+            header.appendChild(
+                expirationText
+            );
+
+        }
+
+
+        container.appendChild(
+            header
+        );
+
+
+        /*
+         * NO CHARACTERS
+         */
 
         if (
             !characters ||
@@ -2018,39 +3479,62 @@ async function loadCampaignMembers() {
         ) {
 
             const empty =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
+
 
             empty.className =
                 "card";
 
+
             empty.innerHTML =
                 "<p>No characters have joined this campaign yet.</p>";
+
 
             container.appendChild(
                 empty
             );
 
+
             return;
+
         }
+
+
+        /*
+         * CHARACTER CARDS
+         */
 
         characters.forEach(
             function(char) {
 
                 const card =
-                    document.createElement("div");
+                    document.createElement(
+                        "div"
+                    );
+
 
                 card.className =
                     "card";
 
+
                 const title =
-                    document.createElement("h3");
+                    document.createElement(
+                        "h3"
+                    );
+
 
                 title.textContent =
                     char.name ||
                     "Unnamed Character";
 
+
                 const identity =
-                    document.createElement("p");
+                    document.createElement(
+                        "p"
+                    );
+
 
                 identity.textContent =
                     [
@@ -2063,18 +3547,27 @@ async function loadCampaignMembers() {
                     .filter(Boolean)
                     .join(" • ");
 
+
                 const soul =
-                    document.createElement("p");
+                    document.createElement(
+                        "p"
+                    );
+
 
                 const soulStrong =
-                    document.createElement("strong");
+                    document.createElement(
+                        "strong"
+                    );
+
 
                 soulStrong.textContent =
                     "Soul: ";
 
+
                 soul.appendChild(
                     soulStrong
                 );
+
 
                 soul.appendChild(
                     document.createTextNode(
@@ -2083,18 +3576,27 @@ async function loadCampaignMembers() {
                     )
                 );
 
+
                 const background =
-                    document.createElement("p");
+                    document.createElement(
+                        "p"
+                    );
+
 
                 const backgroundStrong =
-                    document.createElement("strong");
+                    document.createElement(
+                        "strong"
+                    );
+
 
                 backgroundStrong.textContent =
                     "Background: ";
 
+
                 background.appendChild(
                     backgroundStrong
                 );
+
 
                 background.appendChild(
                     document.createTextNode(
@@ -2103,15 +3605,34 @@ async function loadCampaignMembers() {
                     )
                 );
 
-                card.appendChild(title);
-                card.appendChild(identity);
-                card.appendChild(soul);
-                card.appendChild(background);
 
-                container.appendChild(card);
+                card.appendChild(
+                    title
+                );
+
+
+                card.appendChild(
+                    identity
+                );
+
+
+                card.appendChild(
+                    soul
+                );
+
+
+                card.appendChild(
+                    background
+                );
+
+
+                container.appendChild(
+                    card
+                );
 
             }
         );
+
 
     } catch (error) {
 
@@ -2120,10 +3641,12 @@ async function loadCampaignMembers() {
             error
         );
 
+
         container.innerHTML =
             '<div class="notice error">' +
             escapeHtml(
-                error.message || error
+                error.message ||
+                error
             ) +
             '</div>';
 
@@ -2139,90 +3662,244 @@ async function loadCampaignMembers() {
 function showCampaignInfo() {
 
     if (!currentCampaign) {
+
         return;
+
     }
+
 
     const container =
         $("campaignDashboardContent");
 
+
     if (!container) {
+
         return;
+
     }
 
-    container.innerHTML = "";
+
+    container.innerHTML =
+        "";
+
 
     const info =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     info.className =
         "info";
 
+
     const title =
-        document.createElement("h2");
+        document.createElement(
+            "h2"
+        );
+
 
     title.textContent =
         currentCampaign.name;
 
+
+    info.appendChild(
+        title
+    );
+
+
     const description =
-        document.createElement("p");
+        document.createElement(
+            "p"
+        );
+
 
     description.textContent =
         currentCampaign.description ||
         "No description.";
 
-    const id =
-        document.createElement("div");
 
-    id.className =
+    info.appendChild(
+        description
+    );
+
+
+    /*
+     * CAMPAIGN ID
+     */
+
+    const idBox =
+        document.createElement(
+            "div"
+        );
+
+
+    idBox.className =
         "notice";
 
+
     const idStrong =
-        document.createElement("strong");
+        document.createElement(
+            "strong"
+        );
+
 
     idStrong.textContent =
         "Campaign ID: ";
 
-    id.appendChild(idStrong);
 
-    id.appendChild(
+    idBox.appendChild(
+        idStrong
+    );
+
+
+    idBox.appendChild(
         document.createTextNode(
             currentCampaign.id
         )
     );
 
-    info.appendChild(title);
-    info.appendChild(description);
-    info.appendChild(id);
 
-    if (currentCampaign.join_code) {
+    info.appendChild(
+        idBox
+    );
 
-        const joinCode =
-            document.createElement("div");
 
-        joinCode.className =
+    /*
+     * JOIN CODE
+     */
+
+    if (
+        currentCampaign.join_code
+    ) {
+
+        const codeBox =
+            document.createElement(
+                "div"
+            );
+
+
+        codeBox.className =
             "notice";
 
+
         const codeStrong =
-            document.createElement("strong");
+            document.createElement(
+                "strong"
+            );
+
 
         codeStrong.textContent =
-            "Join Code: ";
+            "PLAYER JOIN CODE: ";
 
-        joinCode.appendChild(
+
+        codeBox.appendChild(
             codeStrong
         );
 
-        joinCode.appendChild(
-            document.createTextNode(
-                currentCampaign.join_code
-            )
+
+        const code =
+            document.createElement(
+                "span"
+            );
+
+
+        code.textContent =
+            currentCampaign.join_code;
+
+
+        code.style.fontWeight =
+            "bold";
+
+
+        code.style.fontSize =
+            "1.4em";
+
+
+        codeBox.appendChild(
+            code
         );
 
+
         info.appendChild(
-            joinCode
+            codeBox
         );
 
     }
+
+
+    /*
+     * EXPIRATION
+     */
+
+    if (
+        currentCampaign.join_code_expires_at
+    ) {
+
+        const expiration =
+            new Date(
+                currentCampaign
+                .join_code_expires_at
+            );
+
+
+        const expirationBox =
+            document.createElement(
+                "div"
+            );
+
+
+        expirationBox.className =
+            "notice";
+
+
+        expirationBox.textContent =
+            "Join Code Expires: " +
+            expiration.toLocaleString();
+
+
+        info.appendChild(
+            expirationBox
+        );
+
+
+        const status =
+            document.createElement(
+                "div"
+            );
+
+
+        if (
+            expiration.getTime() >
+            Date.now()
+        ) {
+
+            status.className =
+                "notice success";
+
+
+            status.textContent =
+                "JOIN CODE ACTIVE";
+
+
+        } else {
+
+            status.className =
+                "notice error";
+
+
+            status.textContent =
+                "JOIN CODE EXPIRED";
+
+        }
+
+
+        info.appendChild(
+            status
+        );
+
+    }
+
 
     container.appendChild(
         info
@@ -2243,25 +3920,34 @@ function showCampaignMessage(
     const box =
         $("campaignMessage");
 
+
     if (!box) {
+
         console.warn(
             "campaignMessage element not found:",
             message
         );
+
+
         return;
+
     }
+
 
     box.textContent =
         message;
+
 
     box.classList.remove(
         "hidden"
     );
 
+
     box.classList.toggle(
         "success",
         success
     );
+
 
     box.classList.toggle(
         "error",
@@ -2280,8 +3966,11 @@ function renderStats(
 ) {
 
     if (!statScores) {
+
         return "";
+
     }
+
 
     return Object.entries(
         statScores
@@ -2292,11 +3981,16 @@ function renderStats(
             const stat =
                 entry[0];
 
+
             const value =
                 entry[1];
 
+
             const mod =
-                modifier(value);
+                modifier(
+                    value
+                );
+
 
             return `
                 <div class="stat">
@@ -2360,14 +4054,20 @@ function loadLocalCharacter() {
             "soulTrialCharacter"
         );
 
+
     if (!saved) {
+
         return;
+
     }
+
 
     try {
 
         character =
-            JSON.parse(saved);
+            JSON.parse(
+                saved
+            );
 
     } catch (error) {
 
@@ -2375,7 +4075,9 @@ function loadLocalCharacter() {
             "Saved character could not be loaded."
         );
 
-        character = null;
+
+        character =
+            null;
 
     }
 
@@ -2383,7 +4085,7 @@ function loadLocalCharacter() {
 
 
 /* =========================================================
-   SAFE BUTTON WIRING
+   BUTTON HELPER
    ========================================================= */
 
 function addButtonListener(
@@ -2394,6 +4096,7 @@ function addButtonListener(
     const button =
         $(id);
 
+
     if (!button) {
 
         console.warn(
@@ -2401,13 +4104,17 @@ function addButtonListener(
             id
         );
 
+
         return;
+
     }
+
 
     button.addEventListener(
         "click",
         handler
     );
+
 
     console.log(
         "Button wired:",
@@ -2428,12 +4135,15 @@ function wireButtons() {
     );
 
 
-    /* PLAYER / DM */
+    /*
+     * PLAYER / DM
+     */
 
     addButtonListener(
         "playerButton",
         beginPlayerFlow
     );
+
 
     addButtonListener(
         "dmButton",
@@ -2441,7 +4151,9 @@ function wireButtons() {
     );
 
 
-    /* OLD BEGIN BUTTON SUPPORT */
+    /*
+     * OLD BEGIN BUTTON
+     */
 
     addButtonListener(
         "beginButton",
@@ -2449,24 +4161,31 @@ function wireButtons() {
     );
 
 
-    /* NAME */
+    /*
+     * NAME
+     */
 
     addButtonListener(
         "continueName",
         startQuestions
     );
 
+
     addButtonListener(
         "backFromName",
         function() {
 
-            showScreen("home");
+            showScreen(
+                "home"
+            );
 
         }
     );
 
 
-    /* RESULT */
+    /*
+     * RESULT
+     */
 
     addButtonListener(
         "continueToCreator",
@@ -2474,12 +4193,15 @@ function wireButtons() {
     );
 
 
-    /* CHARACTER CREATOR */
+    /*
+     * CHARACTER CREATOR
+     */
 
     addButtonListener(
         "saveCharacterButton",
         saveCharacter
     );
+
 
     addButtonListener(
         "viewSheetButton",
@@ -2487,44 +4209,55 @@ function wireButtons() {
     );
 
 
-    /* SHEET */
+    /*
+     * CHARACTER SHEET
+     */
 
     addButtonListener(
         "editCharacterButton",
         openCharacterCreator
     );
 
+
     addButtonListener(
         "campaignsButton",
         openCampaigns
     );
 
+
     addButtonListener(
         "sheetHomeButton",
         function() {
 
-            showScreen("home");
+            showScreen(
+                "home"
+            );
 
         }
     );
 
 
-    /* CAMPAIGNS */
+    /*
+     * CAMPAIGNS
+     */
 
     addButtonListener(
         "campaignHomeButton",
         openCampaigns
     );
 
+
     addButtonListener(
         "createCampaignButton",
         showCreateCampaign
     );
 
+
     addButtonListener(
         "joinCampaignButton",
         showJoinCampaign
     );
+
 
     addButtonListener(
         "campaignCharacterButton",
@@ -2543,22 +4276,28 @@ function wireButtons() {
         }
     );
 
+
     addButtonListener(
         "campaignHomeButton2",
         function() {
 
-            showScreen("home");
+            showScreen(
+                "home"
+            );
 
         }
     );
 
 
-    /* CREATE / JOIN */
+    /*
+     * CREATE / JOIN
+     */
 
     addButtonListener(
         "confirmCreateCampaign",
         createCampaign
     );
+
 
     addButtonListener(
         "confirmJoinCampaign",
@@ -2566,17 +4305,21 @@ function wireButtons() {
     );
 
 
-    /* CAMPAIGN DASHBOARD */
+    /*
+     * CAMPAIGN DASHBOARD
+     */
 
     addButtonListener(
         "playersButton",
         loadCampaignMembers
     );
 
+
     addButtonListener(
         "campaignInfoButton",
         showCampaignInfo
     );
+
 
     addButtonListener(
         "backCampaignsButton",
@@ -2587,7 +4330,7 @@ function wireButtons() {
 
 
 /* =========================================================
-   INITIALIZE APPLICATION
+   INITIALIZE
    ========================================================= */
 
 function initialize() {
@@ -2596,11 +4339,17 @@ function initialize() {
         "Initializing The Soul's Trial..."
     );
 
+
     loadLocalCharacter();
+
 
     wireButtons();
 
-    showScreen("home");
+
+    showScreen(
+        "home"
+    );
+
 
     console.log(
         "The Soul's Trial initialized."
@@ -2610,7 +4359,7 @@ function initialize() {
 
 
 /* =========================================================
-   START
+   START APPLICATION
    ========================================================= */
 
 if (
@@ -2627,4 +4376,4 @@ if (
 
     initialize();
 
-                                           }
+}
