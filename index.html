@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0c12">
+<title>The Soul's Trial</title>
+
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+margin:0;
+min-height:100vh;
+background:
+radial-gradient(circle at top,#29233b 0%,#0b0c12 52%,#050609 100%);
+color:#eee;
+font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+.container{
+width:100%;
+max-width:1050px;
+margin:auto;
+padding:14px;
+}
+
+.panel{
+background:rgba(18,21,31,.98);
+border:1px solid #625a48;
+border-radius:18px;
+padding:25px;
+box-shadow:0 15px 55px rgba(0,0,0,.55);
+}
+
+section{animation:fade .2s ease}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(5px)}
+to{opacity:1;transform:translateY(0)}
+}
+
+.hidden{display:none!important}
+
+h1,h2,h3{
+font-family:Georgia,serif;
+color:#dfc47a;
+}
+
+h1{
+text-align:center;
+font-size:clamp(2.3rem,8vw,4.4rem);
+margin:15px 0;
+}
+
+h2{margin-top:28px}
+
+p{
+line-height:1.6;
+color:#c7c7c7;
+}
+
+.center{text-align:center}
+.muted{color:#999}
+
+button,input,select,textarea{
+width:100%;
+padding:13px;
+margin:6px 0;
+border-radius:10px;
+font:inherit;
+}
+
+button{
+background:#70582a;
+border:1px solid #dfc47a;
+color:#fff;
+font-weight:700;
+cursor:pointer;
+transition:.15s;
+}
+
+button:hover{
+background:#8c7038;
+transform:translateY(-1px);
+}
+
+button:disabled{
+opacity:.55;
+cursor:not-allowed;
+transform:none;
+}
+
+button.secondary{
+background:#202633;
+border-color:#555;
+}
+
+button.danger{
+background:#542c2c;
+border-color:#9b5555;
+}
+
+.choice{
+background:#202737;
+border-color:#514d43;
+text-align:left;
+padding:16px;
+}
+
+.choice:hover{
+border-color:#dfc47a;
+background:#282f41;
+}
+
+input,select,textarea{
+background:#0d121b;
+color:#fff;
+border:1px solid #484848;
+}
+
+textarea{
+min-height:110px;
+resize:vertical;
+}
+
+.progress{
+height:9px;
+background:#292e38;
+border-radius:20px;
+margin:15px 0 25px;
+overflow:hidden;
+}
+
+.progress-bar{
+height:100%;
+width:0%;
+background:#dfc47a;
+transition:width .25s;
+}
+
+.info{
+background:#101520;
+border:1px solid #454238;
+border-radius:12px;
+padding:16px;
+margin:14px 0;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:9px;
+}
+
+.stat{
+background:#0c1119;
+border:1px solid #403d35;
+border-radius:10px;
+padding:13px;
+text-align:center;
+}
+
+.stat strong{
+display:block;
+color:#dfc47a;
+font-size:1.5rem;
+}
+
+.tag{
+display:inline-block;
+padding:7px 11px;
+margin:3px;
+border-radius:20px;
+border:1px solid #625a48;
+color:#dfc47a;
+background:#151923;
+}
+
+.card{
+background:#171c28;
+border:1px solid #3f4350;
+border-radius:12px;
+padding:14px;
+margin:8px 0;
+}
+
+.card h3{margin-top:0}
+
+.section-title{
+border-bottom:1px solid #3d3a34;
+padding-bottom:8px;
+}
+
+.small{font-size:.88rem}
+
+.notice{
+border-left:4px solid #dfc47a;
+padding:10px 14px;
+background:#151923;
+margin:12px 0;
+}
+
+.success{border-left-color:#617d60}
+.error{border-left-color:#8b4b4b}
+
+.nav{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin-bottom:18px;
+}
+
+.nav button{
+width:auto;
+flex:1;
+min-width:120px;
+}
+
+.badge{
+display:inline-block;
+font-size:.8rem;
+padding:4px 8px;
+border-radius:10px;
+background:#292e38;
+color:#ddd;
+}
+
+.divider{
+height:1px;
+background:#38372f;
+margin:22px 0;
+}
+
+.choice.selected{
+border-color:#dfc47a;
+background:#343346;
+}
+
+.big-number{
+font-size:2.2rem;
+font-weight:800;
+color:#dfc47a;
+text-align:center;
+}
+
+@media(max-width:650px){
+.container{padding:7px}
+.panel{padding:17px 13px}
+.grid{grid-template-columns:1fr}
+.stats{grid-template-columns:repeat(2,1fr)}
+.nav{flex-direction:column}
+.nav button{width:100%}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="panel">
+
+<section id="home">
+<h1>The Soul's Trial</h1>
+
+<p class="center">
+<i>
+"Before a soul can be given a new life,
+it must first reveal what it truly is."
+</i>
+</p>
+
+<div class="info">
+<p class="center">Your mortal life has ended.<br>But death was not the end.</p>
+
+<p class="center">
+Something beyond your world has taken notice of you.
+Before you awaken in another world,
+your soul must first be judged.
+</p>
+
+<p class="center">
+Your choices will determine who you were,
+what you become,
+and the path your new life will take.
+</p>
+</div>
+
+<button type="button" id="beginButton">BEGIN THE TRIAL</button>
+<button type="button" class="secondary" id="loginButton">PLAYER LOGIN</button>
+</section>
+
+<section id="login" class="hidden">
+<h1>Enter the Realm</h1>
+
+<p class="center">
+Sign in to save your character and connect it to campaigns.
+</p>
+
+<div class="info">
+<label>Email</label>
+<input id="loginEmail" type="email" autocomplete="email" placeholder="Email">
+
+<label>Password</label>
+<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password">
+
+<button type="button" id="signInButton">SIGN IN</button>
+<button type="button" id="signUpButton">CREATE ACCOUNT</button>
+<button type="button" class="secondary" id="backFromLogin">BACK</button>
+</div>
+
+<div id="authMessage" class="notice hidden"></div>
+</section>
+
+<section id="name" class="hidden">
+<h1>Before the Trial</h1>
+
+<p class="center">
+A name is the first thing a soul carries into the unknown.
+</p>
+
+<input
+id="playerName"
+maxlength="40"
+placeholder="Enter your character's name"
+autocomplete="off">
+
+<button type="button" id="continueName">CONTINUE</button>
+<button type="button" class="secondary" id="backFromName">BACK</button>
+</section>
+
+<section id="quiz" class="hidden">
+<p id="questionNumber" class="muted"></p>
+
+<div class="progress">
+<div id="progressBar" class="progress-bar"></div>
+</div>
+
+<h2 id="question"></h2>
+<p id="questionFlavor" class="muted"></p>
+
+<div id="answers"></div>
+</section>
+
+<section id="result" class="hidden">
+<h1 id="resultName"></h1>
+
+<p class="center">
+<i>Your mortal life has been measured. Your soul has spoken.</i>
+</p>
+
+<div class="info">
+<h2 id="soulPath"></h2>
+<p id="soulDescription"></p>
+
+<p><strong>Race:</strong> <span id="resultRace"></span></p>
+<p><strong>Class:</strong> <span id="resultClass"></span></p>
+<p><strong>Subclass:</strong> <span id="resultSubclass"></span></p>
+<p><strong>Background:</strong> <span id="resultBackground"></span></p>
+</div>
+
+<div class="info">
+<h2>Ability Scores</h2>
+<div id="resultStats" class="stats"></div>
+</div>
+
+<div class="info">
+<h3 id="soulTrait"></h3>
+<p id="traitDescription"></p>
+
+<h3 id="awakeningBlessing"></h3>
+<p id="blessingDescription"></p>
+</div>
+
+<button type="button" id="continueToCreator">
+CONTINUE TO CHARACTER CREATION
+</button>
+</section>
+
+<section id="creator" class="hidden">
+<h1 id="characterName"></h1>
+
+<div class="notice">
+The Soul's Trial determines your character's core identity.
+Your race, class, subclass, background, level and ability
+scores are determined by the trial.
+</div>
+
+<div class="info">
+<h2>Identity</h2>
+
+<p><strong>Race:</strong> <span id="creatorRace"></span></p>
+<p><strong>Class:</strong> <span id="creatorClass"></span></p>
+<p><strong>Subclass:</strong> <span id="creatorSubclass"></span></p>
+<p><strong>Background:</strong> <span id="creatorBackground"></span></p>
+<p><strong>Level:</strong> <span id="creatorLevel"></span></p>
+</div>
+
+<h2>Ability Scores</h2>
+<div id="abilityScores" class="stats"></div>
+
+<h2>Combat Statistics</h2>
+
+<div class="stats">
+<div class="stat"><strong id="creatorHP"></strong>Hit Points</div>
+<div class="stat"><strong id="creatorAC"></strong>Armor Class</div>
+<div class="stat"><strong id="creatorSpeed"></strong>Speed</div>
+</div>
+
+<h2>Equipment</h2>
+
+<div class="info">
+<p>Choose equipment from the options provided by your class.</p>
+<div id="equipmentOptions"></div>
+</div>
+
+<h2>Character Details</h2>
+
+<textarea id="personality" placeholder="Personality"></textarea>
+<textarea id="ideal" placeholder="Ideal"></textarea>
+<textarea id="bond" placeholder="Bond"></textarea>
+<textarea id="flaw" placeholder="Flaw"></textarea>
+<textarea id="backstory" placeholder="Backstory"></textarea>
+
+<button type="button" id="saveCharacterButton">SAVE CHARACTER</button>
+<button type="button" class="secondary" id="viewSheetButton">VIEW CHARACTER SHEET</button>
+</section>
+
+<section id="sheet" class="hidden">
+<h1 id="sheetName"></h1>
+
+<p class="center" id="sheetIdentity"></p>
+
+<div class="nav">
+<button type="button" id="editCharacterButton">EDIT</button>
+<button type="button" id="campaignsButton">CAMPAIGNS</button>
+<button type="button" class="secondary" id="sheetHomeButton">HOME</button>
+</div>
+
+<div class="info">
+<h2>Core Statistics</h2>
+
+<div class="stats">
+<div class="stat"><strong id="sheetHP"></strong>HP</div>
+<div class="stat"><strong id="sheetAC"></strong>AC</div>
+<div class="stat"><strong id="sheetSpeed"></strong>Speed</div>
+<div class="stat"><strong id="sheetLevel"></strong>Level</div>
+<div class="stat"><strong id="sheetProficiency"></strong>Proficiency</div>
+<div class="stat"><strong id="sheetHitDice"></strong>Hit Dice</div>
+</div>
+</div>
+
+<h2>Ability Scores</h2>
+<div id="sheetStats" class="stats"></div>
+
+<h2>Soul</h2>
+
+<div class="info">
+<h2 id="sheetPath"></h2>
+<p id="sheetPathDescription"></p>
+
+<h3 id="sheetTrait"></h3>
+<p id="sheetTraitDescription"></p>
+
+<h3 id="sheetBlessing"></h3>
+<p id="sheetBlessingDescription"></p>
+</div>
+
+<h2>Equipment</h2>
+<div id="sheetEquipment"></div>
+
+<h2>Character</h2>
+
+<div class="info">
+<p><strong>Personality</strong></p>
+<p id="sheetPersonality"></p>
+
+<p><strong>Ideal</strong></p>
+<p id="sheetIdeal"></p>
+
+<p><strong>Bond</strong></p>
+<p id="sheetBond"></p>
+
+<p><strong>Flaw</strong></p>
+<p id="sheetFlaw"></p>
+
+<p><strong>Backstory</strong></p>
+<p id="sheetBackstory"></p>
+</div>
+</section>
+
+<section id="campaigns" class="hidden">
+<h1>Campaigns</h1>
+
+<div id="campaignAccountNotice" class="notice"></div>
+
+<div class="nav">
+<button type="button" id="createCampaignButton">CREATE CAMPAIGN</button>
+<button type="button" id="joinCampaignButton">JOIN CAMPAIGN</button>
+<button type="button" class="secondary" id="campaignCharacterButton">CHARACTER</button>
+</div>
+
+<div id="campaignList"></div>
+
+<div id="campaignCreate" class="hidden">
+<div class="info">
+<h2>Create Campaign</h2>
+
+<input id="campaignName" maxlength="80" placeholder="Campaign name">
+<textarea id="campaignDescription" placeholder="Campaign description"></textarea>
+
+<button type="button" id="confirmCreateCampaign">CREATE CAMPAIGN</button>
+</div>
+</div>
+
+<div id="campaignJoin" class="hidden">
+<div class="info">
+<h2>Join Campaign</h2>
+
+<p>Enter the campaign ID provided by your DM.</p>
+
+<input id="campaignCode" maxlength="30" placeholder="Campaign ID">
+
+<button type="button" id="confirmJoinCampaign">JOIN CAMPAIGN</button>
+</div>
+</div>
+
+<div id="campaignMessage" class="notice hidden"></div>
+</section>
+
+<section id="campaignDashboard" class="hidden">
+<h1 id="campaignTitle"></h1>
+
+<p id="campaignDescription" class="center"></p>
+
+<div class="nav">
+<button type="button" id="playersButton">PLAYERS</button>
+<button type="button" id="campaignInfoButton">INFO</button>
+<button type="button" class="secondary" id="backCampaignsButton">BACK</button>
+</div>
+
+<div id="campaignDashboardContent"></div>
+</section>
+
+</div>
+</div>
+
+<!--
+IMPORTANT:
+The files MUST be in the same GitHub folder.
+
+data.js = game data
+app.js = game/application logic
+supabase.js = optional online account/database system
+-->
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script src="supabase.js"></script>
+
+</body>
+</html>
