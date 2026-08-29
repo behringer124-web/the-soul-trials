@@ -8,25 +8,15 @@
 
 <style>
 *{box-sizing:border-box}
-
 html{scroll-behavior:smooth}
-
 body{
 margin:0;
 min-height:100vh;
-background:
-radial-gradient(circle at top,#29233b 0%,#0b0c12 52%,#050609 100%);
+background:radial-gradient(circle at top,#29233b 0%,#0b0c12 52%,#050609 100%);
 color:#eee;
 font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
-
-.container{
-width:100%;
-max-width:1050px;
-margin:auto;
-padding:14px;
-}
-
+.container{width:100%;max-width:1050px;margin:auto;padding:14px}
 .panel{
 background:rgba(18,21,31,.98);
 border:1px solid #625a48;
@@ -34,50 +24,22 @@ border-radius:18px;
 padding:25px;
 box-shadow:0 15px 55px rgba(0,0,0,.55);
 }
-
-section{
-animation:fade .2s ease;
-}
-
-@keyframes fade{
-from{opacity:0;transform:translateY(5px)}
-to{opacity:1;transform:translateY(0)}
-}
-
+section{animation:fade .2s ease}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .hidden{display:none!important}
-
-h1,h2,h3{
-font-family:Georgia,serif;
-color:#dfc47a;
-}
-
-h1{
-text-align:center;
-font-size:clamp(2.3rem,8vw,4.4rem);
-margin:15px 0;
-}
-
+h1,h2,h3{font-family:Georgia,serif;color:#dfc47a}
+h1{text-align:center;font-size:clamp(2.3rem,8vw,4.4rem);margin:15px 0}
 h2{margin-top:28px}
-
-p{
-line-height:1.6;
-color:#c7c7c7;
-}
-
+p{line-height:1.6;color:#c7c7c7}
 .center{text-align:center}
 .muted{color:#999}
-
-button,
-input,
-select,
-textarea{
+button,input,select,textarea{
 width:100%;
 padding:13px;
 margin:6px 0;
 border-radius:10px;
 font:inherit;
 }
-
 button{
 background:#70582a;
 border:1px solid #dfc47a;
@@ -86,53 +48,23 @@ font-weight:700;
 cursor:pointer;
 transition:.15s;
 }
-
-button:hover{
-background:#8c7038;
-transform:translateY(-1px);
-}
-
-button:disabled{
-opacity:.55;
-cursor:not-allowed;
-transform:none;
-}
-
-button.secondary{
-background:#202633;
-border-color:#555;
-}
-
-button.danger{
-background:#542c2c;
-border-color:#9b5555;
-}
-
+button:hover{background:#8c7038;transform:translateY(-1px)}
+button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+button.secondary{background:#202633;border-color:#555}
+button.danger{background:#542c2c;border-color:#9b5555}
 .choice{
 background:#202737;
 border-color:#514d43;
 text-align:left;
 padding:16px;
 }
-
-.choice:hover{
-border-color:#dfc47a;
-background:#282f41;
-}
-
-input,
-select,
-textarea{
+.choice:hover{border-color:#dfc47a;background:#282f41}
+input,select,textarea{
 background:#0d121b;
 color:#fff;
 border:1px solid #484848;
 }
-
-textarea{
-min-height:110px;
-resize:vertical;
-}
-
+textarea{min-height:110px;resize:vertical}
 .progress{
 height:9px;
 background:#292e38;
@@ -140,14 +72,12 @@ border-radius:20px;
 margin:15px 0 25px;
 overflow:hidden;
 }
-
 .progress-bar{
 height:100%;
 width:0%;
 background:#dfc47a;
 transition:width .25s;
 }
-
 .info{
 background:#101520;
 border:1px solid #454238;
@@ -155,19 +85,8 @@ border-radius:12px;
 padding:16px;
 margin:14px 0;
 }
-
-.grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:12px;
-}
-
-.stats{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:9px;
-}
-
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 .stat{
 background:#0c1119;
 border:1px solid #403d35;
@@ -175,13 +94,7 @@ border-radius:10px;
 padding:13px;
 text-align:center;
 }
-
-.stat strong{
-display:block;
-color:#dfc47a;
-font-size:1.5rem;
-}
-
+.stat strong{display:block;color:#dfc47a;font-size:1.5rem}
 .tag{
 display:inline-block;
 padding:7px 11px;
@@ -191,7 +104,6 @@ border:1px solid #625a48;
 color:#dfc47a;
 background:#151923;
 }
-
 .card{
 background:#171c28;
 border:1px solid #3f4350;
@@ -199,48 +111,19 @@ border-radius:12px;
 padding:14px;
 margin:8px 0;
 }
-
-.card h3{
-margin-top:0;
-}
-
-.section-title{
-border-bottom:1px solid #3d3a34;
-padding-bottom:8px;
-}
-
-.small{
-font-size:.88rem;
-}
-
+.card h3{margin-top:0}
+.section-title{border-bottom:1px solid #3d3a34;padding-bottom:8px}
+.small{font-size:.88rem}
 .notice{
 border-left:4px solid #dfc47a;
 padding:10px 14px;
 background:#151923;
 margin:12px 0;
 }
-
-.success{
-border-left-color:#617d60;
-}
-
-.error{
-border-left-color:#8b4b4b;
-}
-
-.nav{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-margin-bottom:18px;
-}
-
-.nav button{
-width:auto;
-flex:1;
-min-width:120px;
-}
-
+.notice.success{border-left-color:#617d60}
+.notice.error{border-left-color:#8b4b4b}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.nav button{width:auto;flex:1;min-width:120px}
 .badge{
 display:inline-block;
 font-size:.8rem;
@@ -249,25 +132,28 @@ border-radius:10px;
 background:#292e38;
 color:#ddd;
 }
-
-.divider{
-height:1px;
-background:#38372f;
-margin:22px 0;
-}
-
-.choice.selected{
-border-color:#dfc47a;
-background:#343346;
-}
-
+.divider{height:1px;background:#38372f;margin:22px 0}
+.choice.selected{border-color:#dfc47a;background:#343346}
 .big-number{
 font-size:2.2rem;
 font-weight:800;
 color:#dfc47a;
 text-align:center;
 }
-
+#appError{
+position:fixed;
+left:10px;
+right:10px;
+bottom:10px;
+z-index:99999;
+display:none;
+background:#321818;
+border:1px solid #a85b5b;
+color:#fff;
+padding:14px;
+border-radius:10px;
+box-shadow:0 10px 30px rgba(0,0,0,.6);
+}
 @media(max-width:650px){
 .container{padding:7px}
 .panel{padding:17px 13px}
@@ -281,15 +167,12 @@ text-align:center;
 
 <body>
 
+<div id="appError"></div>
+
 <div class="container">
 <div class="panel">
 
-<!-- =========================================================
-HOME
-========================================================= -->
-
 <section id="home">
-
 <h1>The Soul's Trial</h1>
 
 <p class="center">
@@ -300,11 +183,7 @@ it must first reveal what it truly is."
 </p>
 
 <div class="info">
-
-<p class="center">
-Your mortal life has ended.
-But death was not the end.
-</p>
+<p class="center">Your mortal life has ended.<br>But death was not the end.</p>
 
 <p class="center">
 Something beyond your world has taken notice of you.
@@ -317,26 +196,14 @@ Your choices will determine who you were,
 what you become,
 and the path your new life will take.
 </p>
-
 </div>
 
-<button type="button" id="beginButton">
-BEGIN THE TRIAL
-</button>
-
-<button type="button" class="secondary" id="loginButton">
-PLAYER LOGIN
-</button>
-
+<button type="button" data-action="begin">BEGIN THE TRIAL</button>
+<button type="button" class="secondary" data-action="login">PLAYER LOGIN</button>
 </section>
 
 
-<!-- =========================================================
-LOGIN
-========================================================= -->
-
 <section id="login" class="hidden">
-
 <h1>Enter the Realm</h1>
 
 <p class="center">
@@ -346,46 +213,22 @@ Sign in to save your character and connect it to campaigns.
 <div class="info">
 
 <label>Email</label>
-
-<input
-id="loginEmail"
-type="email"
-autocomplete="email"
-placeholder="Email">
+<input id="loginEmail" type="email" autocomplete="email" placeholder="Email">
 
 <label>Password</label>
+<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password">
 
-<input
-id="loginPassword"
-type="password"
-autocomplete="current-password"
-placeholder="Password">
-
-<button type="button" id="signInButton">
-SIGN IN
-</button>
-
-<button type="button" class="secondary" id="signUpButton">
-CREATE ACCOUNT
-</button>
-
-<button type="button" class="secondary" id="backFromLogin">
-BACK
-</button>
+<button type="button" data-action="signin">SIGN IN</button>
+<button type="button" class="secondary" data-action="signup">CREATE ACCOUNT</button>
+<button type="button" class="secondary" data-action="home">BACK</button>
 
 </div>
 
 <div id="authMessage" class="notice hidden"></div>
-
 </section>
 
 
-<!-- =========================================================
-NAME
-========================================================= -->
-
 <section id="name" class="hidden">
-
 <h1>Before the Trial</h1>
 
 <p class="center">
@@ -398,20 +241,10 @@ maxlength="40"
 placeholder="Enter your character's name"
 autocomplete="off">
 
-<button type="button" id="continueName">
-CONTINUE
-</button>
-
-<button type="button" class="secondary" id="backFromName">
-BACK
-</button>
-
+<button type="button" data-action="startQuiz">CONTINUE</button>
+<button type="button" class="secondary" data-action="home">BACK</button>
 </section>
 
-
-<!-- =========================================================
-QUIZ
-========================================================= -->
 
 <section id="quiz" class="hidden">
 
@@ -422,7 +255,6 @@ QUIZ
 </div>
 
 <h2 id="question"></h2>
-
 <p id="questionFlavor" class="muted"></p>
 
 <div id="answers"></div>
@@ -430,19 +262,12 @@ QUIZ
 </section>
 
 
-<!-- =========================================================
-RESULT
-========================================================= -->
-
 <section id="result" class="hidden">
 
 <h1 id="resultName"></h1>
 
 <p class="center">
-<i>
-Your mortal life has been measured.
-Your soul has spoken.
-</i>
+<i>Your mortal life has been measured. Your soul has spoken.</i>
 </p>
 
 <div class="info">
@@ -451,58 +276,32 @@ Your soul has spoken.
 
 <p id="soulDescription"></p>
 
-<p>
-<strong>Race:</strong>
-<span id="resultRace"></span>
-</p>
-
-<p>
-<strong>Class:</strong>
-<span id="resultClass"></span>
-</p>
-
-<p>
-<strong>Subclass:</strong>
-<span id="resultSubclass"></span>
-</p>
-
-<p>
-<strong>Background:</strong>
-<span id="resultBackground"></span>
-</p>
+<p><strong>Race:</strong> <span id="resultRace"></span></p>
+<p><strong>Class:</strong> <span id="resultClass"></span></p>
+<p><strong>Subclass:</strong> <span id="resultSubclass"></span></p>
+<p><strong>Background:</strong> <span id="resultBackground"></span></p>
 
 </div>
 
 <div class="info">
-
 <h2>Ability Scores</h2>
-
 <div id="resultStats" class="stats"></div>
-
 </div>
 
 <div class="info">
-
 <h3 id="soulTrait"></h3>
-
 <p id="traitDescription"></p>
 
 <h3 id="awakeningBlessing"></h3>
-
 <p id="blessingDescription"></p>
-
 </div>
 
-<button type="button" id="continueToCreator">
+<button type="button" data-action="creator">
 CONTINUE TO CHARACTER CREATION
 </button>
 
 </section>
 
-
-<!-- =========================================================
-CHARACTER CREATOR
-========================================================= -->
 
 <section id="creator" class="hidden">
 
@@ -518,35 +317,15 @@ scores are determined by the trial.
 
 <h2>Identity</h2>
 
-<p>
-<strong>Race:</strong>
-<span id="creatorRace"></span>
-</p>
-
-<p>
-<strong>Class:</strong>
-<span id="creatorClass"></span>
-</p>
-
-<p>
-<strong>Subclass:</strong>
-<span id="creatorSubclass"></span>
-</p>
-
-<p>
-<strong>Background:</strong>
-<span id="creatorBackground"></span>
-</p>
-
-<p>
-<strong>Level:</strong>
-<span id="creatorLevel"></span>
-</p>
+<p><strong>Race:</strong> <span id="creatorRace"></span></p>
+<p><strong>Class:</strong> <span id="creatorClass"></span></p>
+<p><strong>Subclass:</strong> <span id="creatorSubclass"></span></p>
+<p><strong>Background:</strong> <span id="creatorBackground"></span></p>
+<p><strong>Level:</strong> <span id="creatorLevel"></span></p>
 
 </div>
 
 <h2>Ability Scores</h2>
-
 <div id="abilityScores" class="stats"></div>
 
 <h2>Combat Statistics</h2>
@@ -573,51 +352,23 @@ Speed
 <h2>Equipment</h2>
 
 <div class="info">
-
-<p>
-Choose equipment from the options provided by your class.
-</p>
-
+<p>Choose equipment from the options provided by your class.</p>
 <div id="equipmentOptions"></div>
-
 </div>
 
 <h2>Character Details</h2>
 
-<textarea
-id="personality"
-placeholder="Personality"></textarea>
+<textarea id="personality" placeholder="Personality"></textarea>
+<textarea id="ideal" placeholder="Ideal"></textarea>
+<textarea id="bond" placeholder="Bond"></textarea>
+<textarea id="flaw" placeholder="Flaw"></textarea>
+<textarea id="backstory" placeholder="Backstory"></textarea>
 
-<textarea
-id="ideal"
-placeholder="Ideal"></textarea>
-
-<textarea
-id="bond"
-placeholder="Bond"></textarea>
-
-<textarea
-id="flaw"
-placeholder="Flaw"></textarea>
-
-<textarea
-id="backstory"
-placeholder="Backstory"></textarea>
-
-<button type="button" id="saveCharacterButton">
-SAVE CHARACTER
-</button>
-
-<button type="button" class="secondary" id="viewSheetButton">
-VIEW CHARACTER SHEET
-</button>
+<button type="button" data-action="save">SAVE CHARACTER</button>
+<button type="button" class="secondary" data-action="sheet">VIEW CHARACTER SHEET</button>
 
 </section>
 
-
-<!-- =========================================================
-CHARACTER SHEET
-========================================================= -->
 
 <section id="sheet" class="hidden">
 
@@ -626,19 +377,9 @@ CHARACTER SHEET
 <p class="center" id="sheetIdentity"></p>
 
 <div class="nav">
-
-<button type="button" id="editCharacterButton">
-EDIT
-</button>
-
-<button type="button" id="campaignsButton">
-CAMPAIGNS
-</button>
-
-<button type="button" class="secondary" id="sheetHomeButton">
-HOME
-</button>
-
+<button type="button" data-action="edit">EDIT</button>
+<button type="button" data-action="campaigns">CAMPAIGNS</button>
+<button type="button" class="secondary" data-action="home">HOME</button>
 </div>
 
 <div class="info">
@@ -647,42 +388,17 @@ HOME
 
 <div class="stats">
 
-<div class="stat">
-<strong id="sheetHP"></strong>
-HP
-</div>
-
-<div class="stat">
-<strong id="sheetAC"></strong>
-AC
-</div>
-
-<div class="stat">
-<strong id="sheetSpeed"></strong>
-Speed
-</div>
-
-<div class="stat">
-<strong id="sheetLevel"></strong>
-Level
-</div>
-
-<div class="stat">
-<strong id="sheetProficiency"></strong>
-Proficiency
-</div>
-
-<div class="stat">
-<strong id="sheetHitDice"></strong>
-Hit Dice
-</div>
+<div class="stat"><strong id="sheetHP"></strong>HP</div>
+<div class="stat"><strong id="sheetAC"></strong>AC</div>
+<div class="stat"><strong id="sheetSpeed"></strong>Speed</div>
+<div class="stat"><strong id="sheetLevel"></strong>Level</div>
+<div class="stat"><strong id="sheetProficiency"></strong>Proficiency</div>
+<div class="stat"><strong id="sheetHitDice"></strong>Hit Dice</div>
 
 </div>
-
 </div>
 
 <h2>Ability Scores</h2>
-
 <div id="sheetStats" class="stats"></div>
 
 <h2>Soul</h2>
@@ -690,21 +406,17 @@ Hit Dice
 <div class="info">
 
 <h2 id="sheetPath"></h2>
-
 <p id="sheetPathDescription"></p>
 
 <h3 id="sheetTrait"></h3>
-
 <p id="sheetTraitDescription"></p>
 
 <h3 id="sheetBlessing"></h3>
-
 <p id="sheetBlessingDescription"></p>
 
 </div>
 
 <h2>Equipment</h2>
-
 <div id="sheetEquipment"></div>
 
 <h2>Character</h2>
@@ -731,10 +443,6 @@ Hit Dice
 </section>
 
 
-<!-- =========================================================
-CAMPAIGNS
-========================================================= -->
-
 <section id="campaigns" class="hidden">
 
 <h1>Campaigns</h1>
@@ -742,19 +450,9 @@ CAMPAIGNS
 <div id="campaignAccountNotice" class="notice"></div>
 
 <div class="nav">
-
-<button type="button" id="createCampaignButton">
-CREATE CAMPAIGN
-</button>
-
-<button type="button" id="joinCampaignButton">
-JOIN CAMPAIGN
-</button>
-
-<button type="button" class="secondary" id="campaignCharacterButton">
-CHARACTER
-</button>
-
+<button type="button" data-action="createCampaign">CREATE CAMPAIGN</button>
+<button type="button" data-action="joinCampaign">JOIN CAMPAIGN</button>
+<button type="button" class="secondary" data-action="sheet">CHARACTER</button>
 </div>
 
 <div id="campaignList"></div>
@@ -765,21 +463,15 @@ CHARACTER
 
 <h2>Create Campaign</h2>
 
-<input
-id="campaignName"
-maxlength="80"
-placeholder="Campaign name">
+<input id="campaignName" maxlength="80" placeholder="Campaign name">
 
-<textarea
-id="campaignDescription"
-placeholder="Campaign description"></textarea>
+<textarea id="campaignDescription" placeholder="Campaign description"></textarea>
 
-<button type="button" id="confirmCreateCampaign">
+<button type="button" data-action="confirmCreateCampaign">
 CREATE CAMPAIGN
 </button>
 
 </div>
-
 </div>
 
 <div id="campaignJoin" class="hidden">
@@ -788,31 +480,21 @@ CREATE CAMPAIGN
 
 <h2>Join Campaign</h2>
 
-<p>
-Enter the campaign ID provided by your DM.
-</p>
+<p>Enter the campaign ID provided by your DM.</p>
 
-<input
-id="campaignCode"
-maxlength="30"
-placeholder="Campaign ID">
+<input id="campaignCode" maxlength="30" placeholder="Campaign ID">
 
-<button type="button" id="confirmJoinCampaign">
+<button type="button" data-action="confirmJoinCampaign">
 JOIN CAMPAIGN
 </button>
 
 </div>
-
 </div>
 
 <div id="campaignMessage" class="notice hidden"></div>
 
 </section>
 
-
-<!-- =========================================================
-CAMPAIGN DASHBOARD
-========================================================= -->
 
 <section id="campaignDashboard" class="hidden">
 
@@ -821,25 +503,14 @@ CAMPAIGN DASHBOARD
 <p id="campaignDescription" class="center"></p>
 
 <div class="nav">
-
-<button type="button" id="playersButton">
-PLAYERS
-</button>
-
-<button type="button" id="campaignInfoButton">
-INFO
-</button>
-
-<button type="button" class="secondary" id="backCampaignsButton">
-BACK
-</button>
-
+<button type="button" data-action="players">PLAYERS</button>
+<button type="button" data-action="campaignInfo">INFO</button>
+<button type="button" class="secondary" data-action="campaigns">BACK</button>
 </div>
 
 <div id="campaignDashboardContent"></div>
 
 </section>
-
 
 </div>
 </div>
@@ -849,22 +520,21 @@ BACK
 "use strict";
 
 /* =========================================================
-SUPABASE CONFIGURATION
-========================================================= */
+   THE SOUL'S TRIAL
+   SINGLE-FILE APPLICATION
+   ========================================================= */
 
-const SUPABASE_URL =
-"https://hcvofqqbtppycgqxzaoi.supabase.co";
+/* ---------- SUPABASE ---------- */
 
-const SUPABASE_KEY =
-"sb_publishable_5NMRF_b1yMCDPr4LwYa_Ow_cveLPlLI";
+const SUPABASE_URL="https://hcvofqqbtppycgqxzaoi.supabase.co";
+const SUPABASE_KEY="sb_publishable_5NMRF_b1yMCDPr4LwYa_Ow_cveLPlLI";
 
-let currentUser = null;
-let currentCampaign = null;
-let character = null;
+let currentUser=null;
+let currentCampaign=null;
+let character=null;
+let questionIndex=0;
 
-let questionIndex = 0;
-
-let scores = {
+let scores={
 STR:0,
 DEX:0,
 CON:0,
@@ -873,23 +543,44 @@ WIS:0,
 CHA:0
 };
 
-let selectedEquipment = [];
+let selectedEquipment=[];
 
 
-/* =========================================================
-SAFE DOM HELPER
-========================================================= */
+/* ---------- SAFE DOM ---------- */
 
 function $(id){
 return document.getElementById(id);
 }
 
 
-/* =========================================================
-SCREEN CONTROL
-========================================================= */
+/* ---------- ERROR HANDLING ---------- */
+
+function showAppError(error){
+
+console.error(error);
+
+const box=$("appError");
+
+if(!box)return;
+
+box.textContent=
+"Something went wrong: "+
+(error&&error.message?error.message:String(error));
+
+box.style.display="block";
+
+setTimeout(function(){
+box.style.display="none";
+},7000);
+
+}
+
+
+/* ---------- SCREEN CONTROL ---------- */
 
 function showScreen(id){
+
+try{
 
 document.querySelectorAll("section").forEach(function(section){
 section.classList.add("hidden");
@@ -897,86 +588,54 @@ section.classList.add("hidden");
 
 const target=$(id);
 
-if(target){
-target.classList.remove("hidden");
+if(!target){
+throw new Error("Screen not found: "+id);
 }
+
+target.classList.remove("hidden");
 
 window.scrollTo({
 top:0,
 behavior:"smooth"
 });
 
+}catch(error){
+
+showAppError(error);
+
+}
+
 }
 
 
-/* =========================================================
-HOME NAVIGATION
-========================================================= */
+/* ---------- LOCAL STORAGE ---------- */
 
-function beginTrial(){
+function loadLocalCharacter(){
 
-scores={
-STR:0,
-DEX:0,
-CON:0,
-INT:0,
-WIS:0,
-CHA:0
-};
+try{
 
-questionIndex=0;
+const saved=
+localStorage.getItem("soulTrialCharacter");
+
+if(saved){
+character=JSON.parse(saved);
+}
+
+}catch(error){
+
+console.warn(
+"Unable to load saved character.",
+error
+);
+
 character=null;
-selectedEquipment=[];
 
-$("playerName").value="";
-
-showScreen("name");
+}
 
 }
 
 
-function showLogin(){
-
-showScreen("login");
-
-}
-
-
-/* =========================================================
-AUTH MESSAGES
-========================================================= */
-
-function showAuthMessage(message,success=false){
-
-const box=$("authMessage");
-
-box.textContent=message;
-
-box.classList.remove("hidden");
-
-box.classList.toggle("success",success);
-box.classList.toggle("error",!success);
-
-}
-
-
-function showCampaignMessage(message,success=false){
-
-const box=$("campaignMessage");
-
-box.textContent=message;
-
-box.classList.remove("hidden");
-
-box.classList.toggle("success",success);
-box.classList.toggle("error",!success);
-
-}
-
-
-/* =========================================================
-SUPABASE REQUEST
-========================================================= */
+/* ---------- SUPABASE ---------- */
 
 async function supabaseRequest(
 table,
@@ -995,14 +654,14 @@ const headers={
 };
 
 if(token){
-headers["Authorization"]="Bearer "+token;
+headers.Authorization="Bearer "+token;
 }else{
-headers["Authorization"]="Bearer "+SUPABASE_KEY;
+headers.Authorization="Bearer "+SUPABASE_KEY;
 }
 
 const options={
-method:method,
-headers:headers
+method,
+headers
 };
 
 if(body!==null){
@@ -1023,11 +682,13 @@ const text=await response.text();
 let data=null;
 
 if(text){
+
 try{
 data=JSON.parse(text);
 }catch{
 data=text;
 }
+
 }
 
 if(!response.ok){
@@ -1037,19 +698,24 @@ let message="Supabase request failed.";
 if(data){
 
 if(typeof data==="object"){
+
 message=
 data.message||
 data.msg||
 data.hint||
 data.error_description||
 JSON.stringify(data);
+
 }else{
+
 message=String(data);
+
 }
 
 }
 
 throw new Error(message);
+
 }
 
 return data;
@@ -1057,40 +723,51 @@ return data;
 }
 
 
-/* =========================================================
-SIGN UP
-========================================================= */
+/* ---------- AUTH ---------- */
+
+function showAuthMessage(message,success=false){
+
+const box=$("authMessage");
+
+if(!box)return;
+
+box.textContent=message;
+box.classList.remove("hidden","success","error");
+
+box.classList.add(
+success?"success":"error"
+);
+
+}
+
 
 async function signup(){
+
+try{
 
 const email=$("loginEmail").value.trim();
 const password=$("loginPassword").value;
 
 if(!email){
-showAuthMessage("Enter an email address.");
-return;
+throw new Error("Enter an email address.");
 }
 
 if(password.length<6){
-showAuthMessage("Password must be at least 6 characters.");
-return;
+throw new Error("Password must be at least 6 characters.");
 }
-
-try{
 
 const response=
 await fetch(
-SUPABASE_URL+
-"/auth/v1/signup",
+SUPABASE_URL+"/auth/v1/signup",
 {
 method:"POST",
 headers:{
-"apikey":SUPABASE_KEY,
+apikey:SUPABASE_KEY,
 "Content-Type":"application/json"
 },
 body:JSON.stringify({
-email:email,
-password:password
+email,
+password
 })
 }
 );
@@ -1117,7 +794,11 @@ data.access_token
 
 currentUser=data.user||null;
 
+try{
 await ensureProfile();
+}catch(error){
+console.warn(error);
+}
 
 showAuthMessage(
 "Account created successfully. You are signed in.",
@@ -1126,20 +807,18 @@ true
 
 setTimeout(function(){
 showScreen("home");
-},800);
+},700);
 
 }else{
 
 showAuthMessage(
-"Account created. Check your email if email confirmation is enabled.",
+"Account created. Check your email if confirmation is required.",
 true
 );
 
 }
 
 }catch(error){
-
-console.error(error);
 
 showAuthMessage(
 error.message||
@@ -1151,26 +830,20 @@ error.message||
 }
 
 
-/* =========================================================
-LOGIN
-========================================================= */
-
 async function login(){
+
+try{
 
 const email=$("loginEmail").value.trim();
 const password=$("loginPassword").value;
 
 if(!email){
-showAuthMessage("Enter your email.");
-return;
+throw new Error("Enter your email.");
 }
 
 if(!password){
-showAuthMessage("Enter your password.");
-return;
+throw new Error("Enter your password.");
 }
-
-try{
 
 const response=
 await fetch(
@@ -1179,12 +852,12 @@ SUPABASE_URL+
 {
 method:"POST",
 headers:{
-"apikey":SUPABASE_KEY,
+apikey:SUPABASE_KEY,
 "Content-Type":"application/json"
 },
 body:JSON.stringify({
-email:email,
-password:password
+email,
+password
 })
 }
 );
@@ -1203,7 +876,6 @@ data.message||
 }
 
 if(!data.access_token){
-
 throw new Error("Supabase did not return a login token.");
 }
 
@@ -1214,7 +886,11 @@ data.access_token
 
 currentUser=data.user||null;
 
+try{
 await ensureProfile();
+}catch(error){
+console.warn(error);
+}
 
 showAuthMessage(
 "Signed in successfully.",
@@ -1233,8 +909,6 @@ showScreen("home");
 
 }catch(error){
 
-console.error(error);
-
 showAuthMessage(
 error.message||
 "Login failed."
@@ -1245,15 +919,9 @@ error.message||
 }
 
 
-/* =========================================================
-PROFILE
-========================================================= */
-
 async function ensureProfile(){
 
-if(!currentUser){
-return;
-}
+if(!currentUser)return;
 
 try{
 
@@ -1269,19 +937,15 @@ encodeURIComponent(currentUser.id)+
 
 if(!existing||existing.length===0){
 
-const email=
-currentUser.email||
-"player@example.com";
-
-const username=
-email.split("@")[0];
+const email=currentUser.email||"player@example.com";
+const username=email.split("@")[0];
 
 await supabaseRequest(
 "profiles",
 "POST",
 {
 id:currentUser.id,
-username:username,
+username,
 display_name:username
 }
 );
@@ -1290,11 +954,6 @@ display_name:username
 
 }catch(error){
 
-/*
-Profile errors must NEVER break login.
-The player can still use the site.
-*/
-
 console.warn(
 "Profile setup warning:",
 error.message
@@ -1302,19 +961,15 @@ error.message
 
 }
 
+}
 
-/* =========================================================
-RESTORE SESSION
-========================================================= */
 
 async function restoreSession(){
 
 const token=
 localStorage.getItem("soulTrialAccessToken");
 
-if(!token){
-return;
-}
+if(!token)return;
 
 try{
 
@@ -1322,10 +977,9 @@ const response=
 await fetch(
 SUPABASE_URL+"/auth/v1/user",
 {
-method:"GET",
 headers:{
-"apikey":SUPABASE_KEY,
-"Authorization":"Bearer "+token
+apikey:SUPABASE_KEY,
+Authorization:"Bearer "+token
 }
 }
 );
@@ -1339,11 +993,16 @@ localStorage.removeItem(
 currentUser=null;
 
 return;
+
 }
 
 currentUser=await response.json();
 
+try{
 await ensureProfile();
+}catch(error){
+console.warn(error);
+}
 
 }catch(error){
 
@@ -1358,8 +1017,8 @@ error.message
 
 
 /* =========================================================
-QUESTIONS
-========================================================= */
+   QUIZ DATA
+   ========================================================= */
 
 const questions=[
 
@@ -1664,15 +1323,14 @@ const questions=[
 
 
 /* =========================================================
-SOUL PATHS
-========================================================= */
+   SOUL PATHS
+   ========================================================= */
 
 const soulPaths={
 
 STR:{
 name:"The Vanguard",
-description:
-"Your soul responds to adversity with strength, courage and decisive action. You are most alive when something stands between you and victory.",
+description:"Your soul responds to adversity with strength, courage and decisive action. You are most alive when something stands between you and victory.",
 classes:["Fighter","Barbarian","Paladin"],
 subclasses:{
 Fighter:"Champion",
@@ -1681,17 +1339,14 @@ Paladin:"Oath of Devotion"
 },
 background:"Soldier",
 trait:"Unyielding",
-traitDescription:
-"You refuse to back down when others would surrender.",
+traitDescription:"You refuse to back down when others would surrender.",
 blessing:"Titan's Resolve",
-blessingDescription:
-"Once per long rest, when reduced to 0 hit points, you may remain at 1 hit point instead."
+blessingDescription:"Once per long rest, when reduced to 0 hit points, you may remain at 1 hit point instead."
 },
 
 DEX:{
 name:"The Shadow",
-description:
-"Your soul favors speed, precision, awareness and adaptability. You survive by recognizing the opening others overlook.",
+description:"Your soul favors speed, precision, awareness and adaptability. You survive by recognizing the opening others overlook.",
 classes:["Rogue","Ranger","Monk"],
 subclasses:{
 Rogue:"Thief",
@@ -1700,17 +1355,14 @@ Monk:"Way of the Open Hand"
 },
 background:"Criminal",
 trait:"Quickstep",
-traitDescription:
-"You instinctively recognize openings and react quickly.",
+traitDescription:"You instinctively recognize openings and react quickly.",
 blessing:"Veilstep",
-blessingDescription:
-"Once per short rest, you may move 10 feet as a reaction when targeted by an attack."
+blessingDescription:"Once per short rest, you may move 10 feet as a reaction when targeted by an attack."
 },
 
 CON:{
 name:"The Unbroken",
-description:
-"Your defining strength is endurance. You keep moving when others fall and refuse to let hardship decide your fate.",
+description:"Your defining strength is endurance. You keep moving when others fall and refuse to let hardship decide your fate.",
 classes:["Barbarian","Fighter","Paladin"],
 subclasses:{
 Barbarian:"Berserker",
@@ -1719,17 +1371,14 @@ Paladin:"Oath of Devotion"
 },
 background:"Outlander",
 trait:"Iron Will",
-traitDescription:
-"Pain and exhaustion rarely convince you to surrender.",
+traitDescription:"Pain and exhaustion rarely convince you to surrender.",
 blessing:"Last Stand",
-blessingDescription:
-"Once per long rest, when you fall below half your maximum hit points, gain temporary hit points equal to your level."
+blessingDescription:"Once per long rest, when you fall below half your maximum hit points, gain temporary hit points equal to your level."
 },
 
 INT:{
 name:"The Arcanist",
-description:
-"Your mind is your greatest weapon. Knowledge, patterns, magic and understanding come naturally to you.",
+description:"Your mind is your greatest weapon. Knowledge, patterns, magic and understanding come naturally to you.",
 classes:["Wizard","Artificer"],
 subclasses:{
 Wizard:"School of Evocation",
@@ -1737,17 +1386,14 @@ Artificer:"Alchemist"
 },
 background:"Sage",
 trait:"Analytical Mind",
-traitDescription:
-"You instinctively break complicated problems into patterns.",
+traitDescription:"You instinctively break complicated problems into patterns.",
 blessing:"Arcane Insight",
-blessingDescription:
-"Once per long rest, gain advantage on an Intelligence check involving Arcana, History or magical knowledge."
+blessingDescription:"Once per long rest, gain advantage on an Intelligence check involving Arcana, History or magical knowledge."
 },
 
 WIS:{
 name:"The Seer",
-description:
-"You notice what others miss and trust instinct, patience and judgment. You understand that knowledge is more than information.",
+description:"You notice what others miss and trust instinct, patience and judgment. You understand that knowledge is more than information.",
 classes:["Cleric","Druid","Monk","Ranger"],
 subclasses:{
 Cleric:"Life Domain",
@@ -1757,17 +1403,14 @@ Ranger:"Hunter"
 },
 background:"Hermit",
 trait:"Instinctive Awareness",
-traitDescription:
-"Your instincts often notice danger before your conscious mind does.",
+traitDescription:"Your instincts often notice danger before your conscious mind does.",
 blessing:"Foresight",
-blessingDescription:
-"Once per long rest, after seeing a d20 result, add your Wisdom modifier to the roll."
+blessingDescription:"Once per long rest, after seeing a d20 result, add your Wisdom modifier to the roll."
 },
 
 CHA:{
 name:"The Sovereign",
-description:
-"Your presence carries weight. People naturally notice, follow, remember or believe you.",
+description:"Your presence carries weight. People naturally notice, follow, remember or believe you.",
 classes:["Bard","Sorcerer","Warlock","Paladin"],
 subclasses:{
 Bard:"College of Lore",
@@ -1777,19 +1420,17 @@ Paladin:"Oath of Devotion"
 },
 background:"Noble",
 trait:"Commanding Presence",
-traitDescription:
-"You possess a presence that is difficult for others to ignore.",
+traitDescription:"You possess a presence that is difficult for others to ignore.",
 blessing:"Voice of the Soul",
-blessingDescription:
-"Once per long rest, gain advantage on a Charisma check made to influence another creature."
+blessingDescription:"Once per long rest, gain advantage on a Charisma check made to influence another creature."
 }
 
 };
 
 
 /* =========================================================
-2014-STYLE CLASS DATA
-========================================================= */
+   CLASS DATA
+   ========================================================= */
 
 const classData={
 
@@ -1799,12 +1440,7 @@ hitDie:10,
 hp:10,
 ac:16,
 speed:30,
-equipment:[
-"Chain mail",
-"Longsword and shield",
-"Light crossbow and 20 bolts",
-"Explorer's pack"
-]
+equipment:["Chain mail","Longsword and shield","Light crossbow and 20 bolts","Explorer's pack"]
 },
 
 Barbarian:{
@@ -1813,12 +1449,7 @@ hitDie:12,
 hp:12,
 ac:14,
 speed:30,
-equipment:[
-"Greataxe",
-"Two handaxes",
-"Explorer's pack",
-"Javelins"
-]
+equipment:["Greataxe","Two handaxes","Explorer's pack","Javelins"]
 },
 
 Paladin:{
@@ -1827,12 +1458,7 @@ hitDie:10,
 hp:10,
 ac:16,
 speed:30,
-equipment:[
-"Longsword and shield",
-"Five javelins",
-"Priest's pack",
-"Chain mail"
-]
+equipment:["Longsword and shield","Five javelins","Priest's pack","Chain mail"]
 },
 
 Rogue:{
@@ -1841,12 +1467,7 @@ hitDie:8,
 hp:8,
 ac:14,
 speed:30,
-equipment:[
-"Rapier",
-"Shortbow and 20 arrows",
-"Leather armor",
-"Thieves' tools"
-]
+equipment:["Rapier","Shortbow and 20 arrows","Leather armor","Thieves' tools"]
 },
 
 Ranger:{
@@ -1855,12 +1476,7 @@ hitDie:10,
 hp:10,
 ac:14,
 speed:30,
-equipment:[
-"Longbow and 20 arrows",
-"Two shortswords",
-"Leather armor",
-"Explorer's pack"
-]
+equipment:["Longbow and 20 arrows","Two shortswords","Leather armor","Explorer's pack"]
 },
 
 Monk:{
@@ -1869,12 +1485,7 @@ hitDie:8,
 hp:8,
 ac:14,
 speed:30,
-equipment:[
-"Shortsword",
-"10 darts",
-"Explorer's pack",
-"Monk's tools"
-]
+equipment:["Shortsword","10 darts","Explorer's pack","Monk's tools"]
 },
 
 Wizard:{
@@ -1883,12 +1494,7 @@ hitDie:6,
 hp:6,
 ac:12,
 speed:30,
-equipment:[
-"Quarterstaff",
-"Light crossbow and 20 bolts",
-"Component pouch",
-"Scholar's pack"
-]
+equipment:["Quarterstaff","Light crossbow and 20 bolts","Component pouch","Scholar's pack"]
 },
 
 Artificer:{
@@ -1897,12 +1503,7 @@ hitDie:8,
 hp:8,
 ac:14,
 speed:30,
-equipment:[
-"Light hammer",
-"Light crossbow and 20 bolts",
-"Thieves' tools",
-"Explorer's pack"
-]
+equipment:["Light hammer","Light crossbow and 20 bolts","Thieves' tools","Explorer's pack"]
 },
 
 Cleric:{
@@ -1911,12 +1512,7 @@ hitDie:8,
 hp:8,
 ac:16,
 speed:30,
-equipment:[
-"Mace",
-"Shield",
-"Scale mail",
-"Light crossbow and 20 bolts"
-]
+equipment:["Mace","Shield","Scale mail","Light crossbow and 20 bolts"]
 },
 
 Druid:{
@@ -1925,12 +1521,7 @@ hitDie:8,
 hp:8,
 ac:14,
 speed:30,
-equipment:[
-"Wooden shield",
-"Scimitar",
-"Leather armor",
-"Explorer's pack"
-]
+equipment:["Wooden shield","Scimitar","Leather armor","Explorer's pack"]
 },
 
 Bard:{
@@ -1939,12 +1530,7 @@ hitDie:8,
 hp:8,
 ac:13,
 speed:30,
-equipment:[
-"Rapier",
-"Leather armor",
-"Light crossbow and 20 bolts",
-"Entertainer's pack"
-]
+equipment:["Rapier","Leather armor","Light crossbow and 20 bolts","Entertainer's pack"]
 },
 
 Sorcerer:{
@@ -1953,12 +1539,7 @@ hitDie:6,
 hp:6,
 ac:12,
 speed:30,
-equipment:[
-"Light crossbow and 20 bolts",
-"Component pouch",
-"Explorer's pack",
-"Two daggers"
-]
+equipment:["Light crossbow and 20 bolts","Component pouch","Explorer's pack","Two daggers"]
 },
 
 Warlock:{
@@ -1967,92 +1548,77 @@ hitDie:8,
 hp:8,
 ac:13,
 speed:30,
-equipment:[
-"Light crossbow and 20 bolts",
-"Leather armor",
-"Arcane focus",
-"Scholar's pack"
-]
+equipment:["Light crossbow and 20 bolts","Leather armor","Arcane focus","Scholar's pack"]
 }
 
 };
 
 
 /* =========================================================
-RACE DETERMINATION
-========================================================= */
+   RACE
+   ========================================================= */
 
-function determineRace(scores){
+function determineRace(statScores){
 
 const sorted=
-Object.entries(scores)
+Object.entries(statScores)
 .sort(function(a,b){
+
+if(b[1]!==a[1]){
 return b[1]-a[1];
+}
+
+return a[0].localeCompare(b[0]);
+
 });
 
 const primary=sorted[0][0];
 const secondary=sorted[1][0];
 
-if(primary==="STR" && secondary==="CON"){
-return "Half-Orc";
-}
+if(primary==="STR"&&secondary==="CON")return"Half-Orc";
+if(primary==="STR"&&secondary==="CHA")return"Dragonborn";
+if(primary==="DEX"&&secondary==="CHA")return"Half-Elf";
+if(primary==="DEX"&&secondary==="INT")return"Elf";
+if(primary==="DEX"&&secondary==="CON")return"Halfling";
+if(primary==="CON"&&secondary==="WIS")return"Dwarf";
+if(primary==="CON"&&secondary==="STR")return"Half-Orc";
+if(primary==="INT"&&secondary==="DEX")return"Gnome";
+if(primary==="INT"&&secondary==="CHA")return"Tiefling";
+if(primary==="WIS"&&secondary==="CON")return"Dwarf";
+if(primary==="WIS"&&secondary==="CHA")return"Half-Elf";
+if(primary==="CHA"&&secondary==="INT")return"Tiefling";
+if(primary==="CHA"&&secondary==="STR")return"Dragonborn";
 
-if(primary==="STR" && secondary==="CHA"){
-return "Dragonborn";
-}
-
-if(primary==="DEX" && secondary==="CHA"){
-return "Half-Elf";
-}
-
-if(primary==="DEX" && secondary==="INT"){
-return "Elf";
-}
-
-if(primary==="DEX" && secondary==="CON"){
-return "Halfling";
-}
-
-if(primary==="CON" && secondary==="WIS"){
-return "Dwarf";
-}
-
-if(primary==="CON" && secondary==="STR"){
-return "Half-Orc";
-}
-
-if(primary==="INT" && secondary==="DEX"){
-return "Gnome";
-}
-
-if(primary==="INT" && secondary==="CHA"){
-return "Tiefling";
-}
-
-if(primary==="WIS" && secondary==="CON"){
-return "Dwarf";
-}
-
-if(primary==="WIS" && secondary==="CHA"){
-return "Half-Elf";
-}
-
-if(primary==="CHA" && secondary==="INT"){
-return "Tiefling";
-}
-
-if(primary==="CHA" && secondary==="STR"){
-return "Dragonborn";
-}
-
-return "Human";
+return"Human";
 
 }
 
 
 /* =========================================================
-START QUESTIONS
-========================================================= */
+   QUIZ
+   ========================================================= */
+
+function beginTrial(){
+
+scores={
+STR:0,
+DEX:0,
+CON:0,
+INT:0,
+WIS:0,
+CHA:0
+};
+
+questionIndex=0;
+character=null;
+selectedEquipment=[];
+
+$("playerName").value="";
+
+showScreen("name");
+
+}
+
 
 function startQuestions(){
 
@@ -2079,14 +1645,16 @@ displayQuestion();
 }
 
 
-/* =========================================================
-DISPLAY QUESTION
-========================================================= */
-
 function displayQuestion(){
 
-const current=
-questions[questionIndex];
+try{
+
+const current=questions[questionIndex];
+
+if(!current){
+calculateSoul();
+return;
+}
 
 $("questionNumber").textContent=
 "Question "+
@@ -2095,10 +1663,9 @@ $("questionNumber").textContent=
 questions.length;
 
 $("progressBar").style.width=
-((questionIndex/questions.length)*100)+"%";
+(((questionIndex+1)/questions.length)*100)+"%";
 
 $("question").textContent=current[0];
-
 $("questionFlavor").textContent=current[1];
 
 const answers=$("answers");
@@ -2114,14 +1681,22 @@ button.type="button";
 button.className="choice";
 button.textContent=option[0];
 
+button.dataset.quizAnswer="true";
+
 button.addEventListener("click",function(){
+
+if(button.disabled)return;
+
+button.disabled=true;
 
 Object.entries(option[1]).forEach(function(entry){
 
 const stat=entry[0];
-const value=entry[1];
+const value=Number(entry[1])||0;
 
+if(Object.prototype.hasOwnProperty.call(scores,stat)){
 scores[stat]+=value;
+}
 
 });
 
@@ -2143,14 +1718,22 @@ answers.appendChild(button);
 
 });
 
+}catch(error){
+
+showAppError(error);
+
+}
+
 }
 
 
 /* =========================================================
-CALCULATE SOUL
-========================================================= */
+   CALCULATE RESULT
+   ========================================================= */
 
 function calculateSoul(){
+
+try{
 
 const sorted=
 Object.entries(scores)
@@ -2188,121 +1771,66 @@ CHA:10
 
 sorted.forEach(function(entry,index){
 
-const stat=entry[0];
-
-finalScores[stat]=standard[index];
+finalScores[entry[0]]=standard[index];
 
 });
 
-const chosenClass=
-path.classes[0];
-
-const subclass=
-path.subclasses[chosenClass];
-
-const race=
-determineRace(scores);
-
-const data=
-classData[chosenClass];
+const chosenClass=path.classes[0];
+const subclass=path.subclasses[chosenClass];
+const race=determineRace(scores);
+const data=classData[chosenClass];
 
 character.race=race;
-
 character.dominantStat=highest;
-
 character.soulPath=path.name;
-
-character.soulDescription=
-path.description;
-
-character.class=
-chosenClass;
-
-character.subclass=
-subclass;
-
-character.background=
-path.background;
-
-character.soulTrait=
-path.trait;
-
-character.traitDescription=
-path.traitDescription;
-
-character.blessing=
-path.blessing;
-
-character.blessingDescription=
-path.blessingDescription;
-
-character.scores=
-finalScores;
-
-character.max_hp=
-data.hp+
-modifier(finalScores.CON);
-
-character.armor_class=
-data.ac;
-
-character.speed=
-data.speed;
-
-character.hit_dice=
-"1d"+
-data.hitDie;
-
+character.soulDescription=path.description;
+character.class=chosenClass;
+character.subclass=subclass;
+character.background=path.background;
+character.soulTrait=path.trait;
+character.traitDescription=path.traitDescription;
+character.blessing=path.blessing;
+character.blessingDescription=path.blessingDescription;
+character.scores=finalScores;
+character.max_hp=data.hp+modifier(finalScores.CON);
+character.armor_class=data.ac;
+character.speed=data.speed;
+character.hit_dice="1d"+data.hitDie;
 character.proficiency_bonus=2;
-
 character.equipment=[];
 
 renderResult();
+
+}catch(error){
+
+showAppError(error);
+
+}
 
 }
 
 
 /* =========================================================
-RESULT
-========================================================= */
+   RESULT
+   ========================================================= */
 
 function renderResult(){
 
-$("resultName").textContent=
-character.name;
-
-$("soulPath").textContent=
-character.soulPath;
-
-$("soulDescription").textContent=
-character.soulDescription;
-
-$("resultRace").textContent=
-character.race;
-
-$("resultClass").textContent=
-character.class;
-
-$("resultSubclass").textContent=
-character.subclass;
-
-$("resultBackground").textContent=
-character.background;
+$("resultName").textContent=character.name;
+$("soulPath").textContent=character.soulPath;
+$("soulDescription").textContent=character.soulDescription;
+$("resultRace").textContent=character.race;
+$("resultClass").textContent=character.class;
+$("resultSubclass").textContent=character.subclass;
+$("resultBackground").textContent=character.background;
 
 $("resultStats").innerHTML=
 renderStats(character.scores);
 
-$("soulTrait").textContent=
-character.soulTrait;
-
-$("traitDescription").textContent=
-character.traitDescription;
-
-$("awakeningBlessing").textContent=
-character.blessing;
-
-$("blessingDescription").textContent=
-character.blessingDescription;
+$("soulTrait").textContent=character.soulTrait;
+$("traitDescription").textContent=character.traitDescription;
+$("awakeningBlessing").textContent=character.blessing;
+$("blessingDescription").textContent=character.blessingDescription;
 
 showScreen("result");
 
@@ -2310,63 +1838,37 @@ showScreen("result");
 
 
 /* =========================================================
-CHARACTER CREATOR
-========================================================= */
+   CHARACTER CREATOR
+   ========================================================= */
 
 function openCharacterCreator(){
 
 if(!character){
 
 alert("No character exists yet.");
-
 return;
 
 }
 
-$("characterName").textContent=
-character.name;
-
-$("creatorRace").textContent=
-character.race;
-
-$("creatorClass").textContent=
-character.class;
-
-$("creatorSubclass").textContent=
-character.subclass;
-
-$("creatorBackground").textContent=
-character.background;
-
-$("creatorLevel").textContent=
-character.level;
+$("characterName").textContent=character.name;
+$("creatorRace").textContent=character.race;
+$("creatorClass").textContent=character.class;
+$("creatorSubclass").textContent=character.subclass;
+$("creatorBackground").textContent=character.background;
+$("creatorLevel").textContent=character.level;
 
 $("abilityScores").innerHTML=
 renderStats(character.scores);
 
-$("creatorHP").textContent=
-character.max_hp;
+$("creatorHP").textContent=character.max_hp;
+$("creatorAC").textContent=character.armor_class;
+$("creatorSpeed").textContent=character.speed+" ft";
 
-$("creatorAC").textContent=
-character.armor_class;
-
-$("creatorSpeed").textContent=
-character.speed+" ft";
-
-$("personality").value=
-character.personality||"";
-
-$("ideal").value=
-character.ideal||"";
-
-$("bond").value=
-character.bond||"";
-
-$("flaw").value=
-character.flaw||"";
-
-$("backstory").value=
-character.backstory||"";
+$("personality").value=character.personality||"";
+$("ideal").value=character.ideal||"";
+$("bond").value=character.bond||"";
+$("flaw").value=character.flaw||"";
+$("backstory").value=character.backstory||"";
 
 selectedEquipment=
 Array.isArray(character.equipment)
@@ -2381,26 +1883,32 @@ showScreen("creator");
 
 
 /* =========================================================
-EQUIPMENT
-========================================================= */
+   EQUIPMENT
+   ========================================================= */
 
 function renderEquipmentOptions(){
 
-const data=
-classData[character.class];
+const data=classData[character.class];
 
-const container=
-$("equipmentOptions");
+const container=$("equipmentOptions");
 
 container.innerHTML="";
 
-data.equipment.forEach(function(item,index){
+if(!data){
+
+container.textContent=
+"No equipment data found.";
+
+return;
+
+}
+
+data.equipment.forEach(function(item){
 
 const wrapper=
 document.createElement("label");
 
 wrapper.className="card";
-
 wrapper.style.cursor="pointer";
 
 const checkbox=
@@ -2415,15 +1923,15 @@ checkbox.style.width="auto";
 checkbox.style.marginRight="8px";
 
 wrapper.appendChild(checkbox);
+wrapper.appendChild(
+document.createTextNode(item)
+);
 
-const text=
-document.createTextNode(item);
+checkbox.addEventListener(
+"change",
+function(){
 
-wrapper.appendChild(text);
-
-checkbox.addEventListener("change",function(){
-
-if(checkbox.checked){
+if(this.checked){
 
 if(!selectedEquipment.includes(item)){
 selectedEquipment.push(item);
@@ -2432,13 +1940,16 @@ selectedEquipment.push(item);
 }else{
 
 selectedEquipment=
-selectedEquipment.filter(function(x){
+selectedEquipment.filter(
+function(x){
 return x!==item;
-});
+}
+);
 
 }
 
-});
+}
+);
 
 container.appendChild(wrapper);
 
@@ -2448,13 +1959,16 @@ container.appendChild(wrapper);
 
 
 /* =========================================================
-SAVE CHARACTER
-========================================================= */
+   SAVE CHARACTER
+   ========================================================= */
 
 async function saveCharacter(){
 
 if(!character){
+
+alert("Create a character first.");
 return;
+
 }
 
 character.personality=
@@ -2473,14 +1987,20 @@ character.backstory=
 $("backstory").value.trim();
 
 character.equipment=
-Array.from(
-new Set(selectedEquipment)
-);
+Array.from(new Set(selectedEquipment));
+
+try{
 
 localStorage.setItem(
 "soulTrialCharacter",
 JSON.stringify(character)
 );
+
+}catch(error){
+
+console.warn(error);
+
+}
 
 if(currentUser){
 
@@ -2497,7 +2017,7 @@ alert(
 console.error(error);
 
 alert(
-"Character saved on this device, but the account sync failed:\n\n"+
+"Character saved on this device, but account sync failed.\n\n"+
 error.message
 );
 
@@ -2516,14 +2036,12 @@ alert(
 
 
 /* =========================================================
-SUPABASE CHARACTER SAVE
-========================================================= */
+   SUPABASE CHARACTER SAVE
+   ========================================================= */
 
 async function saveCharacterToSupabase(){
 
-if(!currentUser||!character){
-return;
-}
+if(!currentUser||!character)return;
 
 const payload={
 player_id:currentUser.id,
@@ -2571,7 +2089,8 @@ await supabaseRequest(
 "characters",
 "PATCH",
 payload,
-"?id=eq."+encodeURIComponent(existing[0].id)
+"?id=eq."+
+encodeURIComponent(existing[0].id)
 );
 
 }else{
@@ -2588,21 +2107,19 @@ payload
 
 
 /* =========================================================
-CHARACTER SHEET
-========================================================= */
+   CHARACTER SHEET
+   ========================================================= */
 
 function viewSheet(){
 
 if(!character){
 
 alert("Create a character first.");
-
 return;
 
 }
 
-$("sheetName").textContent=
-character.name;
+$("sheetName").textContent=character.name;
 
 $("sheetIdentity").textContent=
 character.race+
@@ -2615,59 +2132,30 @@ character.level+
 " • "+
 character.background;
 
-$("sheetHP").textContent=
-character.max_hp;
-
-$("sheetAC").textContent=
-character.armor_class;
-
-$("sheetSpeed").textContent=
-character.speed+" ft";
-
-$("sheetLevel").textContent=
-character.level;
-
-$("sheetProficiency").textContent=
-"+"+character.proficiency_bonus;
-
-$("sheetHitDice").textContent=
-character.hit_dice;
+$("sheetHP").textContent=character.max_hp;
+$("sheetAC").textContent=character.armor_class;
+$("sheetSpeed").textContent=character.speed+" ft";
+$("sheetLevel").textContent=character.level;
+$("sheetProficiency").textContent="+"+character.proficiency_bonus;
+$("sheetHitDice").textContent=character.hit_dice;
 
 $("sheetStats").innerHTML=
 renderStats(character.scores);
 
-$("sheetPath").textContent=
-character.soulPath;
+$("sheetPath").textContent=character.soulPath;
+$("sheetPathDescription").textContent=character.soulDescription;
 
-$("sheetPathDescription").textContent=
-character.soulDescription;
+$("sheetTrait").textContent=character.soulTrait;
+$("sheetTraitDescription").textContent=character.traitDescription;
 
-$("sheetTrait").textContent=
-character.soulTrait;
+$("sheetBlessing").textContent=character.blessing;
+$("sheetBlessingDescription").textContent=character.blessingDescription;
 
-$("sheetTraitDescription").textContent=
-character.traitDescription;
-
-$("sheetBlessing").textContent=
-character.blessing;
-
-$("sheetBlessingDescription").textContent=
-character.blessingDescription;
-
-$("sheetPersonality").textContent=
-character.personality||"—";
-
-$("sheetIdeal").textContent=
-character.ideal||"—";
-
-$("sheetBond").textContent=
-character.bond||"—";
-
-$("sheetFlaw").textContent=
-character.flaw||"—";
-
-$("sheetBackstory").textContent=
-character.backstory||"—";
+$("sheetPersonality").textContent=character.personality||"—";
+$("sheetIdeal").textContent=character.ideal||"—";
+$("sheetBond").textContent=character.bond||"—";
+$("sheetFlaw").textContent=character.flaw||"—";
+$("sheetBackstory").textContent=character.backstory||"—";
 
 renderSheetEquipment();
 
@@ -2676,17 +2164,12 @@ showScreen("sheet");
 }
 
 
-/* =========================================================
-SHEET EQUIPMENT
-========================================================= */
-
 function renderSheetEquipment(){
 
-const container=
-$("sheetEquipment");
+const container=$("sheetEquipment");
+const equipment=character.equipment||[];
 
-const equipment=
-character.equipment||[];
+container.innerHTML="";
 
 if(!equipment.length){
 
@@ -2697,15 +2180,11 @@ return;
 
 }
 
-container.innerHTML="";
-
 equipment.forEach(function(item){
 
-const span=
-document.createElement("span");
+const span=document.createElement("span");
 
 span.className="tag";
-
 span.textContent=item;
 
 container.appendChild(span);
@@ -2716,8 +2195,8 @@ container.appendChild(span);
 
 
 /* =========================================================
-CAMPAIGNS
-========================================================= */
+   CAMPAIGNS
+   ========================================================= */
 
 async function openCampaigns(){
 
@@ -2739,32 +2218,45 @@ $("campaignAccountNotice").textContent=
 
 showScreen("campaigns");
 
+try{
 await loadCampaigns();
+}catch(error){
+showAppError(error);
+}
 
 }
 
 
 function showCreateCampaign(){
 
-$("campaignCreate")
-.classList.remove("hidden");
-
-$("campaignJoin")
-.classList.add("hidden");
+$("campaignCreate").classList.remove("hidden");
+$("campaignJoin").classList.add("hidden");
 
 }
 
 
 function showJoinCampaign(){
 
-$("campaignJoin")
-.classList.remove("hidden");
-
-$("campaignCreate")
-.classList.add("hidden");
+$("campaignJoin").classList.remove("hidden");
+$("campaignCreate").classList.add("hidden");
 
 }
 
+
+function showCampaignMessage(message,success=false){
+
+const box=$("campaignMessage");
+
+box.textContent=message;
+box.classList.remove("hidden","success","error");
+box.classList.add(success?"success":"error");
+
+}
+
+
+/* =========================================================
+   CREATE CAMPAIGN
+   ========================================================= */
 
 async function createCampaign(){
 
@@ -2778,11 +2270,8 @@ return;
 
 }
 
-const name=
-$("campaignName").value.trim();
-
-const description=
-$("campaignDescription").value.trim();
+const name=$("campaignName").value.trim();
+const description=$("campaignDescription").value.trim();
 
 if(!name){
 
@@ -2796,18 +2285,13 @@ return;
 
 try{
 
-/*
-The existing database structure uses
-name and description.
-*/
-
 const created=
 await supabaseRequest(
 "campaigns",
 "POST",
 {
-name:name,
-description:description
+name,
+description
 }
 );
 
@@ -2830,11 +2314,11 @@ role:"dm"
 }
 );
 
-}catch(memberError){
+}catch(error){
 
 console.warn(
-"Campaign owner membership was not created:",
-memberError.message
+"Owner membership warning:",
+error.message
 );
 
 }
@@ -2853,8 +2337,6 @@ await loadCampaigns();
 
 }catch(error){
 
-console.error(error);
-
 showCampaignMessage(
 error.message||
 "Unable to create campaign."
@@ -2866,13 +2348,12 @@ error.message||
 
 
 /* =========================================================
-LOAD CAMPAIGNS
-========================================================= */
+   LOAD CAMPAIGNS
+   ========================================================= */
 
 async function loadCampaigns(){
 
-const container=
-$("campaignList");
+const container=$("campaignList");
 
 container.innerHTML=
 '<div class="card">Loading campaigns...</div>';
@@ -2887,15 +2368,15 @@ null,
 "?select=*&order=id.desc"
 );
 
+container.innerHTML="";
+
 if(!campaigns||campaigns.length===0){
 
 container.innerHTML=
 `
 <div class="info">
 <h2>No Campaigns Yet</h2>
-<p>
-Create a campaign as a DM or join one using a campaign ID.
-</p>
+<p>Create a campaign as a DM or join one using a campaign ID.</p>
 </div>
 `;
 
@@ -2903,48 +2384,27 @@ return;
 
 }
 
-container.innerHTML="";
-
 campaigns.forEach(function(campaign){
 
-const card=
-document.createElement("div");
-
+const card=document.createElement("div");
 card.className="card";
 
-const title=
-document.createElement("h3");
+const title=document.createElement("h3");
+title.textContent=campaign.name||"Unnamed Campaign";
 
-title.textContent=
-campaign.name||"Unnamed Campaign";
-
-const description=
-document.createElement("p");
-
+const description=document.createElement("p");
 description.textContent=
-campaign.description||
-"No description.";
+campaign.description||"No description.";
 
-const idText=
-document.createElement("p");
-
-idText.innerHTML=
-"<strong>Campaign ID:</strong> ";
-
-const idSpan=
-document.createElement("span");
-
-idSpan.textContent=
+const idText=document.createElement("p");
+idText.textContent=
+"Campaign ID: "+
 String(campaign.id);
 
-idText.appendChild(idSpan);
-
-const button=
-document.createElement("button");
+const button=document.createElement("button");
 
 button.type="button";
 button.textContent="OPEN CAMPAIGN";
-
 button.addEventListener(
 "click",
 function(){
@@ -2963,12 +2423,9 @@ container.appendChild(card);
 
 }catch(error){
 
-console.error(error);
-
 container.innerHTML="";
 
-const errorBox=
-document.createElement("div");
+const errorBox=document.createElement("div");
 
 errorBox.className="notice error";
 
@@ -2984,8 +2441,8 @@ container.appendChild(errorBox);
 
 
 /* =========================================================
-JOIN CAMPAIGN
-========================================================= */
+   JOIN CAMPAIGN
+   ========================================================= */
 
 async function joinCampaign(){
 
@@ -2999,8 +2456,7 @@ return;
 
 }
 
-const code=
-$("campaignCode").value.trim();
+const code=$("campaignCode").value.trim();
 
 if(!code){
 
@@ -3034,8 +2490,7 @@ return;
 
 }
 
-const campaign=
-campaigns[0];
+const campaign=campaigns[0];
 
 try{
 
@@ -3049,22 +2504,17 @@ role:"player"
 }
 );
 
-}catch(memberError){
-
-/*
-If the player is already a member,
-we can still open the campaign.
-*/
+}catch(error){
 
 const message=
-memberError.message||"";
+(error.message||"").toLowerCase();
 
 if(
-!message.toLowerCase().includes("duplicate")&&
-!message.toLowerCase().includes("unique")
+!message.includes("duplicate")&&
+!message.includes("unique")
 ){
 
-throw memberError;
+throw error;
 
 }
 
@@ -3089,8 +2539,6 @@ await openCampaign(campaign);
 
 }catch(error){
 
-console.error(error);
-
 showCampaignMessage(
 error.message||
 "Unable to join campaign."
@@ -3102,14 +2550,12 @@ error.message||
 
 
 /* =========================================================
-ATTACH CHARACTER
-========================================================= */
+   ATTACH CHARACTER
+   ========================================================= */
 
 async function attachCharacterToCampaign(campaignId){
 
-if(!currentUser||!character){
-return;
-}
+if(!currentUser||!character)return;
 
 try{
 
@@ -3133,7 +2579,8 @@ await supabaseRequest(
 {
 campaign_id:campaignId
 },
-"?id=eq."+encodeURIComponent(rows[0].id)
+"?id=eq."+
+encodeURIComponent(rows[0].id)
 );
 
 }
@@ -3151,14 +2598,12 @@ error.message
 
 
 /* =========================================================
-OPEN CAMPAIGN
-========================================================= */
+   CAMPAIGN DASHBOARD
+   ========================================================= */
 
 async function openCampaign(campaign){
 
-if(!campaign){
-return;
-}
+if(!campaign)return;
 
 currentCampaign=campaign;
 
@@ -3166,28 +2611,24 @@ $("campaignTitle").textContent=
 campaign.name||"Campaign";
 
 $("campaignDescription").textContent=
-campaign.description||
-"No campaign description.";
+campaign.description||"No campaign description.";
 
 showScreen("campaignDashboard");
 
+try{
 await loadCampaignMembers();
+}catch(error){
+showAppError(error);
+}
 
 }
 
-
-/* =========================================================
-LOAD CAMPAIGN MEMBERS
-========================================================= */
 
 async function loadCampaignMembers(){
 
-if(!currentCampaign){
-return;
-}
+if(!currentCampaign)return;
 
-const container=
-$("campaignDashboardContent");
+const container=$("campaignDashboardContent");
 
 container.innerHTML=
 '<div class="card">Loading campaign roster...</div>';
@@ -3206,22 +2647,16 @@ encodeURIComponent(currentCampaign.id)+
 
 container.innerHTML="";
 
-const header=
-document.createElement("div");
-
+const header=document.createElement("div");
 header.className="info";
 
-const heading=
-document.createElement("h2");
-
+const heading=document.createElement("h2");
 heading.textContent="Campaign Roster";
 
-const campaignId=
-document.createElement("p");
-
-campaignId.innerHTML=
-"<strong>Campaign ID:</strong> "+
-escapeHtml(currentCampaign.id);
+const campaignId=document.createElement("p");
+campaignId.textContent=
+"Campaign ID: "+
+String(currentCampaign.id);
 
 header.appendChild(heading);
 header.appendChild(campaignId);
@@ -3230,11 +2665,9 @@ container.appendChild(header);
 
 if(!members||members.length===0){
 
-const empty=
-document.createElement("div");
+const empty=document.createElement("div");
 
 empty.className="card";
-
 empty.textContent=
 "No players have joined this campaign yet.";
 
@@ -3246,30 +2679,21 @@ return;
 
 members.forEach(function(member,index){
 
-const card=
-document.createElement("div");
-
+const card=document.createElement("div");
 card.className="card";
 
-const title=
-document.createElement("h3");
+const title=document.createElement("h3");
+title.textContent="Member "+(index+1);
 
-title.textContent=
-"Member "+(index+1);
+const player=document.createElement("p");
+player.textContent=
+"Player ID: "+
+String(member.player_id);
 
-const player=
-document.createElement("p");
-
-player.innerHTML=
-"<strong>Player ID:</strong> "+
-escapeHtml(member.player_id);
-
-const role=
-document.createElement("p");
-
-role.innerHTML=
-"<strong>Role:</strong> "+
-escapeHtml(member.role||"player");
+const role=document.createElement("p");
+role.textContent=
+"Role: "+
+String(member.role||"player");
 
 card.appendChild(title);
 card.appendChild(player);
@@ -3281,12 +2705,9 @@ container.appendChild(card);
 
 }catch(error){
 
-console.error(error);
-
 container.innerHTML="";
 
-const errorBox=
-document.createElement("div");
+const errorBox=document.createElement("div");
 
 errorBox.className="notice error";
 
@@ -3301,47 +2722,36 @@ container.appendChild(errorBox);
 }
 
 
-/* =========================================================
-CAMPAIGN INFO
-========================================================= */
-
 function showCampaignInfo(){
 
-if(!currentCampaign){
-return;
-}
+if(!currentCampaign)return;
 
-const container=
-$("campaignDashboardContent");
+const container=$("campaignDashboardContent");
 
 container.innerHTML="";
 
-const info=
-document.createElement("div");
+const info=document.createElement("div");
 
 info.className="info";
 
-const title=
-document.createElement("h2");
+const title=document.createElement("h2");
 
 title.textContent=
 currentCampaign.name||"Campaign";
 
-const description=
-document.createElement("p");
+const description=document.createElement("p");
 
 description.textContent=
 currentCampaign.description||
 "No description.";
 
-const id=
-document.createElement("div");
+const id=document.createElement("div");
 
 id.className="notice";
 
-id.innerHTML=
-"<strong>Campaign ID:</strong> "+
-escapeHtml(currentCampaign.id);
+id.textContent=
+"Campaign ID: "+
+String(currentCampaign.id);
 
 info.appendChild(title);
 info.appendChild(description);
@@ -3353,8 +2763,8 @@ container.appendChild(info);
 
 
 /* =========================================================
-UTILITIES
-========================================================= */
+   UTILITIES
+   ========================================================= */
 
 function modifier(score){
 
@@ -3365,11 +2775,11 @@ return Math.floor((Number(score)-10)/2);
 
 function renderStats(statScores){
 
-return Object.entries(statScores).map(function(entry){
+return Object.entries(statScores).map(
+function(entry){
 
 const stat=entry[0];
 const value=entry[1];
-
 const mod=modifier(value);
 
 return `
@@ -3383,7 +2793,8 @@ ${mod>=0?"+":""}${mod}
 </div>
 `;
 
-}).join("");
+}
+).join("");
 
 }
 
@@ -3401,195 +2812,158 @@ return String(value??"")
 
 
 /* =========================================================
-LOCAL CHARACTER LOAD
-========================================================= */
+   CENTRAL BUTTON HANDLER
+   =========================================================
 
-function loadLocalCharacter(){
+   THIS IS THE IMPORTANT FIX.
 
-const saved=
-localStorage.getItem(
-"soulTrialCharacter"
-);
+   Instead of attaching a listener to every button individually,
+   the document listens for button clicks.
 
-if(!saved){
-return;
-}
+   This means a JavaScript error involving one button cannot
+   prevent the remaining buttons from receiving clicks.
+   ========================================================= */
+
+document.addEventListener(
+"click",
+function(event){
+
+const button=
+event.target.closest("button[data-action]");
+
+if(!button)return;
+
+const action=button.dataset.action;
 
 try{
 
-character=
-JSON.parse(saved);
+switch(action){
+
+case"begin":
+beginTrial();
+break;
+
+case"login":
+showScreen("login");
+break;
+
+case"signin":
+login();
+break;
+
+case"signup":
+signup();
+break;
+
+case"startQuiz":
+startQuestions();
+break;
+
+case"home":
+showScreen("home");
+break;
+
+case"creator":
+openCharacterCreator();
+break;
+
+case"save":
+saveCharacter();
+break;
+
+case"sheet":
+viewSheet();
+break;
+
+case"edit":
+openCharacterCreator();
+break;
+
+case"campaigns":
+openCampaigns();
+break;
+
+case"createCampaign":
+showCreateCampaign();
+break;
+
+case"joinCampaign":
+showJoinCampaign();
+break;
+
+case"confirmCreateCampaign":
+createCampaign();
+break;
+
+case"confirmJoinCampaign":
+joinCampaign();
+break;
+
+case"players":
+loadCampaignMembers();
+break;
+
+case"campaignInfo":
+showCampaignInfo();
+break;
+
+default:
+console.warn(
+"Unknown button action:",
+action
+);
+
+}
 
 }catch(error){
 
-console.warn(
-"Saved character could not be loaded."
+showAppError(error);
+
+}
+
+},
+false
 );
-
-character=null;
-
-}
-
-}
 
 
 /* =========================================================
-BUTTON EVENT WIRING
-=========================================================
-
-IMPORTANT:
-All main buttons are connected here AFTER the page exists.
-This prevents the common issue where buttons stop working
-because an earlier JavaScript error prevented onclick code
-from being registered.
-========================================================= */
-
-function wireButtons(){
-
-$("beginButton").addEventListener(
-"click",
-beginTrial
-);
-
-$("loginButton").addEventListener(
-"click",
-showLogin
-);
-
-$("backFromLogin").addEventListener(
-"click",
-function(){
-showScreen("home");
-}
-);
-
-$("signInButton").addEventListener(
-"click",
-login
-);
-
-$("signUpButton").addEventListener(
-"click",
-signup
-);
-
-$("continueName").addEventListener(
-"click",
-startQuestions
-);
-
-$("backFromName").addEventListener(
-"click",
-function(){
-showScreen("home");
-}
-);
-
-$("continueToCreator").addEventListener(
-"click",
-openCharacterCreator
-);
-
-$("saveCharacterButton").addEventListener(
-"click",
-saveCharacter
-);
-
-$("viewSheetButton").addEventListener(
-"click",
-viewSheet
-);
-
-$("editCharacterButton").addEventListener(
-"click",
-openCharacterCreator
-);
-
-$("campaignsButton").addEventListener(
-"click",
-openCampaigns
-);
-
-$("sheetHomeButton").addEventListener(
-"click",
-function(){
-showScreen("home");
-}
-);
-
-$("createCampaignButton").addEventListener(
-"click",
-showCreateCampaign
-);
-
-$("joinCampaignButton").addEventListener(
-"click",
-showJoinCampaign
-);
-
-$("campaignCharacterButton").addEventListener(
-"click",
-viewSheet
-);
-
-$("confirmCreateCampaign").addEventListener(
-"click",
-createCampaign
-);
-
-$("confirmJoinCampaign").addEventListener(
-"click",
-joinCampaign
-);
-
-$("playersButton").addEventListener(
-"click",
-loadCampaignMembers
-);
-
-$("campaignInfoButton").addEventListener(
-"click",
-showCampaignInfo
-);
-
-$("backCampaignsButton").addEventListener(
-"click",
-openCampaigns
-);
-
-}
-
-
-/* =========================================================
-INITIALIZE
-========================================================= */
+   INITIALIZATION
+   ========================================================= */
 
 function initialize(){
 
-/*
-These two operations are deliberately separate.
-
-The website itself starts immediately.
-
-Supabase is allowed to restore a session in the background,
-but a Supabase problem cannot prevent the Trial buttons
-from working.
-*/
+try{
 
 loadLocalCharacter();
 
-wireButtons();
-
 showScreen("home");
 
-restoreSession();
+}catch(error){
+
+showAppError(error);
+
+}
+
+/*
+Supabase session restoration is intentionally
+not allowed to block the website.
+*/
+
+restoreSession().catch(
+function(error){
+console.warn(
+"Background session restore failed:",
+error
+);
+}
+);
 
 }
 
 
 /* =========================================================
-START APP
-========================================================= */
+   START APPLICATION
+   ========================================================= */
 
 if(
 document.readyState==="loading"
@@ -3597,7 +2971,8 @@ document.readyState==="loading"
 
 document.addEventListener(
 "DOMContentLoaded",
-initialize
+initialize,
+{once:true}
 );
 
 }else{
@@ -3609,4 +2984,4 @@ initialize();
 </script>
 
 </body>
-  </html>
+</html>
