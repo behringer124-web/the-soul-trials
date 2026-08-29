@@ -1,2227 +1,2242 @@
 /* =========================================================
    THE SOUL TRIAL
-   D&D 5E CHARACTER BUILDER
-   APP ENGINE
+   app.js
+   Isekai D&D Character Awakening System
+   2014 D&D Rules Foundation
    ========================================================= */
 
 "use strict";
 
 /* =========================================================
-   CHARACTER STATE
+   SOUL TRIAL QUESTIONS
+   THESE QUESTIONS ARE LOCKED
    ========================================================= */
 
-const soulTrial = {
+const questions = [
 
-  currentStep: 1,
+[
+"You need to move something extremely heavy.",
+[
+["Lift it yourself.",{STR:2}],
+["Find a clever way around the problem.",{INT:2}],
+["Ask someone for help.",{CHA:2}],
+["Study the situation first.",{WIS:2}]
+]
+],
 
-  totalSteps: 8,
+[
+"You notice something valuable has been left unattended.",
+[
+["Take it.",{DEX:1,CHA:1}],
+["Leave it alone.",{WIS:2}],
+["Investigate who it belongs to.",{INT:2}],
+["Secure it somewhere safe.",{CON:1,WIS:1}]
+]
+],
 
-  character: {
+[
+"Someone challenges you to a competition.",
+[
+["Accept immediately.",{STR:2}],
+["Study their strengths first.",{INT:2}],
+["Focus on speed and technique.",{DEX:2}],
+["Try to make it fun for everyone.",{CHA:2}]
+]
+],
 
-    name: "",
+[
+"Your friend is making a terrible decision.",
+[
+["Stop them.",{STR:1,CON:1}],
+["Explain the consequences.",{INT:2}],
+["Try to persuade them.",{CHA:2}],
+["Let them make their own choice.",{WIS:2}]
+]
+],
 
-    race: "",
+[
+"You suddenly find yourself lost.",
+[
+["Keep moving until you find your way.",{CON:2}],
+["Look for landmarks.",{WIS:2}],
+["Figure out the map.",{INT:2}],
+["Ask someone for directions.",{CHA:2}]
+]
+],
 
-    subrace: "",
+[
+"You see someone being threatened.",
+[
+["Step between them.",{STR:2}],
+["Look for an opening.",{DEX:2}],
+["Figure out what's really happening.",{WIS:2}],
+["Try talking the aggressor down.",{CHA:2}]
+]
+],
 
-    class: "",
+[
+"You have failed at something important.",
+[
+["Try again immediately.",{CON:2}],
+["Figure out exactly what went wrong.",{INT:2}],
+["Ask someone experienced for advice.",{CHA:1,WIS:1}],
+["Take time to think about it.",{WIS:2}]
+]
+],
 
-    subclass: "",
+[
+"You discover a strange locked door.",
+[
+["Break it open.",{STR:2}],
+["Search for a hidden mechanism.",{DEX:1,INT:1}],
+["Look for clues.",{WIS:2}],
+["Try to find someone who can open it.",{CHA:2}]
+]
+],
 
-    background: "",
+[
+"You are given a difficult physical challenge.",
+[
+["Push yourself through it.",{CON:2}],
+["Find the fastest technique.",{DEX:2}],
+["Study how it works first.",{INT:2}],
+["Ask someone to teach you.",{CHA:1,WIS:1}]
+]
+],
 
-    level: 1,
+[
+"Someone insults you publicly.",
+[
+["Ignore them.",{WIS:2}],
+["Stand your ground.",{CON:1,CHA:1}],
+["Respond with something clever.",{INT:1,CHA:1}],
+["Challenge them.",{STR:2}]
+]
+],
 
-    alignment: "",
+[
+"You have to learn something completely new.",
+[
+["Practice until you master it.",{CON:2}],
+["Read everything you can.",{INT:2}],
+["Watch someone else do it.",{WIS:2}],
+["Find a teacher.",{CHA:2}]
+]
+],
 
-    experience: 0,
+[
+"Your group has no leader.",
+[
+["Take command.",{CHA:2}],
+["Create a strategy.",{INT:2}],
+["Wait and observe.",{WIS:2}],
+["Volunteer to handle the dangerous part.",{STR:1,CON:1}]
+]
+],
 
-    abilities: {
+[
+"You suddenly hear something moving in the darkness.",
+[
+["Prepare to fight.",{STR:1,CON:1}],
+["Move silently toward it.",{DEX:2}],
+["Listen carefully.",{WIS:2}],
+["Figure out what could be making the sound.",{INT:2}]
+]
+],
 
-      STR: 8,
-      DEX: 8,
-      CON: 8,
-      INT: 8,
-      WIS: 8,
-      CHA: 8
+[
+"Someone needs help but helping them could put you at risk.",
+[
+["Help anyway.",{CON:1,WIS:1}],
+["Find a safer solution.",{INT:2}],
+["Convince others to help.",{CHA:2}],
+["Assess the danger first.",{WIS:2}]
+]
+],
 
-    },
+[
+"You are suddenly placed in a leadership position.",
+[
+["Lead from the front.",{STR:1,CHA:1}],
+["Create a plan.",{INT:2}],
+["Make sure everyone is heard.",{WIS:1,CHA:1}],
+["Keep everyone moving.",{CHA:2}]
+]
+],
 
-    abilityMethod: "standard",
+[
+"You find yourself in a fight.",
+[
+["Fight head-on.",{STR:2}],
+["Look for an opening.",{DEX:2}],
+["Protect everyone.",{CON:1,WIS:1}],
+["Look for a way to end the fight without killing.",{WIS:2}]
+]
+],
 
-    skills: [],
+[
+"You discover that someone has been lying to you.",
+[
+["Confront them.",{STR:1,CHA:1}],
+["Figure out why they lied.",{INT:1,WIS:1}],
+["Pretend you believe them.",{DEX:1,CHA:1}],
+["Give them another chance.",{WIS:2}]
+]
+],
 
-    savingThrows: [],
+[
+"You are offered incredible power.",
+[
+["Accept it.",{STR:1,CHA:1}],
+["Study it first.",{INT:2}],
+["Ask what it will cost.",{WIS:2}],
+["Refuse if the price is too high.",{CON:1,WIS:1}]
+]
+],
 
-    languages: [],
+[
+"You awaken in another world.",
+[
+["Find out how strong you are.",{STR:1,CON:1}],
+["Learn everything about this world.",{INT:2}],
+["Find people you can trust.",{CHA:2}],
+["Observe before acting.",{WIS:2}]
+]
+]
 
-    tools: [],
+];
 
-    equipment: [],
 
-    spells: {
+/* =========================================================
+   D&D 2014 CLASS DEFINITIONS
+   ========================================================= */
 
-      cantrips: [],
+const classes = {
 
-      known: [],
+Barbarian:{
+primary:["STR","CON"],
+secondary:["DEX"],
+subclasses:{
+default:"Path of the Berserker",
+alternatives:[
+"Path of the Totem Warrior"
+]
+},
+skills:[
+"Athletics",
+"Intimidation",
+"Survival",
+"Perception"
+]
+},
 
-      prepared: []
+Bard:{
+primary:["CHA"],
+secondary:["DEX","WIS"],
+subclasses:{
+default:"College of Lore",
+alternatives:[
+"College of Valor"
+]
+},
+skills:[
+"Persuasion",
+"Performance",
+"Insight",
+"Deception"
+]
+},
 
-    },
+Cleric:{
+primary:["WIS"],
+secondary:["CON","CHA"],
+subclasses:{
+default:"Life Domain",
+alternatives:[
+"Light Domain",
+"Tempest Domain",
+"War Domain"
+]
+},
+skills:[
+"Insight",
+"Medicine",
+"Religion",
+"Persuasion"
+]
+},
 
-    personality: {
+Druid:{
+primary:["WIS"],
+secondary:["CON","INT"],
+subclasses:{
+default:"Circle of the Land",
+alternatives:[
+"Circle of the Moon"
+]
+},
+skills:[
+"Nature",
+"Animal Handling",
+"Perception",
+"Survival"
+]
+},
 
-      traits: "",
+Fighter:{
+primary:["STR","CON"],
+secondary:["DEX","WIS"],
+subclasses:{
+default:"Champion",
+alternatives:[
+"Battle Master",
+"Eldritch Knight"
+]
+},
+skills:[
+"Athletics",
+"Perception",
+"Survival",
+"Intimidation"
+]
+},
 
-      ideals: "",
+Monk:{
+primary:["DEX","WIS"],
+secondary:["CON"],
+subclasses:{
+default:"Way of the Open Hand",
+alternatives:[
+"Way of Shadow",
+"Way of the Four Elements"
+]
+},
+skills:[
+"Acrobatics",
+"Stealth",
+"Insight",
+"Perception"
+]
+},
 
-      bonds: "",
+Paladin:{
+primary:["STR","CHA"],
+secondary:["CON","WIS"],
+subclasses:{
+default:"Oath of Devotion",
+alternatives:[
+"Oath of the Ancients",
+"Oath of Vengeance"
+]
+},
+skills:[
+"Athletics",
+"Insight",
+"Persuasion",
+"Intimidation"
+]
+},
 
-      flaws: "",
+Ranger:{
+primary:["DEX","WIS"],
+secondary:["CON"],
+subclasses:{
+default:"Hunter",
+alternatives:[
+"Beast Master"
+]
+},
+skills:[
+"Survival",
+"Perception",
+"Stealth",
+"Animal Handling"
+]
+},
 
-      backstory: ""
+Rogue:{
+primary:["DEX"],
+secondary:["INT","CHA"],
+subclasses:{
+default:"Thief",
+alternatives:[
+"Assassin",
+"Arcane Trickster"
+]
+},
+skills:[
+"Stealth",
+"Acrobatics",
+"Investigation",
+"Deception"
+]
+},
 
-    }
+Sorcerer:{
+primary:["CHA"],
+secondary:["CON"],
+subclasses:{
+default:"Draconic Bloodline",
+alternatives:[
+"Wild Magic"
+]
+},
+skills:[
+"Persuasion",
+"Arcana",
+"Deception",
+"Insight"
+]
+},
 
-  }
+Warlock:{
+primary:["CHA"],
+secondary:["CON","DEX"],
+subclasses:{
+default:"The Fiend",
+alternatives:[
+"The Archfey",
+"The Great Old One"
+]
+},
+skills:[
+"Arcana",
+"Deception",
+"Intimidation",
+"Investigation"
+]
+},
+
+Wizard:{
+primary:["INT"],
+secondary:["DEX","WIS"],
+subclasses:{
+default:"School of Evocation",
+alternatives:[
+"School of Abjuration",
+"School of Divination",
+"School of Illusion"
+]
+},
+skills:[
+"Arcana",
+"Investigation",
+"History",
+"Religion"
+]
+}
 
 };
 
 
 /* =========================================================
-   INITIALIZATION
+   BACKGROUNDS
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+const backgrounds = {
 
-  initializeSoulTrial();
+Acolyte:{
+skills:["Insight","Religion"],
+feature:"Shelter of the Faithful"
+},
+
+Charlatan:{
+skills:["Deception","Sleight of Hand"],
+feature:"False Identity"
+},
+
+Criminal:{
+skills:["Deception","Stealth"],
+feature:"Criminal Contact"
+},
+
+Entertainer:{
+skills:["Acrobatics","Performance"],
+feature:"By Popular Demand"
+},
+
+FolkHero:{
+skills:["Animal Handling","Survival"],
+feature:"Rustic Hospitality"
+},
+
+GuildArtisan:{
+skills:["Insight","Persuasion"],
+feature:"Guild Membership"
+},
+
+Hermit:{
+skills:["Medicine","Religion"],
+feature:"Discovery"
+},
+
+Noble:{
+skills:["History","Persuasion"],
+feature:"Position of Privilege"
+},
+
+Outlander:{
+skills:["Athletics","Survival"],
+feature:"Wanderer"
+},
+
+Sage:{
+skills:["Arcana","History"],
+feature:"Researcher"
+},
+
+Sailor:{
+skills:["Athletics","Perception"],
+feature:"Ship's Passage"
+},
+
+Soldier:{
+skills:["Athletics","Intimidation"],
+feature:"Military Rank"
+},
+
+Urchin:{
+skills:["Sleight of Hand","Stealth"],
+feature:"City Secrets"
+}
+
+};
+
+
+/* =========================================================
+   SOUL SKILLS
+   ORIGINAL HOME BREW SYSTEM
+   ========================================================= */
+
+const soulSkills = {
+
+STR:{
+name:"Unbreakable Will",
+description:
+"When you would be reduced to 0 hit points, your soul refuses to yield. Once per long rest, you may remain at 1 hit point instead."
+},
+
+DEX:{
+name:"Instinctive Evasion",
+description:
+"Your body sometimes moves before your mind understands the danger. Once per long rest, you may use your reaction to gain advantage on a Dexterity saving throw."
+},
+
+CON:{
+name:"Second Wind of the Soul",
+description:
+"Your determination manifests as unnatural endurance. Once per long rest, as a bonus action, regain hit points equal to your proficiency bonus + Constitution modifier."
+},
+
+INT:{
+name:"Worldborn Insight",
+description:
+"Your knowledge from another world occasionally reveals an unexpected solution. Once per long rest, you may gain advantage on one Intelligence check after seeing the result of the roll."
+},
+
+WIS:{
+name:"Soul's Warning",
+description:
+"Something within you senses danger before you consciously recognize it. Once per long rest, you may gain advantage on one Wisdom saving throw or Wisdom ability check."
+},
+
+CHA:{
+name:"Heroic Presence",
+description:
+"Something about your soul commands attention. Once per long rest, you may gain advantage on one Charisma ability check or saving throw."
+}
+
+};
+
+
+/* =========================================================
+   GAME STATE
+   ========================================================= */
+
+const soulTrial = {
+
+question:0,
+
+scores:{
+STR:0,
+DEX:0,
+CON:0,
+INT:0,
+WIS:0,
+CHA:0
+},
+
+answers:[],
+
+character:null,
+
+started:false
+
+};
+
+
+/* =========================================================
+   DOM HELPERS
+   ========================================================= */
+
+function $(id){
+
+return document.getElementById(id);
+
+}
+
+
+function create(tag,className,text){
+
+const element=document.createElement(tag);
+
+if(className)
+element.className=className;
+
+if(text!==undefined)
+element.textContent=text;
+
+return element;
+
+}
+
+
+/* =========================================================
+   START SCREEN
+   ========================================================= */
+
+function startSoulTrial(){
+
+soulTrial.question=0;
+
+soulTrial.answers=[];
+
+Object.keys(soulTrial.scores).forEach(
+stat=>{
+soulTrial.scores[stat]=0;
+}
+);
+
+soulTrial.character=null;
+
+soulTrial.started=true;
+
+renderQuestion();
+
+}
+
+
+/* =========================================================
+   QUESTION SCREEN
+   ========================================================= */
+
+function renderQuestion(){
+
+const app=$("app");
+
+if(!app)
+return;
+
+app.innerHTML="";
+
+const screen=create(
+"section",
+"soul-trial-screen"
+);
+
+const content=create(
+"div",
+"soul-trial-content"
+);
+
+const label=create(
+"span",
+"eyebrow",
+`SOUL TRIAL — ${soulTrial.question+1} / ${questions.length}`
+);
+
+const progress=create(
+"div",
+"soul-progress"
+);
+
+const progressBar=create(
+"div",
+"soul-progress-bar"
+);
+
+progressBar.style.width=
+`${(soulTrial.question/questions.length)*100}%`;
+
+progress.appendChild(progressBar);
+
+const question=create(
+"h1",
+"trial-question",
+questions[soulTrial.question][0]
+);
+
+const answers=create(
+"div",
+"trial-answers"
+);
+
+questions[soulTrial.question][1]
+.forEach((answer,index)=>{
+
+const button=create(
+"button",
+"trial-answer"
+);
+
+const letter=create(
+"span",
+"trial-letter",
+String.fromCharCode(65+index)
+);
+
+const text=create(
+"span",
+"trial-answer-text",
+answer[0]
+);
+
+button.appendChild(letter);
+
+button.appendChild(text);
+
+button.onclick=()=>{
+chooseAnswer(index);
+};
+
+answers.appendChild(button);
 
 });
 
+content.appendChild(label);
 
-function initializeSoulTrial() {
+content.appendChild(progress);
 
-  loadSavedCharacter();
+content.appendChild(question);
 
-  setupNavigation();
+content.appendChild(answers);
 
-  setupInputs();
+screen.appendChild(content);
 
-  setupAbilityInputs();
-
-  renderCurrentStep();
-
-  updateProgress();
+app.appendChild(screen);
 
 }
 
 
 /* =========================================================
-   NAVIGATION
+   ANSWER
    ========================================================= */
 
-function setupNavigation() {
+function chooseAnswer(index){
 
-  document.addEventListener("click", event => {
+const question=
+questions[soulTrial.question];
 
-    const nextButton =
-      event.target.closest("[data-next]");
+const answer=
+question[1][index];
 
-    const previousButton =
-      event.target.closest("[data-previous]");
+soulTrial.answers.push(index);
 
-    if (nextButton) {
+Object.entries(answer[1]).forEach(
+([stat,value])=>{
+soulTrial.scores[stat]+=value;
+}
+);
 
-      saveCurrentScreen();
+soulTrial.question++;
 
-      if (
-        validateStep(soulTrial.currentStep)
-      ) {
+if(
+soulTrial.question>=questions.length
+){
 
-        nextStep();
+finishTrial();
 
-      }
+}else{
 
-    }
-
-    if (previousButton) {
-
-      saveCurrentScreen();
-
-      previousStep();
-
-    }
-
-  });
+renderQuestion();
 
 }
-
-
-function nextStep() {
-
-  if (
-    soulTrial.currentStep <
-    soulTrial.totalSteps
-  ) {
-
-    soulTrial.currentStep++;
-
-    renderCurrentStep();
-
-    updateProgress();
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  }
-
-}
-
-
-function previousStep() {
-
-  if (
-    soulTrial.currentStep >
-    1
-  ) {
-
-    soulTrial.currentStep--;
-
-    renderCurrentStep();
-
-    updateProgress();
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  }
-
-}
-
-
-function goToStep(step) {
-
-  if (
-    step < 1 ||
-    step > soulTrial.totalSteps
-  ) {
-
-    return;
-
-  }
-
-  soulTrial.currentStep = step;
-
-  renderCurrentStep();
-
-  updateProgress();
 
 }
 
 
 /* =========================================================
-   RENDER SCREEN
+   DETERMINE ABILITY SCORES
    ========================================================= */
 
-function renderCurrentStep() {
+function generateAbilityScores(){
 
-  const screens =
-    document.querySelectorAll(".screen");
+const raw=
+Object.values(
+soulTrial.scores
+);
 
-  if (!screens.length) {
+const sorted=[...raw].sort(
+(a,b)=>b-a
+);
 
-    return;
+/*
+Standard array:
+15,14,13,12,10,8
 
-  }
+The strongest trial traits receive
+the strongest D&D scores.
+*/
 
-  screens.forEach(screen => {
+const standard=[
+15,
+14,
+13,
+12,
+10,
+8
+];
 
-    screen.classList.remove("active");
+const result={};
 
-  });
+const stats=[
+"STR",
+"DEX",
+"CON",
+"INT",
+"WIS",
+"CHA"
+];
 
-  const current =
-    document.querySelector(
-      `.screen[data-step="${soulTrial.currentStep}"]`
-    );
+const ranked=stats
+.map(stat=>({
+stat,
+score:soulTrial.scores[stat]
+}))
+.sort(
+(a,b)=>b.score-a.score
+);
 
-  if (current) {
+ranked.forEach(
+(item,index)=>{
+result[item.stat]=standard[index];
+}
+);
 
-    current.classList.add("active");
-
-  }
-
-  populateScreen(
-    soulTrial.currentStep
-  );
+return result;
 
 }
 
 
 /* =========================================================
-   SCREEN POPULATION
+   DETERMINE CLASS
    ========================================================= */
 
-function populateScreen(step) {
+function determineClass(scores){
 
-  switch (step) {
+let bestClass="Fighter";
 
-    case 1:
-      populateIdentityScreen();
-      break;
+let bestScore=-Infinity;
 
-    case 2:
-      populateRaceScreen();
-      break;
+Object.entries(classes)
+.forEach(
+([className,data])=>{
 
-    case 3:
-      populateClassScreen();
-      break;
+let score=0;
 
-    case 4:
-      populateBackgroundScreen();
-      break;
+data.primary.forEach(
+stat=>{
+score+=scores[stat]*3;
+}
+);
 
-    case 5:
-      populateAbilityScreen();
-      break;
+data.secondary.forEach(
+stat=>{
+score+=scores[stat];
+}
+);
 
-    case 6:
-      populateSkillsScreen();
-      break;
+/*
+Small personality bonus from original answers.
+*/
 
-    case 7:
-      populateSpellScreen();
-      break;
+if(
+className==="Paladin" &&
+soulTrial.scores.CHA>=
+soulTrial.scores.STR
+){
 
-    case 8:
-      populateFinalScreen();
-      break;
+score+=3;
 
-  }
+}
+
+if(
+className==="Rogue" &&
+soulTrial.scores.DEX>=
+soulTrial.scores.INT
+){
+
+score+=2;
+
+}
+
+if(
+className==="Wizard" &&
+soulTrial.scores.INT>=
+soulTrial.scores.WIS
+){
+
+score+=3;
+
+}
+
+if(
+className==="Cleric" &&
+soulTrial.scores.WIS>=
+soulTrial.scores.INT
+){
+
+score+=2;
+
+}
+
+if(
+className==="Barbarian" &&
+soulTrial.scores.STR>=
+soulTrial.scores.DEX
+){
+
+score+=2;
+
+}
+
+if(score>bestScore){
+
+bestScore=score;
+
+bestClass=className;
+
+}
+
+});
+
+return bestClass;
 
 }
 
 
 /* =========================================================
-   STEP 1 — IDENTITY
+   DETERMINE SUBCLASS
    ========================================================= */
 
-function populateIdentityScreen() {
+function determineSubclass(
+className,
+scores
+){
 
-  setValue(
-    "#characterName",
-    soulTrial.character.name
-  );
+const data=classes[className];
 
-  setValue(
-    "#alignment",
-    soulTrial.character.alignment
-  );
+if(!data)
+return null;
 
-  setValue(
-    "#characterLevel",
-    soulTrial.character.level
-  );
+const options=data.subclasses.alternatives;
+
+if(!options.length)
+return data.subclasses.default;
+
+/*
+Subclass choice is influenced by the
+secondary stat.
+*/
+
+const highestSecondary=
+data.secondary
+.map(stat=>({
+stat,
+score:scores[stat]
+}))
+.sort(
+(a,b)=>b.score-a.score
+)[0];
+
+if(
+highestSecondary &&
+highestSecondary.stat==="DEX" &&
+options.includes("Assassin")
+){
+
+return "Assassin";
 
 }
 
+if(
+highestSecondary &&
+highestSecondary.stat==="WIS" &&
+options.includes("Oath of the Ancients")
+){
 
-function saveIdentity() {
+return "Oath of the Ancients";
 
-  soulTrial.character.name =
-    getValue("#characterName");
+}
 
-  soulTrial.character.alignment =
-    getValue("#alignment");
+if(
+highestSecondary &&
+highestSecondary.stat==="INT" &&
+options.includes("Eldritch Knight")
+){
 
-  const level =
-    Number(
-      getValue("#characterLevel")
-    );
+return "Eldritch Knight";
 
-  if (
-    level >= 1 &&
-    level <= 20
-  ) {
+}
 
-    soulTrial.character.level =
-      level;
-
-  }
+return data.subclasses.default;
 
 }
 
 
 /* =========================================================
-   STEP 2 — RACE
+   DETERMINE BACKGROUND
    ========================================================= */
 
-function populateRaceScreen() {
+function determineBackground(){
 
-  const container =
-    document.querySelector(
-      "#raceChoices"
-    );
+const scores=soulTrial.scores;
 
-  if (!container) {
+if(
+scores.CHA>=scores.STR &&
+scores.CHA>=scores.INT
+){
 
-    return;
-
-  }
-
-  container.innerHTML = "";
-
-  Object.values(
-    SOUL_TRIAL_DATA.races
-  ).forEach(race => {
-
-    const selected =
-      soulTrial.character.race ===
-      race.name;
-
-    const card =
-      document.createElement("div");
-
-    card.className =
-      `choice ${selected ? "selected" : ""}`;
-
-    card.dataset.race =
-      race.name;
-
-    card.innerHTML = `
-
-      <h3>${escapeHTML(race.name)}</h3>
-
-      <p>
-        ${escapeHTML(race.description)}
-      </p>
-
-      <span class="tag">
-        Speed ${race.speed} ft.
-      </span>
-
-    `;
-
-    card.addEventListener(
-      "click",
-      () => {
-
-        selectRace(
-          race.name
-        );
-
-      }
-    );
-
-    container.appendChild(card);
-
-  });
-
-  renderSubraces();
+return "Noble";
 
 }
 
+if(
+scores.INT>=scores.WIS &&
+scores.INT>=scores.CHA
+){
 
-function selectRace(raceName) {
-
-  const race =
-    getRaceData(raceName);
-
-  if (!race) {
-
-    return;
-
-  }
-
-  soulTrial.character.race =
-    raceName;
-
-  soulTrial.character.subrace =
-    "";
-
-  renderCurrentStep();
+return "Sage";
 
 }
 
+if(
+scores.DEX>=scores.STR &&
+scores.DEX>=scores.CON
+){
 
-function renderSubraces() {
+return "Criminal";
 
-  const container =
-    document.querySelector(
-      "#subraceChoices"
-    );
+}
 
-  if (!container) {
+if(
+scores.WIS>=scores.INT &&
+scores.WIS>=scores.CHA
+){
 
-    return;
+return "Hermit";
 
-  }
+}
 
-  container.innerHTML = "";
+if(
+scores.STR>=scores.DEX
+){
 
-  if (
-    !soulTrial.character.race
-  ) {
+return "Soldier";
 
-    container.innerHTML =
-      `<p class="warning">
-        Choose a race first.
-      </p>`;
+}
 
-    return;
-
-  }
-
-  const race =
-    getRaceData(
-      soulTrial.character.race
-    );
-
-  if (
-    !race.subraces
-  ) {
-
-    container.innerHTML =
-      `<p>
-        This race has no subrace choice
-        in the current ruleset.
-      </p>`;
-
-    return;
-
-  }
-
-  Object.values(
-    race.subraces
-  ).forEach(subrace => {
-
-    const selected =
-      soulTrial.character.subrace ===
-      subrace.name;
-
-    const card =
-      document.createElement("div");
-
-    card.className =
-      `choice ${selected ? "selected" : ""}`;
-
-    card.innerHTML = `
-
-      <h3>
-        ${escapeHTML(subrace.name)}
-      </h3>
-
-      <p>
-        ${subrace.traits
-          .map(escapeHTML)
-          .join(", ")}
-      </p>
-
-    `;
-
-    card.addEventListener(
-      "click",
-      () => {
-
-        soulTrial.character.subrace =
-          subrace.name;
-
-        renderCurrentStep();
-
-      }
-    );
-
-    container.appendChild(card);
-
-  });
+return "FolkHero";
 
 }
 
 
 /* =========================================================
-   STEP 3 — CLASS
+   DETERMINE SKILLS
    ========================================================= */
 
-function populateClassScreen() {
+function determineSkills(
+className,
+background
+){
 
-  const container =
-    document.querySelector(
-      "#classChoices"
-    );
+const classData=
+classes[className];
 
-  if (!container) {
+const backgroundData=
+backgrounds[background];
 
-    return;
+const skills=[];
 
-  }
-
-  container.innerHTML = "";
-
-  Object.values(
-    SOUL_TRIAL_DATA.classes
-  ).forEach(classData => {
-
-    const selected =
-      soulTrial.character.class ===
-      classData.name;
-
-    const card =
-      document.createElement("div");
-
-    card.className =
-      `choice ${selected ? "selected" : ""}`;
-
-    card.innerHTML = `
-
-      <h3>
-        ${escapeHTML(classData.name)}
-      </h3>
-
-      <p>
-        ${classData.hitDie
-          ? `Hit Die: d${classData.hitDie}`
-          : ""}
-      </p>
-
-      <span class="tag">
-        ${classData.primaryAbilities
-          .map(a =>
-            SOUL_TRIAL_DATA.abilities[a]
-          )
-          .join(" / ")}
-      </span>
-
-    `;
-
-    card.addEventListener(
-      "click",
-      () => {
-
-        selectClass(
-          classData.name
-        );
-
-      }
-    );
-
-    container.appendChild(card);
-
-  });
-
-  renderSubclasses();
-
+classData.skills.forEach(
+skill=>{
+if(!skills.includes(skill))
+skills.push(skill);
 }
+);
 
-
-function selectClass(className) {
-
-  const classData =
-    getClassData(className);
-
-  if (!classData) {
-
-    return;
-
-  }
-
-  soulTrial.character.class =
-    className;
-
-  soulTrial.character.subclass =
-    "";
-
-  soulTrial.character.skills = [];
-
-  soulTrial.character.savingThrows =
-    [...classData.savingThrows];
-
-  renderCurrentStep();
-
+backgroundData.skills.forEach(
+skill=>{
+if(!skills.includes(skill))
+skills.push(skill);
 }
+);
 
-
-function renderSubclasses() {
-
-  const container =
-    document.querySelector(
-      "#subclassChoices"
-    );
-
-  if (!container) {
-
-    return;
-
-  }
-
-  container.innerHTML = "";
-
-  if (
-    !soulTrial.character.class
-  ) {
-
-    container.innerHTML =
-      `<p class="warning">
-        Choose a class first.
-      </p>`;
-
-    return;
-
-  }
-
-  const classData =
-    getClassData(
-      soulTrial.character.class
-    );
-
-  const subclassLevel =
-    classData.subclasses
-      .map(key =>
-        getSubclassData(key)
-      )
-      .find(Boolean)?.level || 3;
-
-  const subclasses =
-    getClassSubclasses(
-      soulTrial.character.class
-    );
-
-  const currentLevel =
-    Number(
-      soulTrial.character.level
-    ) || 1;
-
-  const heading =
-    document.createElement("p");
-
-  heading.className =
-    "warning";
-
-  heading.textContent =
-    currentLevel >= subclassLevel
-      ? `Choose your subclass. This class chooses its subclass at level ${subclassLevel}.`
-      : `Subclass selection unlocks at level ${subclassLevel}. You may choose it now for your planned character.`;
-
-  container.appendChild(
-    heading
-  );
-
-  subclasses.forEach(
-    subclass => {
-
-      const selected =
-        soulTrial.character.subclass ===
-        subclass.name;
-
-      const card =
-        document.createElement("div");
-
-      card.className =
-        `choice ${selected ? "selected" : ""}`;
-
-      card.innerHTML = `
-
-        <h3>
-          ${escapeHTML(subclass.name)}
-        </h3>
-
-        <p>
-          Subclass available at
-          level ${subclass.level}.
-        </p>
-
-      `;
-
-      card.addEventListener(
-        "click",
-        () => {
-
-          soulTrial.character.subclass =
-            subclass.name;
-
-          renderCurrentStep();
-
-        }
-      );
-
-      container.appendChild(card);
-
-    }
-  );
+return skills;
 
 }
 
 
 /* =========================================================
-   STEP 4 — BACKGROUND
+   SOUL ARCHETYPE
    ========================================================= */
 
-function populateBackgroundScreen() {
+function determineSoulArchetype(){
 
-  const container =
-    document.querySelector(
-      "#backgroundChoices"
-    );
+const scores=
+soulTrial.scores;
 
-  if (!container) {
+const highest=
+Object.entries(scores)
+.sort(
+(a,b)=>b[1]-a[1]
+)[0][0];
 
-    return;
+const names={
 
-  }
+STR:"The Warrior",
 
-  container.innerHTML = "";
+DEX:"The Shadow",
 
-  Object.values(
-    SOUL_TRIAL_DATA.backgrounds
-  ).forEach(background => {
+CON:"The Survivor",
 
-    const selected =
-      soulTrial.character.background ===
-      background.name;
+INT:"The Scholar",
 
-    const card =
-      document.createElement("div");
+WIS:"The Seer",
 
-    card.className =
-      `choice ${selected ? "selected" : ""}`;
+CHA:"The Leader"
 
-    card.innerHTML = `
+};
 
-      <h3>
-        ${escapeHTML(background.name)}
-      </h3>
-
-      <p>
-        Skills:
-        ${background.skills
-          .map(skill => {
-
-            const skillData =
-              SOUL_TRIAL_DATA.skills[skill];
-
-            return skillData?.name ||
-              formatDataName(skill);
-
-          })
-          .join(", ")}
-      </p>
-
-      <span class="tag">
-        ${escapeHTML(background.feature)}
-      </span>
-
-    `;
-
-    card.addEventListener(
-      "click",
-      () => {
-
-        soulTrial.character.background =
-          background.name;
-
-        soulTrial.character.skills =
-          [
-            ...new Set([
-              ...soulTrial.character.skills,
-              ...background.skills
-            ])
-          ];
-
-        renderCurrentStep();
-
-      }
-    );
-
-    container.appendChild(card);
-
-  });
+return names[highest];
 
 }
 
 
 /* =========================================================
-   STEP 5 — ABILITY SCORES
+   SOUL SKILL
    ========================================================= */
 
-function populateAbilityScreen() {
+function determineSoulSkill(){
 
-  const abilities =
-    Object.keys(
-      SOUL_TRIAL_DATA.abilities
-    );
+const scores=
+soulTrial.scores;
 
-  abilities.forEach(
-    ability => {
+const highest=
+Object.entries(scores)
+.sort(
+(a,b)=>b[1]-a[1]
+)[0][0];
 
-      setValue(
-        `#ability-${ability}`,
-        soulTrial.character.abilities[ability]
-      );
-
-      updateAbilityModifier(
-        ability
-      );
-
-    }
-  );
-
-  updateAbilitySummary();
-
-}
-
-
-function setupAbilityInputs() {
-
-  document.addEventListener(
-    "input",
-    event => {
-
-      if (
-        !event.target.matches(
-          "[data-ability]"
-        )
-      ) {
-
-        return;
-
-      }
-
-      const ability =
-        event.target.dataset.ability;
-
-      const value =
-        Number(event.target.value);
-
-      if (
-        !Number.isNaN(value)
-      ) {
-
-        soulTrial.character.abilities[
-          ability
-        ] = value;
-
-        updateAbilityModifier(
-          ability
-        );
-
-        updateAbilitySummary();
-
-      }
-
-    }
-  );
-
-}
-
-
-function updateAbilityModifier(
-  ability
-) {
-
-  const score =
-    Number(
-      soulTrial.character.abilities[
-        ability
-      ]
-    );
-
-  const modifier =
-    getAbilityModifier(score);
-
-  const output =
-    document.querySelector(
-      `#modifier-${ability}`
-    );
-
-  if (output) {
-
-    output.textContent =
-      modifier >= 0
-        ? `+${modifier}`
-        : `${modifier}`;
-
-  }
-
-}
-
-
-function updateAbilitySummary() {
-
-  const container =
-    document.querySelector(
-      "#abilitySummary"
-    );
-
-  if (!container) {
-
-    return;
-
-  }
-
-  container.innerHTML = "";
-
-  Object.entries(
-    soulTrial.character.abilities
-  ).forEach(
-    ([ability, score]) => {
-
-      const item =
-        document.createElement("div");
-
-      item.className =
-        "summary-item";
-
-      const modifier =
-        getAbilityModifier(score);
-
-      item.innerHTML = `
-
-        <span>
-          ${escapeHTML(
-            SOUL_TRIAL_DATA.abilities[
-              ability
-            ]
-          )}
-        </span>
-
-        <strong>
-          ${score}
-          ${
-            modifier >= 0
-              ? `(+${modifier})`
-              : `(${modifier})`
-          }
-        </strong>
-
-      `;
-
-      container.appendChild(item);
-
-    }
-  );
+return soulSkills[highest];
 
 }
 
 
 /* =========================================================
-   STEP 6 — SKILLS
+   GENERATE CHARACTER
    ========================================================= */
 
-function populateSkillsScreen() {
+function generateCharacter(){
 
-  const container =
-    document.querySelector(
-      "#skillChoices"
-    );
+const scores=
+generateAbilityScores();
 
-  if (!container) {
+const className=
+determineClass(scores);
 
-    return;
+const subclass=
+determineSubclass(
+className,
+scores
+);
 
-  }
+const background=
+determineBackground();
 
-  container.innerHTML = "";
+const skills=
+determineSkills(
+className,
+background
+);
 
-  if (
-    !soulTrial.character.class
-  ) {
+const soulSkill=
+determineSoulSkill();
 
-    return;
+const archetype=
+determineSoulArchetype();
 
-  }
+const character={
 
-  const classData =
-    getClassData(
-      soulTrial.character.class
-    );
+name:"New Soul",
 
-  const backgroundData =
-    getBackgroundData(
-      soulTrial.character.background
-    );
+player:"",
 
-  const classSkillLimit =
-    classData.skillChoices || 0;
+level:1,
 
-  const classSkills =
-    soulTrial.character.skills
-      .filter(skill =>
-        classData.skillOptions
-          .includes(skill)
-      );
+race:"Human",
 
-  const info =
-    document.createElement("div");
+class:className,
 
-  info.className =
-    "warning";
+subclass:subclass,
 
-  info.textContent =
-    `Class skill choices: ${classSkillLimit}. ` +
-    `Background skills are automatically included.`;
+background:background,
 
-  container.appendChild(info);
+archetype:archetype,
 
-  classData.skillOptions
-    .forEach(skill => {
+abilityScores:scores,
 
-      const skillData =
-        SOUL_TRIAL_DATA.skills[skill];
+skills:skills,
 
-      const checked =
-        classSkills.includes(skill);
+soulSkill:soulSkill,
 
-      const backgroundSkill =
-        backgroundData?.skills
-          ?.includes(skill);
+savingThrows:
+classes[className].primary,
 
-      const wrapper =
-        document.createElement("label");
+features:[],
 
-      wrapper.className =
-        "choice";
+equipment:[],
 
-      wrapper.style.display =
-        "block";
+spells:[]
 
-      wrapper.innerHTML = `
+};
 
-        <input
-          type="checkbox"
-          data-skill="${escapeHTML(skill)}"
-          ${checked || backgroundSkill ? "checked" : ""}
-          ${backgroundSkill ? "disabled" : ""}
-        >
+soulTrial.character=character;
 
-        <strong>
-          ${escapeHTML(
-            skillData?.name ||
-            formatDataName(skill)
-          )}
-        </strong>
-
-        <span class="tag">
-          ${escapeHTML(
-            SOUL_TRIAL_DATA.abilities[
-              skillData?.ability
-            ] || ""
-          )}
-        </span>
-
-        ${
-          backgroundSkill
-            ? `<p>
-                Granted by background
-              </p>`
-            : ""
-        }
-
-      `;
-
-      const checkbox =
-        wrapper.querySelector(
-          "input"
-        );
-
-      checkbox.addEventListener(
-        "change",
-        () => {
-
-          updateSelectedSkills();
-
-        }
-      );
-
-      container.appendChild(
-        wrapper
-      );
-
-    });
-
-}
-
-
-function updateSelectedSkills() {
-
-  const checked =
-    Array.from(
-      document.querySelectorAll(
-        "[data-skill]:checked:not(:disabled)"
-      )
-    )
-    .map(
-      input =>
-        input.dataset.skill
-    );
-
-  const backgroundData =
-    getBackgroundData(
-      soulTrial.character.background
-    );
-
-  const backgroundSkills =
-    backgroundData?.skills || [];
-
-  soulTrial.character.skills =
-    [
-      ...new Set([
-        ...backgroundSkills,
-        ...checked
-      ])
-    ];
+return character;
 
 }
 
 
 /* =========================================================
-   STEP 7 — SPELLS
+   FINISH TRIAL
    ========================================================= */
 
-function populateSpellScreen() {
+function finishTrial(){
 
-  const container =
-    document.querySelector(
-      "#spellChoices"
-    );
+const character=
+generateCharacter();
 
-  if (!container) {
-
-    return;
-
-  }
-
-  const spellcastingClasses = [
-    "Bard",
-    "Cleric",
-    "Druid",
-    "Sorcerer",
-    "Warlock",
-    "Wizard",
-    "Paladin",
-    "Ranger"
-  ];
-
-  if (
-    !spellcastingClasses.includes(
-      soulTrial.character.class
-    )
-  ) {
-
-    container.innerHTML = `
-
-      <div class="card">
-
-        <h3>
-          Spellcasting
-        </h3>
-
-        <p>
-          ${escapeHTML(
-            soulTrial.character.class ||
-            "This character"
-          )}
-          does not gain spellcasting
-          through its base class at this stage.
-        </p>
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-  container.innerHTML = `
-
-    <div class="card">
-
-      <h3>
-        Spell Selection
-      </h3>
-
-      <p>
-        Spell selection will be populated
-        from the spell database.
-      </p>
-
-      <div
-        id="spellDatabaseArea"
-        class="choice-grid"
-      ></div>
-
-    </div>
-
-  `;
-
-  if (
-    typeof renderSpellDatabase ===
-    "function"
-  ) {
-
-    renderSpellDatabase();
-
-  }
+showAwakening(character);
 
 }
 
 
 /* =========================================================
-   STEP 8 — FINAL CHARACTER
+   AWAKENING SCREEN
    ========================================================= */
 
-function populateFinalScreen() {
-
-  const container =
-    document.querySelector(
-      "#finalCharacter"
-    );
-
-  if (!container) {
-
-    return;
-
-  }
-
-  const character =
-    buildCharacterSheet();
-
-  container.innerHTML = `
-
-    <div class="card death-card">
-
-      <h2>
-        THE SOUL TRIAL
-      </h2>
-
-      <p>
-        Your character has been forged.
-      </p>
-
-    </div>
-
-    <div class="card">
-
-      <h2>
-        ${escapeHTML(
-          character.name ||
-          "Unnamed Hero"
-        )}
-      </h2>
-
-      <div class="summary">
-
-        <div class="summary-item">
-          <span>Race</span>
-          <strong>
-            ${escapeHTML(
-              character.race
-            )}
-          </strong>
-        </div>
-
-        <div class="summary-item">
-          <span>Class</span>
-          <strong>
-            ${escapeHTML(
-              character.class
-            )}
-          </strong>
-        </div>
-
-        <div class="summary-item">
-          <span>Subclass</span>
-          <strong>
-            ${escapeHTML(
-              character.subclass ||
-              "Not selected"
-            )}
-          </strong>
-        </div>
-
-        <div class="summary-item">
-          <span>Background</span>
-          <strong>
-            ${escapeHTML(
-              character.background
-            )}
-          </strong>
-        </div>
-
-        <div class="summary-item">
-          <span>Level</span>
-          <strong>
-            ${character.level}
-          </strong>
-        </div>
-
-        <div class="summary-item">
-          <span>Hit Points</span>
-          <strong>
-            ${character.hitPoints}
-          </strong>
-        </div>
-
-        <div class="summary-item">
-          <span>Armor Class</span>
-          <strong>
-            ${character.armorClass}
-          </strong>
-        </div>
-
-        <div class="summary-item">
-          <span>Initiative</span>
-          <strong>
-            ${
-              character.initiative >= 0
-                ? `+${character.initiative}`
-                : character.initiative
-            }
-          </strong>
-        </div>
-
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <h2>
-        Ability Scores
-      </h2>
-
-      <div
-        id="finalAbilities"
-        class="summary"
-      ></div>
-
-    </div>
+function showAwakening(character){
+
+const app=$("app");
+
+if(!app)
+return;
+
+app.innerHTML="";
+
+const screen=create(
+"section",
+"soul-trial-screen awakening-screen"
+);
+
+const content=create(
+"div",
+"soul-trial-content"
+);
+
+const warning=create(
+"span",
+"eyebrow",
+"THE TRIAL IS COMPLETE"
+);
+
+const title=create(
+"h1",
+"awakening-title",
+"YOUR SOUL HAS BEEN JUDGED"
+);
+
+const subtitle=create(
+"h2",
+"awakening-subtitle",
+character.archetype
+);
+
+const message=create(
+"p",
+"awakening-text",
+"Your old life is over. A new world awaits you."
+);
+
+const reveal=create(
+"div",
+"awakening-result"
+);
+
+addResult(
+reveal,
+"CLASS",
+character.class
+);
+
+addResult(
+reveal,
+"SUBCLASS",
+character.subclass
+);
+
+addResult(
+reveal,
+"BACKGROUND",
+character.background
+);
+
+addResult(
+reveal,
+"SOUL SKILL",
+character.soulSkill.name
+);
+
+const skillDescription=create(
+"p",
+"soul-skill-description",
+character.soulSkill.description
+);
+
+const continueButton=create(
+"button",
+"btn btn-primary btn-large",
+"OPEN YOUR STATUS"
+);
+
+continueButton.onclick=()=>{
+showStatus(character);
+};
+
+content.appendChild(warning);
+
+content.appendChild(title);
+
+content.appendChild(subtitle);
+
+content.appendChild(message);
+
+content.appendChild(reveal);
+
+content.appendChild(skillDescription);
+
+content.appendChild(continueButton);
 
-    <div class="card">
+screen.appendChild(content);
 
-      <h2>
-        Proficiencies
-      </h2>
-
-      <ul class="feature-list">
-
-        ${character.savingThrows
-          .map(
-            save =>
-              `<li>
-                Saving Throw:
-                ${escapeHTML(
-                  SOUL_TRIAL_DATA
-                    .abilities[save]
-                )}
-              </li>`
-          )
-          .join("")}
-
-        ${character.skills
-          .map(
-            skill =>
-              `<li>
-                Skill:
-                ${escapeHTML(
-                  SOUL_TRIAL_DATA
-                    .skills[skill]?.name ||
-                  formatDataName(skill)
-                )}
-              </li>`
-          )
-          .join("")}
-
-      </ul>
-
-    </div>
-
-    <div class="card">
-
-      <h2>
-        Class Features
-      </h2>
-
-      <ul class="feature-list">
-
-        ${character.features
-          .map(
-            feature =>
-              `<li>
-                ${escapeHTML(feature)}
-              </li>`
-          )
-          .join("")}
-
-      </ul>
-
-    </div>
-
-    <div class="navigation">
-
-      <button
-        class="btn btn-secondary"
-        data-previous
-      >
-        Back
-      </button>
-
-      <button
-        class="btn btn-primary"
-        id="saveCharacterButton"
-      >
-        Save Character
-      </button>
-
-    </div>
-
-  `;
-
-  renderFinalAbilities();
-
-  const saveButton =
-    document.querySelector(
-      "#saveCharacterButton"
-    );
-
-  if (saveButton) {
-
-    saveButton.addEventListener(
-      "click",
-      saveCharacter
-    );
-
-  }
-
-}
-
-
-function renderFinalAbilities() {
-
-  const container =
-    document.querySelector(
-      "#finalAbilities"
-    );
-
-  if (!container) {
-
-    return;
-
-  }
-
-  container.innerHTML = "";
-
-  Object.entries(
-    soulTrial.character.abilities
-  ).forEach(
-    ([ability, score]) => {
-
-      const modifier =
-        getAbilityModifier(score);
-
-      const item =
-        document.createElement("div");
-
-      item.className =
-        "summary-item";
-
-      item.innerHTML = `
-
-        <span>
-          ${escapeHTML(
-            SOUL_TRIAL_DATA
-              .abilities[ability]
-          )}
-        </span>
-
-        <strong>
-          ${score}
-          ${
-            modifier >= 0
-              ? `(+${modifier})`
-              : `(${modifier})`
-          }
-        </strong>
-
-      `;
-
-      container.appendChild(item);
-
-    }
-  );
+app.appendChild(screen);
 
 }
 
 
 /* =========================================================
-   CHARACTER CALCULATION
+   RESULT CARD
    ========================================================= */
 
-function buildCharacterSheet() {
+function addResult(
+container,
+label,
+value
+){
 
-  const character =
-    soulTrial.character;
+const card=create(
+"div",
+"awakening-card"
+);
 
-  const classData =
-    getClassData(
-      character.class
-    );
+const title=create(
+"span",
+"",
+label
+);
 
-  const raceData =
-    getRaceData(
-      character.race
-    );
+const result=create(
+"strong",
+"",
+value
+);
 
-  const subraceData =
-    getSubraceData(
-      character.race,
-      character.subrace
-    );
+card.appendChild(title);
 
-  const level =
-    Number(character.level) || 1;
+card.appendChild(result);
 
-  const constitution =
-    Number(
-      character.abilities.CON
-    ) || 10;
-
-  const dexterity =
-    Number(
-      character.abilities.DEX
-    ) || 10;
-
-  const constitutionModifier =
-    getAbilityModifier(
-      constitution
-    );
-
-  const dexterityModifier =
-    getAbilityModifier(
-      dexterity
-    );
-
-  let hitPoints =
-    classData
-      ? classData.hitDie +
-        constitutionModifier
-      : 8;
-
-  if (level > 1) {
-
-    hitPoints +=
-      (
-        Math.floor(
-          classData.hitDie / 2
-        ) + 1 +
-        constitutionModifier
-      ) *
-      (level - 1);
-
-  }
-
-  if (hitPoints < level) {
-
-    hitPoints = level;
-
-  }
-
-  let armorClass =
-    10 +
-    dexterityModifier;
-
-  if (
-    classData?.name ===
-    "Barbarian"
-  ) {
-
-    armorClass =
-      10 +
-      dexterityModifier +
-      getAbilityModifier(
-        character.abilities.CON
-      );
-
-  }
-
-  if (
-    classData?.name ===
-    "Monk"
-  ) {
-
-    armorClass =
-      10 +
-      dexterityModifier +
-      getAbilityModifier(
-        character.abilities.WIS
-      );
-
-  }
-
-  const features =
-    getClassFeatures(
-      character.class,
-      level
-    );
-
-  return {
-
-    ...character,
-
-    hitPoints,
-
-    armorClass,
-
-    initiative:
-      dexterityModifier,
-
-    proficiencyBonus:
-      getProficiencyBonus(level),
-
-    features,
-
-    speed:
-      subraceData?.speed ||
-      raceData?.speed ||
-      30
-
-  };
+container.appendChild(card);
 
 }
 
 
 /* =========================================================
-   RACE HELPERS
+   STATUS SCREEN
    ========================================================= */
 
-function getSubraceData(
-  raceName,
-  subraceName
-) {
+function showStatus(character){
 
-  const race =
-    getRaceData(raceName);
+const app=$("app");
 
-  if (
-    !race ||
-    !race.subraces
-  ) {
+if(!app)
+return;
 
-    return null;
+app.innerHTML="";
 
-  }
+const screen=create(
+"section",
+"status-screen"
+);
 
-  return Object.values(
-    race.subraces
-  ).find(
-    subrace =>
-      subrace.name ===
-      subraceName
-  ) || null;
+const header=create(
+"div",
+"status-header"
+);
+
+const title=create(
+"h1",
+"",
+"SOUL STATUS"
+);
+
+const name=create(
+"h2",
+"",
+character.name
+);
+
+header.appendChild(title);
+
+header.appendChild(name);
+
+const identity=create(
+"div",
+"status-identity"
+);
+
+addStatus(
+identity,
+"RACE",
+character.race
+);
+
+addStatus(
+identity,
+"CLASS",
+character.class
+);
+
+addStatus(
+identity,
+"SUBCLASS",
+character.subclass
+);
+
+addStatus(
+identity,
+"BACKGROUND",
+character.background
+);
+
+const abilitySection=create(
+"div",
+"status-section"
+);
+
+abilitySection.appendChild(
+create(
+"h3",
+"",
+"ABILITY SCORES"
+)
+);
+
+const abilities=create(
+"div",
+"ability-grid"
+);
+
+Object.entries(
+character.abilityScores
+)
+.forEach(
+([stat,value])=>{
+
+const card=create(
+"div",
+"ability-card"
+);
+
+const name=create(
+"span",
+"",
+stat
+);
+
+const score=create(
+"strong",
+"",
+value
+);
+
+const modifier=
+Math.floor((value-10)/2);
+
+const mod=create(
+"small",
+"",
+modifier>=0
+?`+${modifier}`
+:`${modifier}`
+);
+
+card.appendChild(name);
+
+card.appendChild(score);
+
+card.appendChild(mod);
+
+abilities.appendChild(card);
+
+}
+);
+
+abilitySection.appendChild(abilities);
+
+const soul=create(
+"div",
+"soul-skill-panel"
+);
+
+soul.appendChild(
+create(
+"h3",
+"",
+"✦ SOUL SKILL"
+)
+);
+
+soul.appendChild(
+create(
+"h2",
+"",
+character.soulSkill.name
+)
+);
+
+soul.appendChild(
+create(
+"p",
+"",
+character.soulSkill.description
+)
+);
+
+const skills=create(
+"div",
+"status-section"
+);
+
+skills.appendChild(
+create(
+"h3",
+"",
+"SKILLS"
+)
+);
+
+const skillList=create(
+"div",
+"skill-list"
+);
+
+character.skills.forEach(
+skill=>{
+skillList.appendChild(
+create(
+"span",
+"skill-tag",
+skill
+)
+);
+}
+);
+
+skills.appendChild(skillList);
+
+const button=create(
+"button",
+"btn btn-primary btn-large",
+"VIEW CHARACTER SHEET"
+);
+
+button.onclick=()=>{
+showCharacterSheet(character);
+};
+
+screen.appendChild(header);
+
+screen.appendChild(identity);
+
+screen.appendChild(abilitySection);
+
+screen.appendChild(soul);
+
+screen.appendChild(skills);
+
+screen.appendChild(button);
+
+app.appendChild(screen);
 
 }
 
 
 /* =========================================================
-   INPUT MANAGEMENT
+   STATUS CARD
    ========================================================= */
 
-function setupInputs() {
+function addStatus(
+container,
+label,
+value
+){
 
-  document.addEventListener(
-    "input",
-    event => {
+const card=create(
+"div",
+"status-card"
+);
 
-      if (
-        event.target.id ===
-        "characterName"
-      ) {
+card.appendChild(
+create(
+"span",
+"",
+label
+)
+);
 
-        soulTrial.character.name =
-          event.target.value;
+card.appendChild(
+create(
+"strong",
+"",
+value
+)
+);
 
-      }
-
-      if (
-        event.target.id ===
-        "alignment"
-      ) {
-
-        soulTrial.character.alignment =
-          event.target.value;
-
-      }
-
-      if (
-        event.target.id ===
-        "characterLevel"
-      ) {
-
-        const level =
-          Number(event.target.value);
-
-        if (
-          level >= 1 &&
-          level <= 20
-        ) {
-
-          soulTrial.character.level =
-            level;
-
-          renderSubclasses();
-
-        }
-
-      }
-
-      if (
-        event.target.dataset
-          .personality
-      ) {
-
-        const key =
-          event.target.dataset
-            .personality;
-
-        soulTrial.character.personality[
-          key
-        ] =
-          event.target.value;
-
-      }
-
-    }
-  );
-
-}
-
-
-function saveCurrentScreen() {
-
-  saveIdentity();
-
-  updateSelectedSkills();
+container.appendChild(card);
 
 }
 
 
 /* =========================================================
-   VALIDATION
+   CHARACTER SHEET
    ========================================================= */
 
-function validateStep(step) {
+function showCharacterSheet(character){
 
-  switch (step) {
+const app=$("app");
 
-    case 1:
+if(!app)
+return;
 
-      if (
-        !soulTrial.character.name
-          .trim()
-      ) {
+app.innerHTML="";
 
-        alert(
-          "Your character needs a name."
-        );
+const sheet=create(
+"main",
+"character-sheet-page"
+);
 
-        return false;
+const header=create(
+"header",
+"sheet-header"
+);
 
-      }
+header.appendChild(
+create(
+"span",
+"eyebrow",
+"THE SOUL TRIAL"
+)
+);
 
-      return true;
+const nameInput=create(
+"input",
+"character-name-input"
+);
 
+nameInput.value=
+character.name;
 
-    case 2:
+nameInput.placeholder=
+"Character Name";
 
-      if (
-        !soulTrial.character.race
-      ) {
+nameInput.oninput=()=>{
+character.name=
+nameInput.value;
 
-        alert(
-          "Choose a race before continuing."
-        );
+saveCharacter();
+};
 
-        return false;
+header.appendChild(
+nameInput
+);
 
-      }
+header.appendChild(
+create(
+"p",
+"",
+"Human · 2014 D&D Character"
+)
+);
 
-      return true;
+const identity=create(
+"section",
+"sheet-section"
+);
 
+identity.innerHTML=`
+<h2>Identity</h2>
+<div class="sheet-grid">
+<div><span>Class</span><strong>${character.class}</strong></div>
+<div><span>Subclass</span><strong>${character.subclass}</strong></div>
+<div><span>Background</span><strong>${character.background}</strong></div>
+<div><span>Level</span><strong>${character.level}</strong></div>
+<div><span>Soul Archetype</span><strong>${character.archetype}</strong></div>
+</div>
+`;
 
-    case 3:
+const abilities=create(
+"section",
+"sheet-section"
+);
 
-      if (
-        !soulTrial.character.class
-      ) {
+abilities.appendChild(
+create(
+"h2",
+"",
+"Ability Scores"
+)
+);
 
-        alert(
-          "Choose a class before continuing."
-        );
+const grid=create(
+"div",
+"sheet-ability-grid"
+);
 
-        return false;
+Object.entries(
+character.abilityScores
+)
+.forEach(
+([stat,value])=>{
 
-      }
+const mod=
+Math.floor((value-10)/2);
 
-      return true;
+const card=create(
+"div",
+"sheet-ability"
+);
 
+card.appendChild(
+create(
+"span",
+"",
+stat
+)
+);
 
-    case 4:
+card.appendChild(
+create(
+"strong",
+"",
+value
+)
+);
 
-      if (
-        !soulTrial.character.background
-      ) {
+card.appendChild(
+create(
+"small",
+"",
+mod>=0
+?`+${mod}`
+:`${mod}`
+)
+);
 
-        alert(
-          "Choose a background before continuing."
-        );
-
-        return false;
-
-      }
-
-      return true;
-
-
-    case 5:
-
-      return validateAbilities();
-
-
-    default:
-
-      return true;
-
-  }
+grid.appendChild(card);
 
 }
+);
 
+abilities.appendChild(grid);
 
-function validateAbilities() {
+const combat=create(
+"section",
+"sheet-section"
+);
 
-  const abilities =
-    soulTrial.character.abilities;
+combat.innerHTML=`
+<h2>Combat</h2>
+<div class="sheet-grid">
+<div><span>Armor Class</span><strong>${10+Math.floor((character.abilityScores.DEX-10)/2)}</strong></div>
+<div><span>Hit Points</span><strong>${10+Math.floor((character.abilityScores.CON-10)/2)}</strong></div>
+<div><span>Initiative</span><strong>${formatModifier(Math.floor((character.abilityScores.DEX-10)/2))}</strong></div>
+<div><span>Speed</span><strong>30 ft.</strong></div>
+<div><span>Proficiency</span><strong>+2</strong></div>
+<div><span>Hit Dice</span><strong>d${hitDie(character.class)}</strong></div>
+</div>
+`;
 
-  const valid =
-    Object.values(
-      abilities
-    ).every(
-      score =>
-        Number(score) >= 1 &&
-        Number(score) <= 30
-    );
+const skills=create(
+"section",
+"sheet-section"
+);
 
-  if (!valid) {
+skills.innerHTML=
+`<h2>Proficiencies</h2>`;
 
-    alert(
-      "Ability scores must be between 1 and 30."
-    );
+const skillList=create(
+"div",
+"sheet-skill-list"
+);
 
-    return false;
+character.skills.forEach(
+skill=>{
+skillList.appendChild(
+create(
+"span",
+"skill-tag",
+skill
+)
+);
+}
+);
 
-  }
+skills.appendChild(skillList);
 
-  return true;
+const soul=create(
+"section",
+"soul-skill-final"
+);
+
+soul.appendChild(
+create(
+"span",
+"eyebrow",
+"UNIQUE SOUL ABILITY"
+)
+);
+
+soul.appendChild(
+create(
+"h2",
+"",
+character.soulSkill.name
+)
+);
+
+soul.appendChild(
+create(
+"p",
+"",
+character.soulSkill.description
+)
+);
+
+const actions=create(
+"div",
+"sheet-actions"
+);
+
+const save=create(
+"button",
+"btn btn-primary",
+"SAVE CHARACTER"
+);
+
+save.onclick=()=>{
+saveCharacter();
+};
+
+const restart=create(
+"button",
+"btn btn-secondary",
+"BEGIN AGAIN"
+);
+
+restart.onclick=()=>{
+if(
+confirm(
+"Start a new Soul Trial?"
+)
+){
+
+startSoulTrial();
+
+}
+};
+
+actions.appendChild(save);
+
+actions.appendChild(restart);
+
+sheet.appendChild(header);
+
+sheet.appendChild(identity);
+
+sheet.appendChild(abilities);
+
+sheet.appendChild(combat);
+
+sheet.appendChild(skills);
+
+sheet.appendChild(soul);
+
+sheet.appendChild(actions);
+
+app.appendChild(sheet);
 
 }
 
 
 /* =========================================================
-   PROGRESS BAR
+   HELPERS
    ========================================================= */
 
-function updateProgress() {
+function formatModifier(value){
 
-  const progress =
-    document.querySelector(
-      ".progress-fill"
-    );
+return value>=0
+?`+${value}`
+:String(value);
 
-  if (progress) {
+}
 
-    const percent =
-      (
-        soulTrial.currentStep /
-        soulTrial.totalSteps
-      ) * 100;
 
-    progress.style.width =
-      `${percent}%`;
+function hitDie(className){
 
-  }
+const dice={
+Barbarian:12,
+Fighter:10,
+Paladin:10,
+Ranger:10,
+Monk:8,
+Rogue:8,
+Bard:8,
+Cleric:8,
+Druid:8,
+Warlock:8,
+Sorcerer:6,
+Wizard:6
+};
 
-  const steps =
-    document.querySelectorAll(
-      ".step"
-    );
-
-  steps.forEach(
-    (step, index) => {
-
-      step.classList.toggle(
-        "active",
-        index + 1 <=
-        soulTrial.currentStep
-      );
-
-    }
-  );
+return dice[className]||8;
 
 }
 
 
 /* =========================================================
-   SAVE / LOAD
+   SAVE CHARACTER
    ========================================================= */
 
-function saveCharacter() {
+function saveCharacter(){
 
-  saveCurrentScreen();
+if(!soulTrial.character)
+return;
 
-  localStorage.setItem(
-    "soulTrialCharacter",
-    JSON.stringify(
-      soulTrial.character
-    )
-  );
+try{
 
-  alert(
-    "Character saved to this device."
-  );
+localStorage.setItem(
+"soulTrialCharacter",
+JSON.stringify(
+soulTrial.character
+)
+);
+
+}catch(error){
+
+console.error(
+"Could not save character",
+error
+);
 
 }
-
-
-function loadSavedCharacter() {
-
-  const saved =
-    localStorage.getItem(
-      "soulTrialCharacter"
-    );
-
-  if (!saved) {
-
-    return;
-
-  }
-
-  try {
-
-    const character =
-      JSON.parse(saved);
-
-    soulTrial.character =
-      mergeObjects(
-        soulTrial.character,
-        character
-      );
-
-  } catch (error) {
-
-    console.warn(
-      "Unable to load saved character.",
-      error
-    );
-
-  }
 
 }
 
 
 /* =========================================================
-   EXPORT CHARACTER
+   LOAD CHARACTER
    ========================================================= */
 
-function exportCharacter() {
+function loadCharacter(){
 
-  const character =
-    buildCharacterSheet();
+try{
 
-  const json =
-    JSON.stringify(
-      character,
-      null,
-      2
-    );
+const saved=
+localStorage.getItem(
+"soulTrialCharacter"
+);
 
-  const blob =
-    new Blob(
-      [json],
-      {
-        type:
-          "application/json"
-      }
-    );
+if(!saved)
+return null;
 
-  const url =
-    URL.createObjectURL(
-      blob
-    );
+return JSON.parse(saved);
 
-  const link =
-    document.createElement(
-      "a"
-    );
+}catch(error){
 
-  link.href =
-    url;
+console.error(
+"Could not load character",
+error
+);
 
-  link.download =
-    `${
-      character.name ||
-      "Soul-Trial-Character"
-    }.json`;
+return null;
 
-  link.click();
-
-  URL.revokeObjectURL(
-    url
-  );
+}
 
 }
 
 
 /* =========================================================
-   UTILITY FUNCTIONS
+   BOOT SCREEN
    ========================================================= */
 
-function getValue(selector) {
+function bootSoulTrial(){
 
-  const element =
-    document.querySelector(
-      selector
-    );
+const app=$("app");
 
-  return element
-    ? element.value
-    : "";
+if(!app)
+return;
+
+const saved=
+loadCharacter();
+
+if(saved){
+
+const screen=create(
+"section",
+"soul-trial-screen"
+);
+
+const content=create(
+"div",
+"soul-trial-content"
+);
+
+content.appendChild(
+create(
+"span",
+"eyebrow",
+"THE SOUL TRIAL"
+)
+);
+
+content.appendChild(
+create(
+"h1",
+"",
+"Your Soul Awaits"
+)
+);
+
+content.appendChild(
+create(
+"p",
+"",
+"A previous soul has been recorded."
+)
+);
+
+const continueButton=create(
+"button",
+"btn btn-primary btn-large",
+"Continue Character"
+);
+
+continueButton.onclick=()=>{
+soulTrial.character=saved;
+showCharacterSheet(saved);
+};
+
+const newButton=create(
+"button",
+"btn btn-secondary",
+"Begin A New Trial"
+);
+
+newButton.onclick=()=>{
+localStorage.removeItem(
+"soulTrialCharacter"
+);
+startSoulTrial();
+};
+
+content.appendChild(
+continueButton
+);
+
+content.appendChild(
+newButton
+);
+
+screen.appendChild(content);
+
+app.appendChild(screen);
+
+}else{
+
+showOpening();
 
 }
-
-
-function setValue(
-  selector,
-  value
-) {
-
-  const element =
-    document.querySelector(
-      selector
-    );
-
-  if (element) {
-
-    element.value =
-      value ?? "";
-
-  }
-
-}
-
-
-function escapeHTML(value) {
-
-  return String(
-    value ?? ""
-  )
-  .replace(
-    /&/g,
-    "&amp;"
-  )
-  .replace(
-    /</g,
-    "&lt;"
-  )
-  .replace(
-    />/g,
-    "&gt;"
-  )
-  .replace(
-    /"/g,
-    "&quot;"
-  )
-  .replace(
-    /'/g,
-    "&#039;"
-  );
-
-}
-
-
-function mergeObjects(
-  original,
-  incoming
-) {
-
-  const result =
-    Array.isArray(original)
-      ? [...original]
-      : {...original};
-
-  Object.keys(
-    incoming || {}
-  ).forEach(key => {
-
-    if (
-      incoming[key] &&
-      typeof incoming[key] ===
-      "object" &&
-      !Array.isArray(
-        incoming[key]
-      ) &&
-      original[key] &&
-      typeof original[key] ===
-      "object"
-    ) {
-
-      result[key] =
-        mergeObjects(
-          original[key],
-          incoming[key]
-        );
-
-    } else {
-
-      result[key] =
-        incoming[key];
-
-    }
-
-  });
-
-  return result;
 
 }
 
 
 /* =========================================================
-   PUBLIC API
+   OPENING
    ========================================================= */
 
-window.SoulTrial = {
+function showOpening(){
 
-  character:
-    soulTrial.character,
+const app=$("app");
 
-  nextStep,
+if(!app)
+return;
 
-  previousStep,
+app.innerHTML="";
 
-  goToStep,
+const screen=create(
+"section",
+"soul-trial-screen opening-screen"
+);
 
-  saveCharacter,
+const content=create(
+"div",
+"soul-trial-content"
+);
 
-  exportCharacter,
+content.appendChild(
+create(
+"span",
+"eyebrow",
+"THE SOUL TRIAL"
+)
+);
 
-  buildCharacterSheet,
+content.appendChild(
+create(
+"h1",
+"",
+"Your Old Life Has Ended."
+)
+);
 
-  getState() {
+content.appendChild(
+create(
+"h2",
+"",
+"Your Second Life Begins Now."
+)
+);
 
-    return soulTrial;
+content.appendChild(
+create(
+"p",
+"",
+"You were an ordinary human living an ordinary life. Then everything changed."
+)
+);
 
-  }
+content.appendChild(
+create(
+"p",
+"",
+"Beyond this moment lies a world of magic, monsters, kingdoms and adventure."
+)
+);
+
+content.appendChild(
+create(
+"p",
+"",
+"But before you can enter that world, something must determine what kind of soul you possess."
+)
+);
+
+const button=create(
+"button",
+"btn btn-primary btn-large",
+"ENTER THE SOUL TRIAL"
+);
+
+button.onclick=
+startSoulTrial;
+
+content.appendChild(button);
+
+screen.appendChild(content);
+
+app.appendChild(screen);
+
+}
+
+
+/* =========================================================
+   START APPLICATION
+   ========================================================= */
+
+if(
+document.readyState==="loading"
+){
+
+document.addEventListener(
+"DOMContentLoaded",
+bootSoulTrial
+);
+
+}else{
+
+bootSoulTrial();
+
+}
+
+
+/* =========================================================
+   GLOBAL API
+   ========================================================= */
+
+window.SoulTrial={
+
+questions,
+
+classes,
+
+backgrounds,
+
+soulSkills,
+
+state:soulTrial,
+
+start:startSoulTrial,
+
+reset:()=>{
+localStorage.removeItem(
+"soulTrialCharacter"
+);
+startSoulTrial();
+},
+
+generateCharacter,
+
+showCharacterSheet
 
 };
