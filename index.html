@@ -2,2041 +2,1316 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="The Soul Trial — A complete D&D 5th Edition 2014 character creation and management tool."
+  >
 
   <title>The Soul Trial</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at top, #241c38 0%, #0c0a12 45%, #050509 100%);
-      color: #eee;
-      min-height: 100vh;
-    }
-
-    button,
-    input,
-    select,
-    textarea {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .app {
-      width: 100%;
-      min-height: 100vh;
-    }
-
-    header {
-      text-align: center;
-      padding: 35px 20px 25px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      background: rgba(0,0,0,.25);
-    }
-
-    header h1 {
-      font-size: clamp(2.2rem, 8vw, 4.5rem);
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      color: #d8b4ff;
-      text-shadow:
-        0 0 10px rgba(170,90,255,.7),
-        0 0 30px rgba(120,40,220,.4);
-    }
-
-    header p {
-      margin-top: 10px;
-      color: #aaa;
-      font-size: 1rem;
-    }
-
-    .progress-container {
-      max-width: 1000px;
-      margin: 25px auto 0;
-      padding: 0 15px;
-    }
-
-    .progress-bar {
-      height: 8px;
-      background: #22202b;
-      border-radius: 20px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 12.5%;
-      background: linear-gradient(90deg, #7c3aed, #c084fc);
-      transition: width .3s ease;
-    }
-
-    .steps {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 12px;
-      color: #666;
-      font-size: .72rem;
-      gap: 4px;
-    }
-
-    .step.active {
-      color: #d8b4ff;
-    }
-
-    main {
-      width: min(1100px, 94%);
-      margin: 30px auto 80px;
-    }
-
-    .screen {
-      display: none;
-      animation: fadeIn .25s ease;
-    }
-
-    .screen.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .card {
-      background: rgba(18,16,26,.92);
-      border: 1px solid rgba(190,130,255,.16);
-      border-radius: 16px;
-      padding: 25px;
-      margin-bottom: 20px;
-      box-shadow: 0 15px 40px rgba(0,0,0,.25);
-    }
-
-    .card h2 {
-      color: #d8b4ff;
-      margin-bottom: 8px;
-    }
-
-    .card h3 {
-      color: #c084fc;
-      margin-bottom: 10px;
-    }
-
-    .intro {
-      text-align: center;
-      padding: 50px 25px;
-    }
-
-    .intro h2 {
-      font-size: 2rem;
-      margin-bottom: 15px;
-    }
-
-    .intro p {
-      max-width: 700px;
-      margin: 0 auto 25px;
-      color: #aaa;
-      line-height: 1.7;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-    }
-
-    .choice-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    .choice {
-      background: #14121d;
-      border: 1px solid #30283d;
-      border-radius: 12px;
-      padding: 18px;
-      transition: .2s ease;
-      position: relative;
-    }
-
-    .choice:hover {
-      border-color: #8b5cf6;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(124,58,237,.15);
-    }
-
-    .choice.selected {
-      border-color: #c084fc;
-      background: #211832;
-      box-shadow: 0 0 20px rgba(168,85,247,.18);
-    }
-
-    .choice h3 {
-      color: #eee;
-      margin-bottom: 7px;
-    }
-
-    .choice p {
-      color: #999;
-      line-height: 1.5;
-      font-size: .9rem;
-    }
-
-    .choice .tag {
-      display: inline-block;
-      margin-top: 12px;
-      padding: 4px 8px;
-      border-radius: 5px;
-      background: #2b2040;
-      color: #c084fc;
-      font-size: .75rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 7px;
-      color: #bbb;
-      font-size: .9rem;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      background: #0d0b12;
-      color: #eee;
-      border: 1px solid #332d3d;
-      border-radius: 8px;
-      padding: 12px;
-      outline: none;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #9f67e8;
-      box-shadow: 0 0 0 2px rgba(159,103,232,.12);
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    .field {
-      margin-bottom: 16px;
-    }
-
-    .navigation {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 25px;
-    }
-
-    .btn {
-      border: none;
-      border-radius: 9px;
-      padding: 13px 20px;
-      font-weight: bold;
-      transition: .2s ease;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #7c3aed, #a855f7);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.12);
-    }
-
-    .btn-secondary {
-      background: #211d29;
-      color: #ccc;
-      border: 1px solid #3a3345;
-    }
-
-    .btn-secondary:hover {
-      background: #2c2635;
-    }
-
-    .btn-danger {
-      background: #451b24;
-      color: #ffb4c0;
-      border: 1px solid #71313e;
-    }
-
-    .ability-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-    }
-
-    .ability {
-      text-align: center;
-      background: #111018;
-      border: 1px solid #302b39;
-      border-radius: 12px;
-      padding: 18px;
-    }
-
-    .ability-name {
-      font-weight: bold;
-      color: #c084fc;
-      letter-spacing: 1px;
-    }
-
-    .ability input {
-      text-align: center;
-      font-size: 1.4rem;
-      margin-top: 10px;
-    }
-
-    .summary {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-    }
-
-    .summary-item {
-      background: #111018;
-      padding: 15px;
-      border-radius: 9px;
-      border: 1px solid #292431;
-    }
-
-    .summary-item span {
-      display: block;
-      color: #777;
-      font-size: .75rem;
-      text-transform: uppercase;
-      margin-bottom: 5px;
-    }
-
-    .summary-item strong {
-      color: #eee;
-      font-size: 1rem;
-    }
-
-    .feature-list {
-      list-style: none;
-      margin-top: 10px;
-    }
-
-    .feature-list li {
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,.05);
-      color: #aaa;
-    }
-
-    .feature-list li:last-child {
-      border-bottom: none;
-    }
-
-    .feature-list li::before {
-      content: "◆";
-      color: #9f67e8;
-      margin-right: 8px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .warning {
-      background: #2c2114;
-      border: 1px solid #64461d;
-      color: #e7c68d;
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
-    }
-
-    .success {
-      background: #14251b;
-      border: 1px solid #285d3c;
-      color: #9ce2b4;
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
-    }
-
-    .death-card {
-      text-align: center;
-      padding: 60px 25px;
-    }
-
-    .death-card h2 {
-      font-size: 3rem;
-      color: #c084fc;
-      letter-spacing: 4px;
-    }
-
-    .death-card p {
-      max-width: 700px;
-      margin: 20px auto;
-      color: #999;
-      line-height: 1.7;
-    }
-
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #555;
-      font-size: .8rem;
-      border-top: 1px solid rgba(255,255,255,.05);
-    }
-
-    @media (max-width: 700px) {
-      .ability-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .steps {
-        font-size: .6rem;
-      }
-
-      .card {
-        padding: 18px;
-      }
-
-      .navigation {
-        flex-direction: column-reverse;
-      }
-
-      .navigation .btn {
-        width: 100%;
-      }
-    }
-  </style>
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 </head>
 
 <body>
 
-<div class="app">
+  <!-- =====================================================
+       APPLICATION
+       ===================================================== -->
 
-  <header>
-    <h1>The Soul Trial</h1>
-    <p>A complete Dungeons & Dragons 5th Edition character creation trial</p>
+  <div id="app">
 
-    <div class="progress-container">
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
+    <!-- ===================================================
+         HEADER
+         =================================================== -->
+
+    <header class="site-header">
+
+      <div class="header-content">
+
+        <div class="brand">
+
+          <div class="brand-symbol">
+            ⚔
+          </div>
+
+          <div>
+            <h1>The Soul Trial</h1>
+
+            <p>
+              D&D 5th Edition Character Builder
+            </p>
+          </div>
+
+        </div>
+
+        <div class="header-actions">
+
+          <button
+            id="saveCharacterBtn"
+            class="btn btn-secondary"
+            type="button"
+          >
+            Save Character
+          </button>
+
+          <button
+            id="loadCharacterBtn"
+            class="btn btn-secondary"
+            type="button"
+          >
+            Load Character
+          </button>
+
+          <button
+            id="resetCharacterBtn"
+            class="btn btn-danger"
+            type="button"
+          >
+            New Character
+          </button>
+
+        </div>
+
       </div>
 
-      <div class="steps">
-        <span class="step active" data-step="0">Begin</span>
-        <span class="step" data-step="1">Class</span>
-        <span class="step" data-step="2">Origin</span>
-        <span class="step" data-step="3">Abilities</span>
-        <span class="step" data-step="4">Skills</span>
-        <span class="step" data-step="5">Equipment</span>
-        <span class="step" data-step="6">Details</span>
-        <span class="step" data-step="7">Sheet</span>
+    </header>
+
+
+    <!-- ===================================================
+         PROGRESS
+         =================================================== -->
+
+    <section
+      id="progressSection"
+      class="progress-section"
+    >
+
+      <div class="progress-wrapper">
+
+        <div class="progress-step active">
+          <span>1</span>
+          <label>Identity</label>
+        </div>
+
+        <div class="progress-line"></div>
+
+        <div class="progress-step">
+          <span>2</span>
+          <label>Race</label>
+        </div>
+
+        <div class="progress-line"></div>
+
+        <div class="progress-step">
+          <span>3</span>
+          <label>Class</label>
+        </div>
+
+        <div class="progress-line"></div>
+
+        <div class="progress-step">
+          <span>4</span>
+          <label>Background</label>
+        </div>
+
+        <div class="progress-line"></div>
+
+        <div class="progress-step">
+          <span>5</span>
+          <label>Abilities</label>
+        </div>
+
+        <div class="progress-line"></div>
+
+        <div class="progress-step">
+          <span>6</span>
+          <label>Skills</label>
+        </div>
+
+        <div class="progress-line"></div>
+
+        <div class="progress-step">
+          <span>7</span>
+          <label>Equipment</label>
+        </div>
+
+        <div class="progress-line"></div>
+
+        <div class="progress-step">
+          <span>8</span>
+          <label>Spells</label>
+        </div>
+
+        <div class="progress-line"></div>
+
+        <div class="progress-step">
+          <span>9</span>
+          <label>Review</label>
+        </div>
+
       </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         MAIN CONTENT
+         =================================================== -->
+
+    <main class="main-container">
+
+      <!-- ================================================
+           CHARACTER IDENTITY
+           ================================================ -->
+
+      <section
+        id="identitySection"
+        class="builder-section active"
+      >
+
+        <div class="section-header">
+
+          <div>
+            <span class="eyebrow">
+              The Beginning
+            </span>
+
+            <h2>
+              Who Are You?
+            </h2>
+
+            <p>
+              Every soul begins with a name and a story.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label for="characterName">
+              Character Name
+            </label>
+
+            <input
+              id="characterName"
+              type="text"
+              placeholder="Enter character name"
+              autocomplete="off"
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="playerName">
+              Player Name
+            </label>
+
+            <input
+              id="playerName"
+              type="text"
+              placeholder="Enter player name"
+              autocomplete="off"
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="characterLevel">
+              Level
+            </label>
+
+            <select id="characterLevel">
+
+              <option value="1">
+                Level 1
+              </option>
+
+              <option value="2">
+                Level 2
+              </option>
+
+              <option value="3">
+                Level 3
+              </option>
+
+              <option value="4">
+                Level 4
+              </option>
+
+              <option value="5">
+                Level 5
+              </option>
+
+              <option value="6">
+                Level 6
+              </option>
+
+              <option value="7">
+                Level 7
+              </option>
+
+              <option value="8">
+                Level 8
+              </option>
+
+              <option value="9">
+                Level 9
+              </option>
+
+              <option value="10">
+                Level 10
+              </option>
+
+              <option value="11">
+                Level 11
+              </option>
+
+              <option value="12">
+                Level 12
+              </option>
+
+              <option value="13">
+                Level 13
+              </option>
+
+              <option value="14">
+                Level 14
+              </option>
+
+              <option value="15">
+                Level 15
+              </option>
+
+              <option value="16">
+                Level 16
+              </option>
+
+              <option value="17">
+                Level 17
+              </option>
+
+              <option value="18">
+                Level 18
+              </option>
+
+              <option value="19">
+                Level 19
+              </option>
+
+              <option value="20">
+                Level 20
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="alignment">
+              Alignment
+            </label>
+
+            <select id="alignment">
+
+              <option value="">
+                Select Alignment
+              </option>
+
+              <option value="Lawful Good">
+                Lawful Good
+              </option>
+
+              <option value="Neutral Good">
+                Neutral Good
+              </option>
+
+              <option value="Chaotic Good">
+                Chaotic Good
+              </option>
+
+              <option value="Lawful Neutral">
+                Lawful Neutral
+              </option>
+
+              <option value="True Neutral">
+                True Neutral
+              </option>
+
+              <option value="Chaotic Neutral">
+                Chaotic Neutral
+              </option>
+
+              <option value="Lawful Evil">
+                Lawful Evil
+              </option>
+
+              <option value="Neutral Evil">
+                Neutral Evil
+              </option>
+
+              <option value="Chaotic Evil">
+                Chaotic Evil
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ================================================
+           RACE
+           ================================================ -->
+
+      <section
+        id="raceSection"
+        class="builder-section"
+      >
+
+        <div class="section-header">
+
+          <div>
+            <span class="eyebrow">
+              Blood & Heritage
+            </span>
+
+            <h2>
+              Choose Your Race
+            </h2>
+
+            <p>
+              Your heritage shapes your body, abilities,
+              languages, and place in the world.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div
+          id="raceChoices"
+          class="choice-grid"
+        >
+
+          <!-- Populated by JavaScript -->
+
+        </div>
+
+
+        <div
+          id="subraceArea"
+          class="subchoice-area"
+        >
+
+          <div class="section-header compact">
+
+            <div>
+
+              <span class="eyebrow">
+                Heritage
+              </span>
+
+              <h3>
+                Choose Your Subrace
+              </h3>
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="subraceChoices"
+            class="choice-grid"
+          >
+
+            <!-- Populated by JavaScript -->
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ================================================
+           CLASS
+           ================================================ -->
+
+      <section
+        id="classSection"
+        class="builder-section"
+      >
+
+        <div class="section-header">
+
+          <div>
+
+            <span class="eyebrow">
+              Calling
+            </span>
+
+            <h2>
+              Choose Your Class
+            </h2>
+
+            <p>
+              Your class defines how you fight, survive,
+              and shape the world around you.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="classChoices"
+          class="choice-grid"
+        >
+
+          <!-- Populated by JavaScript -->
+
+        </div>
+
+
+        <div
+          id="subclassArea"
+          class="subchoice-area"
+        >
+
+          <div class="section-header compact">
+
+            <div>
+
+              <span class="eyebrow">
+                Specialization
+              </span>
+
+              <h3>
+                Choose Your Subclass
+              </h3>
+
+              <p>
+                Available according to your class and level.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="subclassChoices"
+            class="choice-grid"
+          >
+
+            <!-- Populated by JavaScript -->
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ================================================
+           BACKGROUND
+           ================================================ -->
+
+      <section
+        id="backgroundSection"
+        class="builder-section"
+      >
+
+        <div class="section-header">
+
+          <div>
+
+            <span class="eyebrow">
+              Your Past
+            </span>
+
+            <h2>
+              Choose Your Background
+            </h2>
+
+            <p>
+              Your life before adventuring left you with
+              skills, proficiencies, equipment, and a story.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="backgroundChoices"
+          class="choice-grid"
+        >
+
+          <!-- Populated by JavaScript -->
+
+        </div>
+
+
+        <div
+          id="backgroundDetails"
+          class="details-panel"
+        >
+
+          <!-- Populated by JavaScript -->
+
+        </div>
+
+      </section>
+
+
+      <!-- ================================================
+           ABILITIES
+           ================================================ -->
+
+      <section
+        id="abilitiesSection"
+        class="builder-section"
+      >
+
+        <div class="section-header">
+
+          <div>
+
+            <span class="eyebrow">
+              The Soul Within
+            </span>
+
+            <h2>
+              Ability Scores
+            </h2>
+
+            <p>
+              Determine the raw capabilities of your character.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="ability-method-selector">
+
+          <label>
+            Ability Score Method
+          </label>
+
+          <select id="abilityMethod">
+
+            <option value="standard">
+              Standard Array
+            </option>
+
+            <option value="pointbuy">
+              Point Buy
+            </option>
+
+            <option value="manual">
+              Manual Roll / Enter
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div
+          id="abilityScores"
+          class="ability-grid"
+        >
+
+          <!-- Populated by JavaScript -->
+
+        </div>
+
+
+        <div
+          id="pointBuyArea"
+          class="details-panel"
+        >
+
+          <!-- Populated by JavaScript -->
+
+        </div>
+
+      </section>
+
+
+      <!-- ================================================
+           SKILLS
+           ================================================ -->
+
+      <section
+        id="skillsSection"
+        class="builder-section"
+      >
+
+        <div class="section-header">
+
+          <div>
+
+            <span class="eyebrow">
+              Training
+            </span>
+
+            <h2>
+              Skills & Proficiencies
+            </h2>
+
+            <p>
+              Select the skills your character is trained in.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="skillChoices"
+          class="skill-grid"
+        >
+
+          <!-- Populated by JavaScript -->
+
+        </div>
+
+
+        <div class="proficiency-panels">
+
+          <div class="details-panel">
+
+            <h3>
+              Saving Throws
+            </h3>
+
+            <div
+              id="savingThrowDisplay"
+            ></div>
+
+          </div>
+
+
+          <div class="details-panel">
+
+            <h3>
+              Languages
+            </h3>
+
+            <div
+              id="languageDisplay"
+            ></div>
+
+          </div>
+
+
+          <div class="details-panel">
+
+            <h3>
+              Tool Proficiencies
+            </h3>
+
+            <div
+              id="toolDisplay"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ================================================
+           EQUIPMENT
+           ================================================ -->
+
+      <section
+        id="equipmentSection"
+        class="builder-section"
+      >
+
+        <div class="section-header">
+
+          <div>
+
+            <span class="eyebrow">
+              Steel & Supplies
+            </span>
+
+            <h2>
+              Equipment
+            </h2>
+
+            <p>
+              Choose the weapons, armor, tools, and gear
+              that accompany your character.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="equipmentChoices"
+          class="equipment-grid"
+        >
+
+          <!-- Populated by JavaScript -->
+
+        </div>
+
+
+        <div class="equipment-summary">
+
+          <div class="details-panel">
+
+            <h3>
+              Starting Equipment
+            </h3>
+
+            <div
+              id="selectedEquipment"
+            ></div>
+
+          </div>
+
+
+          <div class="details-panel">
+
+            <h3>
+              Inventory
+            </h3>
+
+            <div
+              id="inventoryDisplay"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ================================================
+           SPELLS
+           ================================================ -->
+
+      <section
+        id="spellsSection"
+        class="builder-section"
+      >
+
+        <div class="section-header">
+
+          <div>
+
+            <span class="eyebrow">
+              Arcane Power
+            </span>
+
+            <h2>
+              Spells
+            </h2>
+
+            <p>
+              Choose and prepare spells available to your
+              character.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="spell-summary">
+
+          <div class="stat-card">
+
+            <span>
+              Spellcasting Ability
+            </span>
+
+            <strong id="spellcastingAbility">
+              —
+            </strong>
+
+          </div>
+
+
+          <div class="stat-card">
+
+            <span>
+              Spell Save DC
+            </span>
+
+            <strong id="spellSaveDC">
+              —
+            </strong>
+
+          </div>
+
+
+          <div class="stat-card">
+
+            <span>
+              Spell Attack Bonus
+            </span>
+
+            <strong id="spellAttackBonus">
+              —
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="spellDatabaseArea"
+          class="spell-database"
+        >
+
+          <!-- Populated by spells.js -->
+
+        </div>
+
+      </section>
+
+
+      <!-- ================================================
+           FEATURES
+           ================================================ -->
+
+      <section
+        id="featuresSection"
+        class="builder-section"
+      >
+
+        <div class="section-header">
+
+          <div>
+
+            <span class="eyebrow">
+              The Soul's Gifts
+            </span>
+
+            <h2>
+              Features & Traits
+            </h2>
+
+            <p>
+              Review your racial traits, class features,
+              subclass features, and background abilities.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="featuresDisplay"
+          class="feature-list"
+        >
+
+          <!-- Populated by JavaScript -->
+
+        </div>
+
+      </section>
+
+
+      <!-- ================================================
+           CHARACTER SUMMARY
+           ================================================ -->
+
+      <section
+        id="reviewSection"
+        class="builder-section"
+      >
+
+        <div class="section-header">
+
+          <div>
+
+            <span class="eyebrow">
+              The Completed Soul
+            </span>
+
+            <h2>
+              Character Review
+            </h2>
+
+            <p>
+              Review your character before beginning your
+              adventure.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="characterSummary"
+          class="character-sheet"
+        >
+
+          <!-- Populated by JavaScript -->
+
+        </div>
+
+
+        <div class="final-actions">
+
+          <button
+            id="saveFinalCharacterBtn"
+            class="btn btn-primary btn-large"
+            type="button"
+          >
+            Save Character
+          </button>
+
+          <button
+            id="exportCharacterBtn"
+            class="btn btn-secondary btn-large"
+            type="button"
+          >
+            Export Character
+          </button>
+
+          <button
+            id="printCharacterBtn"
+            class="btn btn-secondary btn-large"
+            type="button"
+          >
+            Print Character
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           NAVIGATION
+           ================================================= -->
+
+      <nav
+        id="builderNavigation"
+        class="builder-navigation"
+      >
+
+        <button
+          id="previousBtn"
+          class="btn btn-secondary"
+          type="button"
+        >
+          ← Previous
+        </button>
+
+
+        <div
+          id="stepIndicator"
+          class="step-indicator"
+        >
+          Step 1 of 9
+        </div>
+
+
+        <button
+          id="nextBtn"
+          class="btn btn-primary"
+          type="button"
+        >
+          Next →
+        </button>
+
+      </nav>
+
+    </main>
+
+
+    <!-- ===================================================
+         CHARACTER SHEET SIDEBAR
+         =================================================== -->
+
+    <aside
+      id="characterSidebar"
+      class="character-sidebar"
+    >
+
+      <div class="sidebar-header">
+
+        <div>
+
+          <span class="eyebrow">
+            Character
+          </span>
+
+          <h2 id="sidebarCharacterName">
+            New Character
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <div class="sidebar-stats">
+
+        <div class="sidebar-stat">
+
+          <span>
+            Race
+          </span>
+
+          <strong id="sidebarRace">
+            —
+          </strong>
+
+        </div>
+
+
+        <div class="sidebar-stat">
+
+          <span>
+            Class
+          </span>
+
+          <strong id="sidebarClass">
+            —
+          </strong>
+
+        </div>
+
+
+        <div class="sidebar-stat">
+
+          <span>
+            Level
+          </span>
+
+          <strong id="sidebarLevel">
+            1
+          </strong>
+
+        </div>
+
+
+        <div class="sidebar-stat">
+
+          <span>
+            Armor Class
+          </span>
+
+          <strong id="sidebarAC">
+            —
+          </strong>
+
+        </div>
+
+
+        <div class="sidebar-stat">
+
+          <span>
+            Hit Points
+          </span>
+
+          <strong id="sidebarHP">
+            —
+          </strong>
+
+        </div>
+
+
+        <div class="sidebar-stat">
+
+          <span>
+            Speed
+          </span>
+
+          <strong id="sidebarSpeed">
+            —
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="sidebar-abilities">
+
+        <h3>
+          Ability Scores
+        </h3>
+
+        <div class="mini-ability-grid">
+
+          <div>
+            <span>STR</span>
+            <strong id="sideSTR">10</strong>
+          </div>
+
+          <div>
+            <span>DEX</span>
+            <strong id="sideDEX">10</strong>
+          </div>
+
+          <div>
+            <span>CON</span>
+            <strong id="sideCON">10</strong>
+          </div>
+
+          <div>
+            <span>INT</span>
+            <strong id="sideINT">10</strong>
+          </div>
+
+          <div>
+            <span>WIS</span>
+            <strong id="sideWIS">10</strong>
+          </div>
+
+          <div>
+            <span>CHA</span>
+            <strong id="sideCHA">10</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+    </aside>
+
+
+    <!-- ===================================================
+         NOTIFICATION
+         =================================================== -->
+
+    <div
+      id="notification"
+      class="notification"
+      role="status"
+      aria-live="polite"
+    >
     </div>
-  </header>
 
-  <main>
 
-    <!-- INTRO -->
+    <!-- ===================================================
+         MODAL
+         =================================================== -->
 
-    <section class="screen active" id="screen-0">
+    <div
+      id="modalOverlay"
+      class="modal-overlay"
+      aria-hidden="true"
+    >
 
-      <div class="card intro">
+      <div
+        id="modal"
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+      >
 
-        <h2>Enter the Soul Trial</h2>
-
-        <p>
-          Every adventurer begins with a choice.
-          Who are you?
-          What path will you walk?
-          And what will remain when the trial is over?
-        </p>
-
-        <p>
-          The Soul Trial will guide you through the creation of a complete
-          D&D 5e character, including class, subclass, race, background,
-          ability scores, skills, equipment, spells, and character details.
-        </p>
-
-        <button class="btn btn-primary" onclick="nextStep()">
-          Begin the Trial
+        <button
+          id="closeModalBtn"
+          class="modal-close"
+          type="button"
+          aria-label="Close"
+        >
+          ×
         </button>
 
-      </div>
+        <div id="modalContent">
 
-    </section>
-
-
-    <!-- CLASS -->
-
-    <section class="screen" id="screen-1">
-
-      <div class="card">
-
-        <h2>Choose Your Class</h2>
-
-        <p>
-          Your class determines the fundamental abilities and role of your
-          character. Choose carefully. Your path will shape the rest of the
-          trial.
-        </p>
-
-        <div class="choice-grid" id="classChoices"></div>
-
-      </div>
-
-      <div class="card hidden" id="subclassCard">
-
-        <h2>Choose Your Subclass</h2>
-
-        <p>
-          Choose the specialization that defines how your class develops.
-          Subclasses become especially important when creating characters
-          at higher levels.
-        </p>
-
-        <div class="choice-grid" id="subclassChoices"></div>
-
-      </div>
-
-      <div class="navigation">
-
-        <button class="btn btn-secondary" onclick="previousStep()">
-          Back
-        </button>
-
-        <button class="btn btn-primary" onclick="nextStep()">
-          Continue
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- ORIGIN -->
-
-    <section class="screen" id="screen-2">
-
-      <div class="card">
-
-        <h2>Choose Your Race</h2>
-
-        <p>
-          Your race grants physical and cultural traits that shape your
-          character.
-        </p>
-
-        <div class="choice-grid" id="raceChoices"></div>
-
-      </div>
-
-      <div class="card">
-
-        <h2>Choose Your Background</h2>
-
-        <p>
-          Your background represents your life before adventuring and grants
-          proficiencies, equipment, and roleplaying foundations.
-        </p>
-
-        <div class="choice-grid" id="backgroundChoices"></div>
-
-      </div>
-
-      <div class="navigation">
-
-        <button class="btn btn-secondary" onclick="previousStep()">
-          Back
-        </button>
-
-        <button class="btn btn-primary" onclick="nextStep()">
-          Continue
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- ABILITIES -->
-
-    <section class="screen" id="screen-3">
-
-      <div class="card">
-
-        <h2>Determine Ability Scores</h2>
-
-        <p>
-          Enter your six ability scores. The system will automatically
-          calculate modifiers.
-        </p>
-
-        <div class="ability-grid">
-
-          <div class="ability">
-            <div class="ability-name">STRENGTH</div>
-            <input type="number" id="str" min="1" max="30" value="10"
-              oninput="updateAbilities()">
-            <div id="strMod">+0</div>
-          </div>
-
-          <div class="ability">
-            <div class="ability-name">DEXTERITY</div>
-            <input type="number" id="dex" min="1" max="30" value="10"
-              oninput="updateAbilities()">
-            <div id="dexMod">+0</div>
-          </div>
-
-          <div class="ability">
-            <div class="ability-name">CONSTITUTION</div>
-            <input type="number" id="con" min="1" max="30" value="10"
-              oninput="updateAbilities()">
-            <div id="conMod">+0</div>
-          </div>
-
-          <div class="ability">
-            <div class="ability-name">INTELLIGENCE</div>
-            <input type="number" id="int" min="1" max="30" value="10"
-              oninput="updateAbilities()">
-            <div id="intMod">+0</div>
-          </div>
-
-          <div class="ability">
-            <div class="ability-name">WISDOM</div>
-            <input type="number" id="wis" min="1" max="30" value="10"
-              oninput="updateAbilities()">
-            <div id="wisMod">+0</div>
-          </div>
-
-          <div class="ability">
-            <div class="ability-name">CHARISMA</div>
-            <input type="number" id="cha" min="1" max="30" value="10"
-              oninput="updateAbilities()">
-            <div id="chaMod">+0</div>
-          </div>
-
-        </div>
-
-        <div class="warning">
-          For now, enter the scores determined by your group's chosen
-          ability-score method. Additional score-generation tools can be
-          added to the builder.
-        </div>
-
-      </div>
-
-      <div class="card">
-
-        <h2>Alignment</h2>
-
-        <select id="alignment">
-          <option value="">Choose Alignment</option>
-          <option>Lawful Good</option>
-          <option>Neutral Good</option>
-          <option>Chaotic Good</option>
-          <option>Lawful Neutral</option>
-          <option>True Neutral</option>
-          <option>Chaotic Neutral</option>
-          <option>Lawful Evil</option>
-          <option>Neutral Evil</option>
-          <option>Chaotic Evil</option>
-        </select>
-
-      </div>
-
-      <div class="navigation">
-
-        <button class="btn btn-secondary" onclick="previousStep()">
-          Back
-        </button>
-
-        <button class="btn btn-primary" onclick="nextStep()">
-          Continue
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- SKILLS -->
-
-    <section class="screen" id="screen-4">
-
-      <div class="card">
-
-        <h2>Choose Your Skills</h2>
-
-        <p>
-          Choose the skills granted by your class and background.
-          Available choices will eventually be restricted automatically
-          according to your character's actual rules.
-        </p>
-
-        <div class="grid" id="skillChoices"></div>
-
-        <div class="warning">
-          Your final character sheet will automatically calculate skill
-          modifiers using the appropriate ability and proficiency bonus.
-        </div>
-
-      </div>
-
-      <div class="navigation">
-
-        <button class="btn btn-secondary" onclick="previousStep()">
-          Back
-        </button>
-
-        <button class="btn btn-primary" onclick="nextStep()">
-          Continue
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- EQUIPMENT -->
-
-    <section class="screen" id="screen-5">
-
-      <div class="card">
-
-        <h2>Starting Equipment</h2>
-
-        <p>
-          Choose your starting equipment. Equipment options will eventually
-          change automatically based on your class and background.
-        </p>
-
-        <div class="grid">
-
-          <div class="field">
-            <label>Primary Weapon</label>
-
-            <select id="weapon">
-              <option value="">Choose Weapon</option>
-              <option>Longsword</option>
-              <option>Shortsword</option>
-              <option>Rapier</option>
-              <option>Battleaxe</option>
-              <option>Greataxe</option>
-              <option>Greatsword</option>
-              <option>Warhammer</option>
-              <option>Quarterstaff</option>
-              <option>Longbow</option>
-              <option>Shortbow</option>
-              <option>Light Crossbow</option>
-              <option>Hand Crossbow</option>
-              <option>Dagger</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>Armor</label>
-
-            <select id="armor">
-              <option value="">Choose Armor</option>
-              <option>None</option>
-              <option>Leather Armor</option>
-              <option>Studded Leather</option>
-              <option>Hide Armor</option>
-              <option>Chain Shirt</option>
-              <option>Scale Mail</option>
-              <option>Breastplate</option>
-              <option>Half Plate</option>
-              <option>Chain Mail</option>
-              <option>Plate Armor</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>Shield</label>
-
-            <select id="shield">
-              <option value="No">No Shield</option>
-              <option value="Yes">Shield</option>
-            </select>
-          </div>
+          <!-- Dynamic content -->
 
         </div>
 
       </div>
 
-      <div class="card">
+    </div>
 
-        <h2>Additional Equipment</h2>
 
-        <textarea id="equipment"
-          placeholder="Add additional equipment here..."></textarea>
+    <!-- ===================================================
+         HIDDEN FILE INPUT
+         =================================================== -->
 
-      </div>
+    <input
+      id="characterFileInput"
+      type="file"
+      accept=".json,application/json"
+      hidden
+    >
 
-      <div class="navigation">
 
-        <button class="btn btn-secondary" onclick="previousStep()">
-          Back
-        </button>
+    <!-- ===================================================
+         FOOTER
+         =================================================== -->
 
-        <button class="btn btn-primary" onclick="nextStep()">
-          Continue
-        </button>
+    <footer class="site-footer">
 
-      </div>
+      <p>
+        The Soul Trial
+      </p>
 
-    </section>
+      <p>
+        D&D 5th Edition Character Builder
+        · 2014 Rules
+      </p>
 
+    </footer>
 
-    <!-- DETAILS -->
+  </div>
 
-    <section class="screen" id="screen-6">
 
-      <div class="card">
+  <!-- =====================================================
+       JAVASCRIPT
+       ===================================================== -->
 
-        <h2>Your Identity</h2>
+  <script src="data.js"></script>
 
-        <div class="grid">
+  <script src="character.js"></script>
 
-          <div class="field">
-            <label>Character Name</label>
-            <input id="characterName" placeholder="Enter character name">
-          </div>
+  <script src="spells.js"></script>
 
-          <div class="field">
-            <label>Player Name</label>
-            <input id="playerName" placeholder="Enter player name">
-          </div>
+  <script src="app.js"></script>
 
-          <div class="field">
-            <label>Level</label>
-
-            <select id="level">
-              <option value="1">Level 1</option>
-              <option value="2">Level 2</option>
-              <option value="3">Level 3</option>
-              <option value="4">Level 4</option>
-              <option value="5">Level 5</option>
-              <option value="6">Level 6</option>
-              <option value="7">Level 7</option>
-              <option value="8">Level 8</option>
-              <option value="9">Level 9</option>
-              <option value="10">Level 10</option>
-              <option value="11">Level 11</option>
-              <option value="12">Level 12</option>
-              <option value="13">Level 13</option>
-              <option value="14">Level 14</option>
-              <option value="15">Level 15</option>
-              <option value="16">Level 16</option>
-              <option value="17">Level 17</option>
-              <option value="18">Level 18</option>
-              <option value="19">Level 19</option>
-              <option value="20">Level 20</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>Age</label>
-            <input id="age" type="number" min="1">
-          </div>
-
-        </div>
-
-      </div>
-
-      <div class="card">
-
-        <h2>Character Story</h2>
-
-        <div class="field">
-          <label>Personality Traits</label>
-          <textarea id="personality"></textarea>
-        </div>
-
-        <div class="field">
-          <label>Ideals</label>
-          <textarea id="ideals"></textarea>
-        </div>
-
-        <div class="field">
-          <label>Bonds</label>
-          <textarea id="bonds"></textarea>
-        </div>
-
-        <div class="field">
-          <label>Flaws</label>
-          <textarea id="flaws"></textarea>
-        </div>
-
-        <div class="field">
-          <label>Backstory</label>
-          <textarea id="backstory"
-            placeholder="Tell the story of your character..."></textarea>
-        </div>
-
-      </div>
-
-      <div class="navigation">
-
-        <button class="btn btn-secondary" onclick="previousStep()">
-          Back
-        </button>
-
-        <button class="btn btn-primary" onclick="buildCharacter()">
-          Complete The Trial
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- CHARACTER SHEET -->
-
-    <section class="screen" id="screen-7">
-
-      <div class="card death-card">
-
-        <h2>THE TRIAL IS COMPLETE</h2>
-
-        <p>
-          Your soul has chosen its path.
-          Your character has been forged.
-        </p>
-
-      </div>
-
-      <div class="card">
-
-        <h2>Character Summary</h2>
-
-        <div class="summary">
-
-          <div class="summary-item">
-            <span>Name</span>
-            <strong id="summaryName">—</strong>
-          </div>
-
-          <div class="summary-item">
-            <span>Class</span>
-            <strong id="summaryClass">—</strong>
-          </div>
-
-          <div class="summary-item">
-            <span>Subclass</span>
-            <strong id="summarySubclass">—</strong>
-          </div>
-
-          <div class="summary-item">
-            <span>Race</span>
-            <strong id="summaryRace">—</strong>
-          </div>
-
-          <div class="summary-item">
-            <span>Background</span>
-            <strong id="summaryBackground">—</strong>
-          </div>
-
-          <div class="summary-item">
-            <span>Level</span>
-            <strong id="summaryLevel">—</strong>
-          </div>
-
-          <div class="summary-item">
-            <span>Alignment</span>
-            <strong id="summaryAlignment">—</strong>
-          </div>
-
-        </div>
-
-      </div>
-
-      <div class="card">
-
-        <h2>Ability Scores</h2>
-
-        <div class="summary">
-
-          <div class="summary-item">
-            <span>Strength</span>
-            <strong id="sheetStr">10</strong>
-          </div>
-
-          <div class="summary-item">
-            <span>Dexterity</span>
-            <strong id="sheetDex">10</strong>
-          </div>
-
-          <div class="summary-item">
-            <span>Constitution</span>
-            <strong id="sheetCon">10</strong>
-          </div>
-
-          <div class="summary-item">
-            <span>Intelligence</span>
-            <strong id="sheetInt">10</strong>
-          </div>
-
-          <div class="summary-item">
-            <span>Wisdom</span>
-            <strong id="sheetWis">10</strong>
-          </div>
-
-          <div class="summary-item">
-            <span>Charisma</span>
-            <strong id="sheetCha">10</strong>
-          </div>
-
-        </div>
-
-      </div>
-
-      <div class="card">
-
-        <h2>Chosen Skills</h2>
-
-        <ul class="feature-list" id="summarySkills"></ul>
-
-      </div>
-
-      <div class="card">
-
-        <h2>Equipment</h2>
-
-        <div class="summary">
-
-          <div class="summary-item">
-            <span>Weapon</span>
-            <strong id="summaryWeapon">—</strong>
-          </div>
-
-          <div class="summary-item">
-            <span>Armor</span>
-            <strong id="summaryArmor">—</strong>
-          </div>
-
-          <div class="summary-item">
-            <span>Shield</span>
-            <strong id="summaryShield">—</strong>
-          </div>
-
-        </div>
-
-        <div class="success" id="summaryEquipment">
-          No additional equipment recorded.
-        </div>
-
-      </div>
-
-      <div class="card">
-
-        <h2>Backstory</h2>
-
-        <p id="summaryBackstory">
-          No backstory entered.
-        </p>
-
-      </div>
-
-      <div class="navigation">
-
-        <button class="btn btn-secondary" onclick="previousStep()">
-          Back
-        </button>
-
-        <button class="btn btn-danger" onclick="resetCharacter()">
-          Start New Character
-        </button>
-
-      </div>
-
-    </section>
-
-  </main>
-
-  <footer>
-    The Soul Trial • D&D 5e Character Builder
-  </footer>
-
-</div>
-
-
-<script>
-
-  /*
-   * ============================================
-   * THE SOUL TRIAL
-   * CORE CHARACTER CREATION DATA
-   * ============================================
-   */
-
-  const character = {
-
-    class: "",
-    subclass: "",
-
-    race: "",
-    background: "",
-
-    skills: [],
-
-    alignment: "",
-
-    abilities: {
-      str: 10,
-      dex: 10,
-      con: 10,
-      int: 10,
-      wis: 10,
-      cha: 10
-    },
-
-    equipment: {
-      weapon: "",
-      armor: "",
-      shield: "",
-      additional: ""
-    },
-
-    details: {
-      name: "",
-      player: "",
-      level: 1,
-      age: "",
-      personality: "",
-      ideals: "",
-      bonds: "",
-      flaws: "",
-      backstory: ""
-    }
-
-  };
-
-
-  /*
-   * ============================================
-   * CLASS DATA
-   * ============================================
-   */
-
-  const classes = {
-
-    Barbarian: {
-      description: "A fierce warrior who draws upon primal fury.",
-      role: "Frontline",
-      subclasses: [
-        "Path of the Berserker",
-        "Path of the Totem Warrior"
-      ]
-    },
-
-    Bard: {
-      description: "A versatile spellcaster who uses magic, music, and inspiration.",
-      role: "Support",
-      subclasses: [
-        "College of Lore",
-        "College of Valor"
-      ]
-    },
-
-    Cleric: {
-      description: "A divine spellcaster empowered by a deity or divine force.",
-      role: "Support / Divine",
-      subclasses: [
-        "Life Domain",
-        "Light Domain",
-        "War Domain"
-      ]
-    },
-
-    Druid: {
-      description: "A nature-focused spellcaster capable of transforming into beasts.",
-      role: "Spellcaster",
-      subclasses: [
-        "Circle of the Land",
-        "Circle of the Moon"
-      ]
-    },
-
-    Fighter: {
-      description: "A master of weapons, armor, and martial combat.",
-      role: "Martial",
-      subclasses: [
-        "Champion",
-        "Battle Master",
-        "Eldritch Knight"
-      ]
-    },
-
-    Monk: {
-      description: "A disciplined martial artist who harnesses inner power.",
-      role: "Martial",
-      subclasses: [
-        "Way of the Open Hand",
-        "Way of Shadow",
-        "Way of the Four Elements"
-      ]
-    },
-
-    Paladin: {
-      description: "A holy warrior bound by an oath.",
-      role: "Frontline / Divine",
-      subclasses: [
-        "Oath of Devotion",
-        "Oath of the Ancients",
-        "Oath of Vengeance"
-      ]
-    },
-
-    Ranger: {
-      description: "A wilderness warrior skilled in tracking, survival, and ranged combat.",
-      role: "Martial / Wilderness",
-      subclasses: [
-        "Hunter",
-        "Beast Master"
-      ]
-    },
-
-    Rogue: {
-      description: "A cunning specialist who excels at stealth and precision.",
-      role: "Skill / Martial",
-      subclasses: [
-        "Thief",
-        "Assassin",
-        "Arcane Trickster"
-      ]
-    },
-
-    Sorcerer: {
-      description: "A spellcaster whose magic comes from an innate source of power.",
-      role: "Spellcaster",
-      subclasses: [
-        "Draconic Bloodline",
-        "Wild Magic"
-      ]
-    },
-
-    Warlock: {
-      description: "A spellcaster who gains power through a pact with a mysterious patron.",
-      role: "Spellcaster",
-      subclasses: [
-        "The Archfey",
-        "The Fiend",
-        "The Great Old One"
-      ]
-    },
-
-    Wizard: {
-      description: "A scholarly spellcaster who masters magic through study.",
-      role: "Spellcaster",
-      subclasses: [
-        "School of Abjuration",
-        "School of Conjuration",
-        "School of Divination",
-        "School of Enchantment",
-        "School of Evocation",
-        "School of Illusion",
-        "School of Necromancy",
-        "School of Transmutation"
-      ]
-    }
-
-  };
-
-
-  /*
-   * ============================================
-   * RACE DATA
-   * ============================================
-   */
-
-  const races = {
-
-    Human: {
-      description: "Adaptable and ambitious people found throughout the world.",
-      traits: ["Versatile", "Adaptable"]
-    },
-
-    Dwarf: {
-      description: "Hardy people renowned for resilience and craftsmanship.",
-      traits: ["Darkvision", "Dwarven Resilience"]
-    },
-
-    Elf: {
-      description: "Graceful people with ancient traditions and a connection to magic.",
-      traits: ["Darkvision", "Keen Senses", "Fey Ancestry"]
-    },
-
-    Halfling: {
-      description: "Small, fortunate adventurers with remarkable courage.",
-      traits: ["Lucky", "Brave"]
-    },
-
-    Dragonborn: {
-      description: "Proud humanoids descended from mighty dragons.",
-      traits: ["Draconic Ancestry", "Breath Weapon", "Damage Resistance"]
-    },
-
-    Gnome: {
-      description: "Small, clever people known for curiosity and invention.",
-      traits: ["Darkvision", "Gnome Cunning"]
-    },
-
-    Half-Elf: {
-      description: "People carrying the heritage of both humans and elves.",
-      traits: ["Darkvision", "Fey Ancestry", "Skill Versatility"]
-    },
-
-    Half-Orc: {
-      description: "Powerful warriors carrying both human and orc heritage.",
-      traits: ["Darkvision", "Relentless Endurance", "Savage Attacks"]
-    },
-
-    Tiefling: {
-      description: "People marked by infernal heritage and supernatural power.",
-      traits: ["Darkvision", "Hellish Resistance", "Infernal Legacy"]
-    }
-
-  };
-
-
-  /*
-   * ============================================
-   * BACKGROUND DATA
-   * ============================================
-   */
-
-  const backgrounds = {
-
-    Acolyte: {
-      description: "You spent your life serving a temple or religious institution.",
-      skills: ["Insight", "Religion"]
-    },
-
-    Charlatan: {
-      description: "You survived through deception, disguise, and manipulation.",
-      skills: ["Deception", "Sleight of Hand"]
-    },
-
-    Criminal: {
-      description: "You lived a life outside the law.",
-      skills: ["Deception", "Stealth"]
-    },
-
-    Entertainer: {
-      description: "You survived by performing for others.",
-      skills: ["Acrobatics", "Performance"]
-    },
-
-    FolkHero: {
-      description: "You came from humble beginnings and earned the respect of your community.",
-      skills: ["Animal Handling", "Survival"]
-    },
-
-    GuildArtisan: {
-      description: "You were a skilled member of a guild.",
-      skills: ["Insight", "Persuasion"]
-    },
-
-    Hermit: {
-      description: "You lived apart from society in solitude.",
-      skills: ["Medicine", "Religion"]
-    },
-
-    Noble: {
-      description: "You were raised among wealth, status, and influence.",
-      skills: ["History", "Persuasion"]
-    },
-
-    Outlander: {
-      description: "You grew up far from civilization.",
-      skills: ["Athletics", "Survival"]
-    },
-
-    Sage: {
-      description: "You spent your life studying knowledge and forgotten lore.",
-      skills: ["Arcana", "History"]
-    },
-
-    Sailor: {
-      description: "You spent years working aboard a vessel.",
-      skills: ["Athletics", "Perception"]
-    },
-
-    Soldier: {
-      description: "You served in a military organization.",
-      skills: ["Athletics", "Intimidation"]
-    },
-
-    Urchin: {
-      description: "You survived on the streets through cleverness and resourcefulness.",
-      skills: ["Sleight of Hand", "Stealth"]
-    }
-
-  };
-
-
-  /*
-   * ============================================
-   * SKILLS
-   * ============================================
-   */
-
-  const skills = [
-
-    "Acrobatics",
-    "Animal Handling",
-    "Arcana",
-    "Athletics",
-    "Deception",
-    "History",
-    "Insight",
-    "Intimidation",
-    "Investigation",
-    "Medicine",
-    "Nature",
-    "Perception",
-    "Performance",
-    "Persuasion",
-    "Religion",
-    "Sleight of Hand",
-    "Stealth",
-    "Survival"
-
-  ];
-
-
-  /*
-   * ============================================
-   * SCREEN MANAGEMENT
-   * ============================================
-   */
-
-  let currentStep = 0;
-
-  const totalSteps = 8;
-
-
-  function showStep(step) {
-
-    if (step < 0) {
-      step = 0;
-    }
-
-    if (step >= totalSteps) {
-      step = totalSteps - 1;
-    }
-
-    currentStep = step;
-
-    document.querySelectorAll(".screen").forEach(screen => {
-      screen.classList.remove("active");
-    });
-
-    const target = document.getElementById(`screen-${currentStep}`);
-
-    if (target) {
-      target.classList.add("active");
-    }
-
-    document.querySelectorAll(".step").forEach((stepElement, index) => {
-
-      stepElement.classList.toggle(
-        "active",
-        index <= currentStep
-      );
-
-    });
-
-    const progress = ((currentStep + 1) / totalSteps) * 100;
-
-    document.getElementById("progressFill").style.width =
-      `${progress}%`;
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  }
-
-
-  function nextStep() {
-
-    saveCurrentScreen();
-
-    if (currentStep < totalSteps - 1) {
-      showStep(currentStep + 1);
-    }
-
-  }
-
-
-  function previousStep() {
-
-    saveCurrentScreen();
-
-    if (currentStep > 0) {
-      showStep(currentStep - 1);
-    }
-
-  }
-
-
-  /*
-   * ============================================
-   * CLASS CREATION
-   * ============================================
-   */
-
-  function renderClasses() {
-
-    const container =
-      document.getElementById("classChoices");
-
-    container.innerHTML = "";
-
-    Object.entries(classes).forEach(([name, data]) => {
-
-      const div = document.createElement("div");
-
-      div.className = "choice";
-
-      if (character.class === name) {
-        div.classList.add("selected");
-      }
-
-      div.innerHTML = `
-        <h3>${name}</h3>
-        <p>${data.description}</p>
-        <span class="tag">${data.role}</span>
-      `;
-
-      div.onclick = () => {
-
-        character.class = name;
-        character.subclass = "";
-
-        renderClasses();
-        renderSubclasses();
-
-      };
-
-      container.appendChild(div);
-
-    });
-
-  }
-
-
-  function renderSubclasses() {
-
-    const card =
-      document.getElementById("subclassCard");
-
-    const container =
-      document.getElementById("subclassChoices");
-
-    container.innerHTML = "";
-
-    if (!character.class) {
-
-      card.classList.add("hidden");
-
-      return;
-
-    }
-
-    card.classList.remove("hidden");
-
-    classes[character.class].subclasses.forEach(subclass => {
-
-      const div = document.createElement("div");
-
-      div.className = "choice";
-
-      if (character.subclass === subclass) {
-        div.classList.add("selected");
-      }
-
-      div.innerHTML = `
-        <h3>${subclass}</h3>
-        <p>
-          Specialize your ${character.class.toLowerCase()}
-          through this path.
-        </p>
-      `;
-
-      div.onclick = () => {
-
-        character.subclass = subclass;
-
-        renderSubclasses();
-
-      };
-
-      container.appendChild(div);
-
-    });
-
-  }
-
-
-  /*
-   * ============================================
-   * RACE CREATION
-   * ============================================
-   */
-
-  function renderRaces() {
-
-    const container =
-      document.getElementById("raceChoices");
-
-    container.innerHTML = "";
-
-    Object.entries(races).forEach(([name, data]) => {
-
-      const div = document.createElement("div");
-
-      div.className = "choice";
-
-      if (character.race === name) {
-        div.classList.add("selected");
-      }
-
-      div.innerHTML = `
-        <h3>${name}</h3>
-        <p>${data.description}</p>
-        <span class="tag">
-          ${data.traits.join(" • ")}
-        </span>
-      `;
-
-      div.onclick = () => {
-
-        character.race = name;
-
-        renderRaces();
-
-      };
-
-      container.appendChild(div);
-
-    });
-
-  }
-
-
-  /*
-   * ============================================
-   * BACKGROUND CREATION
-   * ============================================
-   */
-
-  function renderBackgrounds() {
-
-    const container =
-      document.getElementById("backgroundChoices");
-
-    container.innerHTML = "";
-
-    Object.entries(backgrounds).forEach(([name, data]) => {
-
-      const div = document.createElement("div");
-
-      div.className = "choice";
-
-      if (character.background === name) {
-        div.classList.add("selected");
-      }
-
-      div.innerHTML = `
-        <h3>${formatName(name)}</h3>
-        <p>${data.description}</p>
-        <span class="tag">
-          ${data.skills.join(" • ")}
-        </span>
-      `;
-
-      div.onclick = () => {
-
-        character.background = name;
-
-        renderBackgrounds();
-
-        renderSkills();
-
-      };
-
-      container.appendChild(div);
-
-    });
-
-  }
-
-
-  /*
-   * ============================================
-   * SKILL CREATION
-   * ============================================
-   */
-
-  function renderSkills() {
-
-    const container =
-      document.getElementById("skillChoices");
-
-    container.innerHTML = "";
-
-    const backgroundSkills =
-      character.background
-        ? backgrounds[character.background].skills
-        : [];
-
-    skills.forEach(skill => {
-
-      const div = document.createElement("div");
-
-      div.className = "choice";
-
-      const required =
-        backgroundSkills.includes(skill);
-
-      const selected =
-        character.skills.includes(skill);
-
-      if (selected || required) {
-        div.classList.add("selected");
-      }
-
-      div.innerHTML = `
-        <h3>${skill}</h3>
-        <p>
-          ${required
-            ? "Granted by your background."
-            : "Choose this skill for your character."}
-        </p>
-      `;
-
-      if (!required) {
-
-        div.onclick = () => {
-
-          if (character.skills.includes(skill)) {
-
-            character.skills =
-              character.skills.filter(s => s !== skill);
-
-          } else {
-
-            character.skills.push(skill);
-
-          }
-
-          renderSkills();
-
-        };
-
-      }
-
-      container.appendChild(div);
-
-    });
-
-  }
-
-
-  /*
-   * ============================================
-   * ABILITY SCORE CALCULATIONS
-   * ============================================
-   */
-
-  function modifier(score) {
-
-    return Math.floor((Number(score) - 10) / 2);
-
-  }
-
-
-  function formatModifier(value) {
-
-    return value >= 0
-      ? `+${value}`
-      : `${value}`;
-
-  }
-
-
-  function updateAbilities() {
-
-    const abilityNames = [
-      "str",
-      "dex",
-      "con",
-      "int",
-      "wis",
-      "cha"
-    ];
-
-    abilityNames.forEach(ability => {
-
-      const input =
-        document.getElementById(ability);
-
-      const score =
-        Number(input.value) || 0;
-
-      character.abilities[ability] = score;
-
-      document.getElementById(`${ability}Mod`)
-        .textContent =
-        formatModifier(modifier(score));
-
-    });
-
-  }
-
-
-  /*
-   * ============================================
-   * SAVE CURRENT SCREEN
-   * ============================================
-   */
-
-  function saveCurrentScreen() {
-
-    character.alignment =
-      document.getElementById("alignment")?.value || "";
-
-    character.equipment.weapon =
-      document.getElementById("weapon")?.value || "";
-
-    character.equipment.armor =
-      document.getElementById("armor")?.value || "";
-
-    character.equipment.shield =
-      document.getElementById("shield")?.value || "";
-
-    character.equipment.additional =
-      document.getElementById("equipment")?.value || "";
-
-    character.details.name =
-      document.getElementById("characterName")?.value || "";
-
-    character.details.player =
-      document.getElementById("playerName")?.value || "";
-
-    character.details.level =
-      Number(document.getElementById("level")?.value || 1);
-
-    character.details.age =
-      document.getElementById("age")?.value || "";
-
-    character.details.personality =
-      document.getElementById("personality")?.value || "";
-
-    character.details.ideals =
-      document.getElementById("ideals")?.value || "";
-
-    character.details.bonds =
-      document.getElementById("bonds")?.value || "";
-
-    character.details.flaws =
-      document.getElementById("flaws")?.value || "";
-
-    character.details.backstory =
-      document.getElementById("backstory")?.value || "";
-
-    updateAbilities();
-
-  }
-
-
-  /*
-   * ============================================
-   * BUILD FINAL CHARACTER
-   * ============================================
-   */
-
-  function buildCharacter() {
-
-    saveCurrentScreen();
-
-    document.getElementById("summaryName").textContent =
-      character.details.name || "Unnamed Character";
-
-    document.getElementById("summaryClass").textContent =
-      character.class || "No Class";
-
-    document.getElementById("summarySubclass").textContent =
-      character.subclass || "No Subclass";
-
-    document.getElementById("summaryRace").textContent =
-      character.race || "No Race";
-
-    document.getElementById("summaryBackground").textContent =
-      character.background
-        ? formatName(character.background)
-        : "No Background";
-
-    document.getElementById("summaryLevel").textContent =
-      character.details.level;
-
-    document.getElementById("summaryAlignment").textContent =
-      character.alignment || "Unaligned";
-
-    document.getElementById("sheetStr").textContent =
-      `${character.abilities.str} (${formatModifier(modifier(character.abilities.str))})`;
-
-    document.getElementById("sheetDex").textContent =
-      `${character.abilities.dex} (${formatModifier(modifier(character.abilities.dex))})`;
-
-    document.getElementById("sheetCon").textContent =
-      `${character.abilities.con} (${formatModifier(modifier(character.abilities.con))})`;
-
-    document.getElementById("sheetInt").textContent =
-      `${character.abilities.int} (${formatModifier(modifier(character.abilities.int))})`;
-
-    document.getElementById("sheetWis").textContent =
-      `${character.abilities.wis} (${formatModifier(modifier(character.abilities.wis))})`;
-
-    document.getElementById("sheetCha").textContent =
-      `${character.abilities.cha} (${formatModifier(modifier(character.abilities.cha))})`;
-
-    document.getElementById("summaryWeapon").textContent =
-      character.equipment.weapon || "None";
-
-    document.getElementById("summaryArmor").textContent =
-      character.equipment.armor || "None";
-
-    document.getElementById("summaryShield").textContent =
-      character.equipment.shield || "No";
-
-    document.getElementById("summaryEquipment").textContent =
-      character.equipment.additional ||
-      "No additional equipment recorded.";
-
-    document.getElementById("summaryBackstory").textContent =
-      character.details.backstory ||
-      "No backstory entered.";
-
-    const skillList =
-      document.getElementById("summarySkills");
-
-    skillList.innerHTML = "";
-
-    const allSkills = [
-      ...(character.background
-        ? backgrounds[character.background].skills
-        : []),
-      ...character.skills
-    ];
-
-    const uniqueSkills =
-      [...new Set(allSkills)];
-
-    if (uniqueSkills.length === 0) {
-
-      const li = document.createElement("li");
-
-      li.textContent = "No skills selected.";
-
-      skillList.appendChild(li);
-
-    } else {
-
-      uniqueSkills.forEach(skill => {
-
-        const li = document.createElement("li");
-
-        li.textContent = skill;
-
-        skillList.appendChild(li);
-
-      });
-
-    }
-
-    showStep(7);
-
-  }
-
-
-  /*
-   * ============================================
-   * RESET
-   * ============================================
-   */
-
-  function resetCharacter() {
-
-    if (!confirm(
-      "Are you sure you want to begin a new character?"
-    )) {
-      return;
-    }
-
-    location.reload();
-
-  }
-
-
-  /*
-   * ============================================
-   * FORMAT NAMES
-   * ============================================
-   */
-
-  function formatName(value) {
-
-    return value
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, char => char.toUpperCase())
-      .trim();
-
-  }
-
-
-  /*
-   * ============================================
-   * INITIALIZE
-   * ============================================
-   */
-
-  renderClasses();
-  renderSubclasses();
-  renderRaces();
-  renderBackgrounds();
-  renderSkills();
-  updateAbilities();
-  showStep(0);
-
-</script>
 
 </body>
-   </html>
+</html>
