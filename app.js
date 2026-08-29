@@ -1,7 +1,12 @@
 "use strict";
 
+/* =========================================================
+THE SOUL'S TRIAL — APP.JS
+========================================================= */
+
 let character = null;
 let currentCampaign = null;
+
 let questionIndex = 0;
 
 let scores = {
@@ -16,7 +21,7 @@ CHA: 0
 let selectedEquipment = [];
 
 /* =========================================================
-DOM
+DOM HELPER
 ========================================================= */
 
 function $(id) {
@@ -65,8 +70,10 @@ questionIndex = 0;
 selectedEquipment = [];
 character = null;
 
-if ($("playerName")) {
-    $("playerName").value = "";
+const nameInput = $("playerName");
+
+if (nameInput) {
+    nameInput.value = "";
 }
 
 showScreen("name");
@@ -79,10 +86,21 @@ START QUESTIONS
 
 function startQuestions() {
 
-const name = $("playerName").value.trim();
+const input = $("playerName");
+
+if (!input) {
+    console.error("playerName input not found.");
+    return;
+}
+
+const name = input.value.trim();
 
 if (!name) {
+
     alert("Your soul must have a name.");
+
+    input.focus();
+
     return;
 }
 
@@ -92,6 +110,7 @@ character = {
 };
 
 showScreen("quiz");
+
 displayQuestion();
 
 }
@@ -102,6 +121,15 @@ DISPLAY QUESTION
 
 function displayQuestion() {
 
+if (!questions || !questions.length) {
+
+    alert("No quiz questions were loaded.");
+
+    console.error("questions array is missing or empty.");
+
+    return;
+}
+
 const current = questions[questionIndex];
 
 if (!current) {
@@ -109,19 +137,31 @@ if (!current) {
     return;
 }
 
-$("questionNumber").textContent =
+const number = $("questionNumber");
+const progress = $("progressBar");
+const question = $("question");
+const flavor = $("questionFlavor");
+const answers = $("answers");
+
+if (!number || !progress || !question || !flavor || !answers) {
+
+    console.error("Quiz elements are missing from index.html.");
+
+    return;
+}
+
+number.textContent =
     "Question " +
     (questionIndex + 1) +
     " of " +
     questions.length;
 
-$("progressBar").style.width =
-    (((questionIndex + 1) / questions.length) * 100) + "%";
+progress.style.width =
+    ((questionIndex / questions.length) * 100) + "%";
 
-$("question").textContent = current[0];
-$("questionFlavor").textContent = current[1];
+question.textContent = current[0];
 
-const answers = $("answers");
+flavor.textContent = current[1];
 
 answers.innerHTML = "";
 
@@ -140,19 +180,24 @@ current[2].forEach(function(option) {
             const stat = entry[0];
             const amount = entry[1];
 
-            if (typeof scores[stat] !== "number") {
+            if (scores[stat] === undefined) {
                 scores[stat] = 0;
             }
 
             scores[stat] += amount;
+
         });
 
         questionIndex++;
 
         if (questionIndex < questions.length) {
+
             displayQuestion();
+
         } else {
+
             calculateSoul();
+
         }
 
     });
@@ -164,7 +209,7 @@ current[2].forEach(function(option) {
 }
 
 /* =========================================================
-MODIFIER
+ABILITY MODIFIER
 ========================================================= */
 
 function modifier(score) {
@@ -195,7 +240,11 @@ const highest = sorted[0][0];
 const path = soulPaths[highest];
 
 if (!path) {
-    alert("Unable to determine your Soul Path.");
+
+    console.error("No soul path found for:", highest);
+
+    alert("Unable to determine your soul path.");
+
     return;
 }
 
@@ -218,31 +267,61 @@ const finalScores = {
 };
 
 sorted.forEach(function(entry, index) {
+
     finalScores[entry[0]] = standard[index];
+
 });
 
 const chosenClass = path.classes[0];
-const subclass = path.subclasses[chosenClass];
-const race = determineRace(scores);
-const data = classData[chosenClass];
+
+const subclass =
+    path.subclasses[chosenClass];
+
+const race =
+    determineRace(scores);
+
+const data =
+    classData[chosenClass];
+
+if (!data) {
+
+    console.error("Class data missing:", chosenClass);
+
+    alert("Unable to create your character.");
+
+    return;
+}
 
 character.race = race;
+
 character.dominantStat = highest;
 
 character.soulPath = path.name;
-character.soulDescription = path.description;
+
+character.soulDescription =
+    path.description;
 
 character.class = chosenClass;
+
 character.subclass = subclass;
-character.background = path.background;
 
-character.soulTrait = path.trait;
-character.traitDescription = path.traitDescription;
+character.background =
+    path.background;
 
-character.blessing = path.blessing;
-character.blessingDescription = path.blessingDescription;
+character.soulTrait =
+    path.trait;
 
-character.scores = finalScores;
+character.traitDescription =
+    path.traitDescription;
+
+character.blessing =
+    path.blessing;
+
+character.blessingDescription =
+    path.blessingDescription;
+
+character.scores =
+    finalScores;
 
 character.max_hp =
     data.hp +
@@ -261,25 +340,34 @@ character.hit_dice =
     "1d" + data.hitDie;
 
 character.proficiency_bonus = 2;
+
 character.experience_points = 0;
+
 character.inspiration = false;
 
 character.equipment = [];
 
 saveLocalCharacter();
+
 renderResult();
 
 }
 
 /* =========================================================
-RESULT
+RESULT SCREEN
 ========================================================= */
 
 function renderResult() {
 
-$("resultName").textContent = character.name;
+if (!character) {
+    return;
+}
 
-$("soulPath").textContent = character.soulPath;
+$("resultName").textContent =
+    character.name;
+
+$("soulPath").textContent =
+    character.soulPath;
 
 $("soulDescription").textContent =
     character.soulDescription;
@@ -322,7 +410,9 @@ CHARACTER CREATOR
 function openCharacterCreator() {
 
 if (!character) {
+
     alert("No character exists yet.");
+
     return;
 }
 
@@ -388,13 +478,19 @@ EQUIPMENT
 
 function renderEquipmentOptions() {
 
-const data = classData[character.class];
-
-if (!data) {
+if (!character) {
     return;
 }
 
-const container = $("equipmentOptions");
+const data =
+    classData[character.class];
+
+const container =
+    $("equipmentOptions");
+
+if (!container || !data) {
+    return;
+}
 
 container.innerHTML = "";
 
@@ -409,6 +505,7 @@ data.equipment.forEach(function(item) {
         document.createElement("input");
 
     checkbox.type = "checkbox";
+
     checkbox.value = item;
 
     checkbox.checked =
@@ -422,24 +519,29 @@ data.equipment.forEach(function(item) {
         document.createTextNode(" " + item)
     );
 
-    checkbox.addEventListener("change", function() {
+    checkbox.addEventListener(
+        "change",
+        function() {
 
-        if (checkbox.checked) {
+            if (checkbox.checked) {
 
-            if (!selectedEquipment.includes(item)) {
-                selectedEquipment.push(item);
+                if (!selectedEquipment.includes(item)) {
+                    selectedEquipment.push(item);
+                }
+
+            } else {
+
+                selectedEquipment =
+                    selectedEquipment.filter(
+                        function(x) {
+                            return x !== item;
+                        }
+                    );
+
             }
 
-        } else {
-
-            selectedEquipment =
-                selectedEquipment.filter(function(x) {
-                    return x !== item;
-                });
-
         }
-
-    });
+    );
 
     container.appendChild(wrapper);
 
@@ -471,7 +573,9 @@ SAVE CHARACTER
 async function saveCharacter() {
 
 if (!character) {
-    alert("No character exists.");
+
+    alert("Create a character first.");
+
     return;
 }
 
@@ -491,7 +595,9 @@ character.backstory =
     $("backstory").value.trim();
 
 character.equipment =
-    Array.from(new Set(selectedEquipment));
+    Array.from(
+        new Set(selectedEquipment)
+    );
 
 saveLocalCharacter();
 
@@ -499,36 +605,39 @@ try {
 
     await initializeSupabase();
 
-    if (!currentUser || !currentUser.id) {
-        throw new Error(
-            "Anonymous Supabase session was not available."
-        );
-    }
-
     await saveCharacterToSupabase();
 
-    $("syncStatus").textContent =
+    const status =
+        $("syncStatus");
+
+    status.textContent =
         "Character saved and synced with the Soul's Trial realm.";
 
-    $("syncStatus").classList.remove("error");
-    $("syncStatus").classList.add("success");
+    status.classList.remove("error");
+
+    status.classList.add("success");
 
     alert("Character saved successfully.");
 
 } catch (error) {
 
-    console.error("Character sync error:", error);
+    console.error(error);
 
-    $("syncStatus").textContent =
+    const status =
+        $("syncStatus");
+
+    status.textContent =
         "Character saved on this device. Online sync is currently unavailable.";
 
-    $("syncStatus").classList.remove("success");
-    $("syncStatus").classList.add("error");
+    status.classList.remove("success");
+
+    status.classList.add("error");
 
     alert(
         "Character saved locally, but online synchronization failed:\n\n" +
         error.message
     );
+
 }
 
 }
@@ -539,8 +648,14 @@ SAVE CHARACTER TO SUPABASE
 
 async function saveCharacterToSupabase() {
 
-if (!currentUser || !currentUser.id) {
-    throw new Error("No Supabase user is available.");
+if (!character) {
+    return;
+}
+
+await initializeSupabase();
+
+if (!currentUser) {
+    throw new Error("Anonymous session is unavailable.");
 }
 
 const payload = {
@@ -550,39 +665,47 @@ const payload = {
     name: character.name,
 
     race: character.race,
+
     class: character.class,
+
     subclass: character.subclass,
+
     background: character.background,
 
     level: character.level,
 
     strength: character.scores.STR,
+
     dexterity: character.scores.DEX,
+
     constitution: character.scores.CON,
+
     intelligence: character.scores.INT,
+
     wisdom: character.scores.WIS,
+
     charisma: character.scores.CHA,
 
     max_hp: character.max_hp,
-    current_hp: character.current_hp || character.max_hp,
+
+    current_hp:
+        character.current_hp ||
+        character.max_hp,
 
     armor_class: character.armor_class,
+
     speed: character.speed,
 
     proficiency_bonus:
         character.proficiency_bonus,
 
-    hit_dice:
-        character.hit_dice,
+    hit_dice: character.hit_dice,
 
-    soul_path:
-        character.soulPath,
+    soul_path: character.soulPath,
 
-    soul_trait:
-        character.soulTrait,
+    soul_trait: character.soulTrait,
 
-    soul_blessing:
-        character.blessing,
+    soul_blessing: character.blessing,
 
     personality:
         character.personality || "",
@@ -640,12 +763,8 @@ if (existing && existing.length) {
         character.supabaseId =
             created[0].id;
 
-    } else {
-
-        throw new Error(
-            "Supabase created the character but returned no character ID."
-        );
     }
+
 }
 
 saveLocalCharacter();
@@ -659,7 +778,9 @@ CHARACTER SHEET
 function viewSheet() {
 
 if (!character) {
+
     alert("Create a character first.");
+
     return;
 }
 
@@ -691,7 +812,8 @@ $("sheetLevel").textContent =
     character.level;
 
 $("sheetProficiency").textContent =
-    "+" + character.proficiency_bonus;
+    "+" +
+    character.proficiency_bonus;
 
 $("sheetHitDice").textContent =
     character.hit_dice;
@@ -747,10 +869,17 @@ function renderSheetEquipment() {
 const container =
     $("sheetEquipment");
 
+if (!container) {
+    return;
+}
+
 container.innerHTML = "";
 
 const equipment =
-    character.equipment || [];
+    character &&
+    Array.isArray(character.equipment)
+        ? character.equipment
+        : [];
 
 if (!equipment.length) {
 
@@ -766,6 +895,7 @@ equipment.forEach(function(item) {
         document.createElement("span");
 
     span.className = "tag";
+
     span.textContent = item;
 
     container.appendChild(span);
@@ -782,59 +912,104 @@ async function openCampaigns() {
 
 showScreen("campaigns");
 
-$("campaignAccountNotice").textContent =
-    "Connecting your Soul to the campaign realm...";
+const notice =
+    $("campaignAccountNotice");
+
+if (notice) {
+
+    notice.textContent =
+        "Connecting your Soul to the campaign realm...";
+
+}
 
 try {
 
     await initializeSupabase();
 
-    if (!currentUser || !currentUser.id) {
-        throw new Error(
-            "Anonymous account could not be created."
-        );
+    if (!currentUser) {
+        throw new Error("Anonymous session unavailable.");
     }
 
-    $("campaignAccountNotice").textContent =
-        "You are connected anonymously. No login is required.";
+    if (notice) {
+
+        notice.textContent =
+            "You are connected anonymously. No login is required.";
+
+    }
 
     await loadCampaigns();
 
 } catch (error) {
 
-    console.error("Campaign connection error:", error);
+    console.error(error);
 
-    $("campaignAccountNotice").textContent =
-        "Campaign connection failed: " +
-        error.message;
+    if (notice) {
+
+        notice.textContent =
+            "Campaign connection failed: " +
+            error.message;
+
+    }
 
 }
 
 }
 
 /* =========================================================
-CREATE CAMPAIGN UI
+SHOW CREATE CAMPAIGN
 ========================================================= */
 
 function showCreateCampaign() {
 
-$("campaignCreate").classList.remove("hidden");
-$("campaignJoin").classList.add("hidden");
+const create =
+    $("campaignCreate");
 
-$("campaignMessage").classList.add("hidden");
+const join =
+    $("campaignJoin");
+
+if (create) {
+    create.classList.remove("hidden");
+}
+
+if (join) {
+    join.classList.add("hidden");
+}
+
+const message =
+    $("campaignMessage");
+
+if (message) {
+    message.classList.add("hidden");
+}
 
 }
 
 /* =========================================================
-JOIN CAMPAIGN UI
+SHOW JOIN CAMPAIGN
 ========================================================= */
 
 function showJoinCampaign() {
 
-$("campaignJoin").classList.remove("hidden");
-$("campaignCreate").classList.add("hidden");
+const join =
+    $("campaignJoin");
 
-$("campaignMessage").classList.add("hidden");
+const create =
+    $("campaignCreate");
+
+if (join) {
+    join.classList.remove("hidden");
+}
+
+if (create) {
+    create.classList.add("hidden");
+}
+
+const message =
+    $("campaignMessage");
+
+if (message) {
+    message.classList.add("hidden");
+}
 
 }
 
@@ -851,10 +1026,8 @@ try {
 
     await initializeSupabase();
 
-    if (!currentUser || !currentUser.id) {
-        throw new Error(
-            "Anonymous Supabase account is not available."
-        );
+    if (!currentUser) {
+        throw new Error("Anonymous session unavailable.");
     }
 
     const name =
@@ -869,11 +1042,15 @@ try {
             "Enter a campaign name."
         );
 
+        $("campaignName").focus();
+
         return;
     }
 
-    button.disabled = true;
-    button.textContent = "CREATING CAMPAIGN...";
+    if (button) {
+        button.disabled = true;
+        button.textContent = "CREATING CAMPAIGN...";
+    }
 
     const created =
         await supabaseRequest(
@@ -881,7 +1058,7 @@ try {
             "POST",
             {
                 name: name,
-                description: description || null,
+                description: description,
                 dm_id: currentUser.id
             }
         );
@@ -889,46 +1066,30 @@ try {
     if (!created || !created.length) {
 
         throw new Error(
-            "Supabase did not return the newly created campaign."
+            "Campaign was not created."
         );
+
     }
 
     const campaign =
         created[0];
 
-    try {
-
-        await supabaseRequest(
-            "campaign_members",
-            "POST",
-            {
-                campaign_id: campaign.id,
-                player_id: currentUser.id,
-                role: "dm"
-            }
-        );
-
-    } catch (memberError) {
-
-        console.error(
-            "Campaign member creation failed:",
-            memberError
-        );
-
-        throw new Error(
-            "Campaign was created, but adding you as DM failed: " +
-            memberError.message
-        );
-    }
+    await supabaseRequest(
+        "campaign_members",
+        "POST",
+        {
+            campaign_id: campaign.id,
+            player_id: currentUser.id,
+            role: "dm"
+        }
+    );
 
     $("campaignName").value = "";
+
     $("campaignDescription").value = "";
 
-    $("campaignCreate").classList.add("hidden");
-
     showCampaignMessage(
-        "Campaign created successfully! Your join code is " +
-        (campaign.join_code || campaign.id),
+        "Campaign created successfully!",
         true
     );
 
@@ -942,14 +1103,21 @@ try {
     );
 
     showCampaignMessage(
-        "Unable to create campaign: " +
-        (error.message || "Unknown error.")
+        error.message ||
+        "Unable to create campaign."
     );
 
 } finally {
 
-    button.disabled = false;
-    button.textContent = "CREATE CAMPAIGN";
+    if (button) {
+
+        button.disabled = false;
+
+        button.textContent =
+            "CREATE CAMPAIGN";
+
+    }
+
 }
 
 }
@@ -962,6 +1130,10 @@ async function loadCampaigns() {
 
 const container =
     $("campaignList");
+
+if (!container) {
+    return;
+}
 
 container.innerHTML =
     '<div class="card">Loading campaigns...</div>';
@@ -980,18 +1152,16 @@ try {
 
     container.innerHTML = "";
 
-    if (!campaigns || campaigns.length === 0) {
+    if (!campaigns || !campaigns.length) {
 
-        container.innerHTML =
-            `
+        container.innerHTML = `
             <div class="info">
                 <h2>No Campaigns Yet</h2>
                 <p>
-                    Create a campaign as a DM or join one using
-                    the ID or join code provided by your DM.
+                    Create a campaign as a DM or join one using the ID provided by your DM.
                 </p>
             </div>
-            `;
+        `;
 
         return;
     }
@@ -1007,7 +1177,8 @@ try {
             document.createElement("h3");
 
         title.textContent =
-            campaign.name || "Unnamed Campaign";
+            campaign.name ||
+            "Unnamed Campaign";
 
         const description =
             document.createElement("p");
@@ -1019,8 +1190,11 @@ try {
         const idText =
             document.createElement("p");
 
-        idText.innerHTML =
-            "<strong>Campaign ID:</strong> ";
+        const strong =
+            document.createElement("strong");
+
+        strong.textContent =
+            "Campaign ID: ";
 
         const idSpan =
             document.createElement("span");
@@ -1028,27 +1202,15 @@ try {
         idSpan.textContent =
             campaign.id;
 
+        idText.appendChild(strong);
+
         idText.appendChild(idSpan);
-
-        const codeText =
-            document.createElement("p");
-
-        codeText.innerHTML =
-            "<strong>Join Code:</strong> ";
-
-        const codeSpan =
-            document.createElement("span");
-
-        codeSpan.textContent =
-            campaign.join_code ||
-            "Unavailable";
-
-        codeText.appendChild(codeSpan);
 
         const button =
             document.createElement("button");
 
         button.type = "button";
+
         button.textContent =
             "OPEN CAMPAIGN";
 
@@ -1060,9 +1222,11 @@ try {
         );
 
         card.appendChild(title);
+
         card.appendChild(description);
+
         card.appendChild(idText);
-        card.appendChild(codeText);
+
         card.appendChild(button);
 
         container.appendChild(card);
@@ -1071,15 +1235,13 @@ try {
 
 } catch (error) {
 
-    console.error(
-        "LOAD CAMPAIGNS ERROR:",
-        error
-    );
+    console.error(error);
 
     container.innerHTML =
         '<div class="notice error">' +
         escapeHtml(error.message) +
         '</div>';
+
 }
 
 }
@@ -1097,10 +1259,8 @@ try {
 
     await initializeSupabase();
 
-    if (!currentUser || !currentUser.id) {
-        throw new Error(
-            "Anonymous Supabase account is not available."
-        );
+    if (!currentUser) {
+        throw new Error("Anonymous session unavailable.");
     }
 
     const code =
@@ -1112,11 +1272,19 @@ try {
             "Enter a campaign ID or join code."
         );
 
+        $("campaignCode").focus();
+
         return;
     }
 
-    button.disabled = true;
-    button.textContent = "JOINING...";
+    if (button) {
+
+        button.disabled = true;
+
+        button.textContent =
+            "JOINING CAMPAIGN...";
+
+    }
 
     let campaigns =
         await supabaseRequest(
@@ -1128,7 +1296,7 @@ try {
             "&select=*"
         );
 
-    if (!campaigns || campaigns.length === 0) {
+    if (!campaigns || !campaigns.length) {
 
         campaigns =
             await supabaseRequest(
@@ -1136,12 +1304,13 @@ try {
                 "GET",
                 null,
                 "?join_code=eq." +
-                encodeURIComponent(code.toUpperCase()) +
+                encodeURIComponent(code) +
                 "&select=*"
             );
+
     }
 
-    if (!campaigns || campaigns.length === 0) {
+    if (!campaigns || !campaigns.length) {
 
         showCampaignMessage(
             "Campaign not found."
@@ -1165,7 +1334,7 @@ try {
             "&select=id"
         );
 
-    if (!members || members.length === 0) {
+    if (!members || !members.length) {
 
         await supabaseRequest(
             "campaign_members",
@@ -1176,12 +1345,15 @@ try {
                 role: "player"
             }
         );
+
     }
 
     if (character) {
+
         await attachCharacterToCampaign(
             campaign.id
         );
+
     }
 
     $("campaignCode").value = "";
@@ -1197,26 +1369,30 @@ try {
 
 } catch (error) {
 
-    console.error(
-        "JOIN CAMPAIGN ERROR:",
-        error
-    );
+    console.error(error);
 
     showCampaignMessage(
-        "Unable to join campaign: " +
-        (error.message || "Unknown error.")
+        error.message ||
+        "Unable to join campaign."
     );
 
 } finally {
 
-    button.disabled = false;
-    button.textContent = "JOIN CAMPAIGN";
+    if (button) {
+
+        button.disabled = false;
+
+        button.textContent =
+            "JOIN CAMPAIGN";
+
+    }
+
 }
 
 }
 
 /* =========================================================
-ATTACH CHARACTER
+ATTACH CHARACTER TO CAMPAIGN
 ========================================================= */
 
 async function attachCharacterToCampaign(campaignId) {
@@ -1245,8 +1421,12 @@ if (!characterId) {
         );
 
     if (rows && rows.length) {
-        characterId = rows[0].id;
+
+        characterId =
+            rows[0].id;
+
     }
+
 }
 
 if (!characterId) {
@@ -1255,6 +1435,7 @@ if (!characterId) {
 
     characterId =
         character.supabaseId;
+
 }
 
 if (characterId) {
@@ -1273,6 +1454,7 @@ if (characterId) {
         campaignId;
 
     saveLocalCharacter();
+
 }
 
 }
@@ -1283,23 +1465,31 @@ OPEN CAMPAIGN
 
 async function openCampaign(campaign) {
 
-currentCampaign = campaign;
+if (!campaign) {
+    return;
+}
+
+currentCampaign =
+    campaign;
 
 $("campaignTitle").textContent =
-    campaign.name || "Campaign";
+    campaign.name ||
+    "Campaign";
 
 $("campaignDescription").textContent =
     campaign.description ||
     "No campaign description.";
 
-showScreen("campaignDashboard");
+showScreen(
+    "campaignDashboard"
+);
 
 await loadCampaignMembers();
 
 }
 
 /* =========================================================
-CAMPAIGN MEMBERS
+LOAD CAMPAIGN MEMBERS
 ========================================================= */
 
 async function loadCampaignMembers() {
@@ -1310,6 +1500,10 @@ if (!currentCampaign) {
 
 const container =
     $("campaignDashboardContent");
+
+if (!container) {
+    return;
+}
 
 container.innerHTML =
     '<div class="card">Loading campaign roster...</div>';
@@ -1332,7 +1526,8 @@ try {
     const header =
         document.createElement("div");
 
-    header.className = "info";
+    header.className =
+        "info";
 
     const heading =
         document.createElement("h2");
@@ -1343,32 +1538,33 @@ try {
     const id =
         document.createElement("p");
 
-    id.innerHTML =
-        "<strong>Campaign ID:</strong> " +
-        escapeHtml(currentCampaign.id);
+    const strong =
+        document.createElement("strong");
 
-    const joinCode =
-        document.createElement("p");
+    strong.textContent =
+        "Campaign ID: ";
 
-    joinCode.innerHTML =
-        "<strong>Join Code:</strong> " +
-        escapeHtml(
-            currentCampaign.join_code ||
-            "Unavailable"
-        );
+    id.appendChild(strong);
+
+    id.appendChild(
+        document.createTextNode(
+            currentCampaign.id
+        )
+    );
 
     header.appendChild(heading);
+
     header.appendChild(id);
-    header.appendChild(joinCode);
 
     container.appendChild(header);
 
-    if (!characters || characters.length === 0) {
+    if (!characters || !characters.length) {
 
         const empty =
             document.createElement("div");
 
-        empty.className = "card";
+        empty.className =
+            "card";
 
         empty.innerHTML =
             "<p>No characters have joined this campaign yet.</p>";
@@ -1383,7 +1579,8 @@ try {
         const card =
             document.createElement("div");
 
-        card.className = "card";
+        card.className =
+            "card";
 
         const title =
             document.createElement("h3");
@@ -1400,7 +1597,9 @@ try {
                 char.race,
                 char.class,
                 char.subclass,
-                "Level " + char.level
+                char.level
+                    ? "Level " + char.level
+                    : null
             ]
             .filter(Boolean)
             .join(" • ");
@@ -1426,8 +1625,11 @@ try {
             );
 
         card.appendChild(title);
+
         card.appendChild(identity);
+
         card.appendChild(soul);
+
         card.appendChild(background);
 
         container.appendChild(card);
@@ -1436,15 +1638,13 @@ try {
 
 } catch (error) {
 
-    console.error(
-        "CAMPAIGN ROSTER ERROR:",
-        error
-    );
+    console.error(error);
 
     container.innerHTML =
         '<div class="notice error">' +
         escapeHtml(error.message) +
         '</div>';
+
 }
 
 }
@@ -1462,12 +1662,17 @@ if (!currentCampaign) {
 const container =
     $("campaignDashboardContent");
 
+if (!container) {
+    return;
+}
+
 container.innerHTML = "";
 
 const info =
     document.createElement("div");
 
-info.className = "info";
+info.className =
+    "info";
 
 const title =
     document.createElement("h2");
@@ -1485,14 +1690,19 @@ description.textContent =
 const id =
     document.createElement("div");
 
-id.className = "notice";
+id.className =
+    "notice";
 
 id.innerHTML =
     "<strong>Campaign ID:</strong> " +
-    escapeHtml(currentCampaign.id);
+    escapeHtml(
+        currentCampaign.id
+    );
 
 info.appendChild(title);
+
 info.appendChild(description);
+
 info.appendChild(id);
 
 if (currentCampaign.join_code) {
@@ -1500,7 +1710,8 @@ if (currentCampaign.join_code) {
     const joinCode =
         document.createElement("div");
 
-    joinCode.className = "notice";
+    joinCode.className =
+        "notice";
 
     joinCode.innerHTML =
         "<strong>Join Code:</strong> " +
@@ -1509,6 +1720,7 @@ if (currentCampaign.join_code) {
         );
 
     info.appendChild(joinCode);
+
 }
 
 container.appendChild(info);
@@ -1527,51 +1739,64 @@ success = false
 const box =
     $("campaignMessage");
 
+if (!box) {
+    return;
+}
+
 box.textContent =
     message;
 
-box.classList.remove("hidden");
-
-box.classList.toggle(
+box.classList.remove(
+    "hidden",
     "success",
-    success
+    "error"
 );
 
-box.classList.toggle(
-    "error",
-    !success
+box.classList.add(
+    success
+        ? "success"
+        : "error"
 );
 
 }
 
 /* =========================================================
-STATS
+RENDER STATS
 ========================================================= */
 
 function renderStats(statScores) {
 
-return Object.entries(statScores)
-    .map(function(entry) {
+if (!statScores) {
+    return "";
+}
 
-        const stat = entry[0];
-        const value = entry[1];
+return Object.entries(
+    statScores
+)
+.map(function(entry) {
 
-        const mod =
-            modifier(value);
+    const stat =
+        entry[0];
 
-        return `
-            <div class="stat">
-                <strong>${escapeHtml(value)}</strong>
-                ${escapeHtml(stat)}
-                <br>
-                <span class="small">
-                    ${mod >= 0 ? "+" : ""}${mod}
-                </span>
-            </div>
-        `;
+    const value =
+        entry[1];
 
-    })
-    .join("");
+    const mod =
+        modifier(value);
+
+    return `
+        <div class="stat">
+            <strong>${escapeHtml(value)}</strong>
+            ${escapeHtml(stat)}
+            <br>
+            <span class="small">
+                ${mod >= 0 ? "+" : ""}${mod}
+            </span>
+        </div>
+    `;
+
+})
+.join("");
 
 }
 
@@ -1617,6 +1842,7 @@ try {
     );
 
     character = null;
+
 }
 
 }
@@ -1627,136 +1853,423 @@ BUTTONS
 
 function wireButtons() {
 
-$("beginButton").addEventListener(
-    "click",
-    beginTrial
-);
+const begin =
+    $("beginButton");
 
-$("campaignHomeButton").addEventListener(
-    "click",
-    openCampaigns
-);
+if (begin) {
+    begin.addEventListener(
+        "click",
+        beginTrial
+    );
+}
 
-$("continueName").addEventListener(
-    "click",
-    startQuestions
-);
 
-$("backFromName").addEventListener(
-    "click",
-    function() {
-        showScreen("home");
-    }
-);
+const campaignHome =
+    $("campaignHomeButton");
 
-$("continueToCreator").addEventListener(
-    "click",
-    openCharacterCreator
-);
+if (campaignHome) {
+    campaignHome.addEventListener(
+        "click",
+        openCampaigns
+    );
+}
 
-$("saveCharacterButton").addEventListener(
-    "click",
-    saveCharacter
-);
 
-$("viewSheetButton").addEventListener(
-    "click",
-    viewSheet
-);
+const continueName =
+    $("continueName");
 
-$("editCharacterButton").addEventListener(
-    "click",
-    openCharacterCreator
-);
+if (continueName) {
+    continueName.addEventListener(
+        "click",
+        startQuestions
+    );
+}
 
-$("campaignsButton").addEventListener(
-    "click",
-    openCampaigns
-);
 
-$("sheetHomeButton").addEventListener(
-    "click",
-    function() {
-        showScreen("home");
-    }
-);
+const backName =
+    $("backFromName");
 
-$("createCampaignButton").addEventListener(
-    "click",
-    showCreateCampaign
-);
-
-$("joinCampaignButton").addEventListener(
-    "click",
-    showJoinCampaign
-);
-
-$("campaignCharacterButton").addEventListener(
-    "click",
-    function() {
-
-        if (character) {
-            viewSheet();
-        } else {
-            beginTrial();
+if (backName) {
+    backName.addEventListener(
+        "click",
+        function() {
+            showScreen("home");
         }
+    );
+}
 
-    }
-);
 
-$("campaignHomeButton2").addEventListener(
-    "click",
-    function() {
-        showScreen("home");
-    }
-);
+const continueCreator =
+    $("continueToCreator");
 
-$("confirmCreateCampaign").addEventListener(
-    "click",
-    createCampaign
-);
+if (continueCreator) {
+    continueCreator.addEventListener(
+        "click",
+        openCharacterCreator
+    );
+}
 
-$("confirmJoinCampaign").addEventListener(
-    "click",
-    joinCampaign
-);
 
-$("playersButton").addEventListener(
-    "click",
-    loadCampaignMembers
-);
+const saveCharacter =
+    $("saveCharacterButton");
 
-$("campaignInfoButton").addEventListener(
-    "click",
-    showCampaignInfo
-);
+if (saveCharacter) {
+    saveCharacter.addEventListener(
+        "click",
+        saveCharacter
+    );
+}
 
-$("backCampaignsButton").addEventListener(
-    "click",
-    openCampaigns
-);
+
+const viewSheet =
+    $("viewSheetButton");
+
+if (viewSheet) {
+    viewSheet.addEventListener(
+        "click",
+        viewSheet
+    );
+}
+
+
+const editCharacter =
+    $("editCharacterButton");
+
+if (editCharacter) {
+    editCharacter.addEventListener(
+        "click",
+        openCharacterCreator
+    );
+}
+
+
+const campaigns =
+    $("campaignsButton");
+
+if (campaigns) {
+    campaigns.addEventListener(
+        "click",
+        openCampaigns
+    );
+}
+
+
+const sheetHome =
+    $("sheetHomeButton");
+
+if (sheetHome) {
+    sheetHome.addEventListener(
+        "click",
+        function() {
+            showScreen("home");
+        }
+    );
+}
+
+
+/* =====================================================
+   CAMPAIGN BUTTONS
+   ===================================================== */
+
+const createCampaign =
+    $("createCampaignButton");
+
+if (createCampaign) {
+
+    createCampaign.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            showCreateCampaign();
+
+        }
+    );
+
+}
+
+
+const joinCampaign =
+    $("joinCampaignButton");
+
+if (joinCampaign) {
+
+    joinCampaign.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            showJoinCampaign();
+
+        }
+    );
+
+}
+
+
+const campaignCharacter =
+    $("campaignCharacterButton");
+
+if (campaignCharacter) {
+
+    campaignCharacter.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            if (character) {
+
+                viewSheet();
+
+            } else {
+
+                beginTrial();
+
+            }
+
+        }
+    );
+
+}
+
+
+const campaignHome2 =
+    $("campaignHomeButton2");
+
+if (campaignHome2) {
+
+    campaignHome2.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            showScreen("home");
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ACTUAL CREATE CAMPAIGN BUTTON
+   ===================================================== */
+
+const confirmCreate =
+    $("confirmCreateCampaign");
+
+if (confirmCreate) {
+
+    confirmCreate.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            createCampaign();
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ACTUAL JOIN CAMPAIGN BUTTON
+   ===================================================== */
+
+const confirmJoin =
+    $("confirmJoinCampaign");
+
+if (confirmJoin) {
+
+    confirmJoin.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            joinCampaign();
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   CAMPAIGN DASHBOARD
+   ===================================================== */
+
+const players =
+    $("playersButton");
+
+if (players) {
+
+    players.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            loadCampaignMembers();
+
+        }
+    );
+
+}
+
+
+const info =
+    $("campaignInfoButton");
+
+if (info) {
+
+    info.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            showCampaignInfo();
+
+        }
+    );
+
+}
+
+
+const backCampaigns =
+    $("backCampaignsButton");
+
+if (backCampaigns) {
+
+    backCampaigns.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            openCampaigns();
+
+        }
+    );
+
+}
 
 }
 
 /* =========================================================
-START APP
+KEYBOARD SUPPORT
+========================================================= */
+
+function wireKeyboardSupport() {
+
+const nameInput =
+    $("playerName");
+
+if (nameInput) {
+
+    nameInput.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                event.preventDefault();
+
+                startQuestions();
+
+            }
+
+        }
+    );
+
+}
+
+
+const campaignName =
+    $("campaignName");
+
+if (campaignName) {
+
+    campaignName.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                createCampaign();
+
+            }
+
+        }
+    );
+
+}
+
+
+const campaignCode =
+    $("campaignCode");
+
+if (campaignCode) {
+
+    campaignCode.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                event.preventDefault();
+
+                joinCampaign();
+
+            }
+
+        }
+    );
+
+}
+
+}
+
+/* =========================================================
+APP INITIALIZATION
 ========================================================= */
 
 function initialize() {
+
+console.log(
+    "The Soul's Trial initializing..."
+);
 
 loadLocalCharacter();
 
 wireButtons();
 
+wireKeyboardSupport();
+
 showScreen("home");
+
+console.log(
+    "The Soul's Trial initialized successfully."
+);
 
 }
 
-/* =========================================================
-DOM READY
-========================================================= */
-
-if (document.readyState === "loading") {
+if (
+document.readyState ===
+"loading"
+) {
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -1767,4 +2280,4 @@ document.addEventListener(
 
 initialize();
 
-          }
+        }
