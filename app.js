@@ -1,396 +1,380 @@
 "use strict";
 
-let character=null;
-let currentCampaign=null;
+let character = null;
+let currentCampaign = null;
+let questionIndex = 0;
 
-let questionIndex=0;
-
-let scores={
-STR:0,
-DEX:0,
-CON:0,
-INT:0,
-WIS:0,
-CHA:0
+let scores = {
+STR: 0,
+DEX: 0,
+CON: 0,
+INT: 0,
+WIS: 0,
+CHA: 0
 };
 
-let selectedEquipment=[];
-
+let selectedEquipment = [];
 
 /* =========================================================
 DOM
 ========================================================= */
 
-function $(id){
+function $(id) {
 return document.getElementById(id);
 }
-
 
 /* =========================================================
 SCREEN CONTROL
 ========================================================= */
 
-function showScreen(id){
+function showScreen(id) {
 
-document.querySelectorAll("section").forEach(function(section){
-section.classList.add("hidden");
+document.querySelectorAll("section").forEach(function(section) {
+    section.classList.add("hidden");
 });
 
-const target=$(id);
+const target = $(id);
 
-if(target){
-target.classList.remove("hidden");
+if (target) {
+    target.classList.remove("hidden");
 }
 
 window.scrollTo({
-top:0,
-behavior:"smooth"
+    top: 0,
+    behavior: "smooth"
 });
 
 }
-
 
 /* =========================================================
 BEGIN TRIAL
 ========================================================= */
 
-function beginTrial(){
+function beginTrial() {
 
-scores={
-STR:0,
-DEX:0,
-CON:0,
-INT:0,
-WIS:0,
-CHA:0
+scores = {
+    STR: 0,
+    DEX: 0,
+    CON: 0,
+    INT: 0,
+    WIS: 0,
+    CHA: 0
 };
 
-questionIndex=0;
-selectedEquipment=[];
-character=null;
+questionIndex = 0;
+selectedEquipment = [];
+character = null;
 
-$("playerName").value="";
+if ($("playerName")) {
+    $("playerName").value = "";
+}
 
 showScreen("name");
 
 }
 
-
 /* =========================================================
 START QUESTIONS
 ========================================================= */
 
-function startQuestions(){
+function startQuestions() {
 
-const name=
-$("playerName").value.trim();
+const name = $("playerName").value.trim();
 
-if(!name){
-
-alert("Your soul must have a name.");
-
-return;
-
+if (!name) {
+    alert("Your soul must have a name.");
+    return;
 }
 
-character={
-name:name,
-level:1
+character = {
+    name: name,
+    level: 1
 };
 
 showScreen("quiz");
-
 displayQuestion();
 
 }
-
 
 /* =========================================================
 DISPLAY QUESTION
 ========================================================= */
 
-function displayQuestion(){
+function displayQuestion() {
 
-const current=
-questions[questionIndex];
+const current = questions[questionIndex];
 
-$("questionNumber").textContent=
-"Question "+
-(questionIndex+1)+
-" of "+
-questions.length;
-
-$("progressBar").style.width=
-((questionIndex/questions.length)*100)+"%";
-
-$("question").textContent=current[0];
-
-$("questionFlavor").textContent=current[1];
-
-const answers=$("answers");
-
-answers.innerHTML="";
-
-current[2].forEach(function(option){
-
-const button=
-document.createElement("button");
-
-button.type="button";
-button.className="choice";
-button.textContent=option[0];
-
-button.addEventListener("click",function(){
-
-Object.entries(option[1]).forEach(function(entry){
-
-scores[entry[0]]+=entry[1];
-
-});
-
-questionIndex++;
-
-if(questionIndex<questions.length){
-
-displayQuestion();
-
-}else{
-
-calculateSoul();
-
+if (!current) {
+    calculateSoul();
+    return;
 }
 
-});
+$("questionNumber").textContent =
+    "Question " +
+    (questionIndex + 1) +
+    " of " +
+    questions.length;
 
-answers.appendChild(button);
+$("progressBar").style.width =
+    (((questionIndex + 1) / questions.length) * 100) + "%";
+
+$("question").textContent = current[0];
+$("questionFlavor").textContent = current[1];
+
+const answers = $("answers");
+
+answers.innerHTML = "";
+
+current[2].forEach(function(option) {
+
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.className = "choice";
+    button.textContent = option[0];
+
+    button.addEventListener("click", function() {
+
+        Object.entries(option[1]).forEach(function(entry) {
+
+            const stat = entry[0];
+            const amount = entry[1];
+
+            if (typeof scores[stat] !== "number") {
+                scores[stat] = 0;
+            }
+
+            scores[stat] += amount;
+        });
+
+        questionIndex++;
+
+        if (questionIndex < questions.length) {
+            displayQuestion();
+        } else {
+            calculateSoul();
+        }
+
+    });
+
+    answers.appendChild(button);
 
 });
 
 }
-
 
 /* =========================================================
 MODIFIER
 ========================================================= */
 
-function modifier(score){
+function modifier(score) {
 
-return Math.floor((Number(score)-10)/2);
+return Math.floor((Number(score) - 10) / 2);
 
 }
-
 
 /* =========================================================
 CALCULATE SOUL
 ========================================================= */
 
-function calculateSoul(){
+function calculateSoul() {
 
-const sorted=
-Object.entries(scores).sort(function(a,b){
+const sorted =
+    Object.entries(scores).sort(function(a, b) {
 
-if(b[1]!==a[1]){
-return b[1]-a[1];
+        if (b[1] !== a[1]) {
+            return b[1] - a[1];
+        }
+
+        return a[0].localeCompare(b[0]);
+
+    });
+
+const highest = sorted[0][0];
+
+const path = soulPaths[highest];
+
+if (!path) {
+    alert("Unable to determine your Soul Path.");
+    return;
 }
 
-return a[0].localeCompare(b[0]);
-
-});
-
-const highest=sorted[0][0];
-
-const path=soulPaths[highest];
-
-const standard=[
-16,
-14,
-13,
-12,
-10,
-8
+const standard = [
+    16,
+    14,
+    13,
+    12,
+    10,
+    8
 ];
 
-const finalScores={
-STR:10,
-DEX:10,
-CON:10,
-INT:10,
-WIS:10,
-CHA:10
+const finalScores = {
+    STR: 10,
+    DEX: 10,
+    CON: 10,
+    INT: 10,
+    WIS: 10,
+    CHA: 10
 };
 
-sorted.forEach(function(entry,index){
-
-finalScores[entry[0]]=standard[index];
-
+sorted.forEach(function(entry, index) {
+    finalScores[entry[0]] = standard[index];
 });
 
-const chosenClass=
-path.classes[0];
+const chosenClass = path.classes[0];
+const subclass = path.subclasses[chosenClass];
+const race = determineRace(scores);
+const data = classData[chosenClass];
 
-const subclass=
-path.subclasses[chosenClass];
+character.race = race;
+character.dominantStat = highest;
 
-const race=
-determineRace(scores);
+character.soulPath = path.name;
+character.soulDescription = path.description;
 
-const data=
-classData[chosenClass];
+character.class = chosenClass;
+character.subclass = subclass;
+character.background = path.background;
 
-character.race=race;
-character.dominantStat=highest;
-character.soulPath=path.name;
-character.soulDescription=path.description;
-character.class=chosenClass;
-character.subclass=subclass;
-character.background=path.background;
+character.soulTrait = path.trait;
+character.traitDescription = path.traitDescription;
 
-character.soulTrait=path.trait;
-character.traitDescription=path.traitDescription;
+character.blessing = path.blessing;
+character.blessingDescription = path.blessingDescription;
 
-character.blessing=path.blessing;
-character.blessingDescription=path.blessingDescription;
+character.scores = finalScores;
 
-character.scores=finalScores;
+character.max_hp =
+    data.hp +
+    modifier(finalScores.CON);
 
-character.max_hp=
-data.hp+
-modifier(finalScores.CON);
+character.current_hp =
+    character.max_hp;
 
-character.current_hp=
-character.max_hp;
+character.armor_class =
+    data.ac;
 
-character.armor_class=
-data.ac;
+character.speed =
+    data.speed;
 
-character.speed=
-data.speed;
+character.hit_dice =
+    "1d" + data.hitDie;
 
-character.hit_dice=
-"1d"+data.hitDie;
+character.proficiency_bonus = 2;
+character.experience_points = 0;
+character.inspiration = false;
 
-character.proficiency_bonus=2;
-
-character.experience_points=0;
-character.inspiration=false;
-
-character.equipment=[];
+character.equipment = [];
 
 saveLocalCharacter();
-
 renderResult();
 
 }
-
 
 /* =========================================================
 RESULT
 ========================================================= */
 
-function renderResult(){
+function renderResult() {
 
-$("resultName").textContent=character.name;
+$("resultName").textContent = character.name;
 
-$("soulPath").textContent=character.soulPath;
+$("soulPath").textContent = character.soulPath;
 
-$("soulDescription").textContent=
-character.soulDescription;
+$("soulDescription").textContent =
+    character.soulDescription;
 
-$("resultRace").textContent=
-character.race;
+$("resultRace").textContent =
+    character.race;
 
-$("resultClass").textContent=
-character.class;
+$("resultClass").textContent =
+    character.class;
 
-$("resultSubclass").textContent=
-character.subclass;
+$("resultSubclass").textContent =
+    character.subclass;
 
-$("resultBackground").textContent=
-character.background;
+$("resultBackground").textContent =
+    character.background;
 
-$("resultStats").innerHTML=
-renderStats(character.scores);
+$("resultStats").innerHTML =
+    renderStats(character.scores);
 
-$("soulTrait").textContent=
-character.soulTrait;
+$("soulTrait").textContent =
+    character.soulTrait;
 
-$("traitDescription").textContent=
-character.traitDescription;
+$("traitDescription").textContent =
+    character.traitDescription;
 
-$("awakeningBlessing").textContent=
-character.blessing;
+$("awakeningBlessing").textContent =
+    character.blessing;
 
-$("blessingDescription").textContent=
-character.blessingDescription;
+$("blessingDescription").textContent =
+    character.blessingDescription;
 
 showScreen("result");
 
 }
 
-
 /* =========================================================
 CHARACTER CREATOR
 ========================================================= */
 
-function openCharacterCreator(){
+function openCharacterCreator() {
 
-if(!character){
-
-alert("No character exists yet.");
-
-return;
-
+if (!character) {
+    alert("No character exists yet.");
+    return;
 }
 
-$("characterName").textContent=
-character.name;
+$("characterName").textContent =
+    character.name;
 
-$("creatorRace").textContent=
-character.race;
+$("creatorRace").textContent =
+    character.race;
 
-$("creatorClass").textContent=
-character.class;
+$("creatorClass").textContent =
+    character.class;
 
-$("creatorSubclass").textContent=
-character.subclass;
+$("creatorSubclass").textContent =
+    character.subclass;
 
-$("creatorBackground").textContent=
-character.background;
+$("creatorBackground").textContent =
+    character.background;
 
-$("creatorLevel").textContent=
-character.level;
+$("creatorLevel").textContent =
+    character.level;
 
-$("abilityScores").innerHTML=
-renderStats(character.scores);
+$("abilityScores").innerHTML =
+    renderStats(character.scores);
 
-$("creatorHP").textContent=
-character.max_hp;
+$("creatorHP").textContent =
+    character.max_hp;
 
-$("creatorAC").textContent=
-character.armor_class;
+$("creatorAC").textContent =
+    character.armor_class;
 
-$("creatorSpeed").textContent=
-character.speed+" ft";
+$("creatorSpeed").textContent =
+    character.speed + " ft";
 
-$("personality").value=
-character.personality||"";
+$("personality").value =
+    character.personality || "";
 
-$("ideal").value=
-character.ideal||"";
+$("ideal").value =
+    character.ideal || "";
 
-$("bond").value=
-character.bond||"";
+$("bond").value =
+    character.bond || "";
 
-$("flaw").value=
-character.flaw||"";
+$("flaw").value =
+    character.flaw || "";
 
-$("backstory").value=
-character.backstory||"";
+$("backstory").value =
+    character.backstory || "";
 
-selectedEquipment=
-Array.isArray(character.equipment)
-?character.equipment.slice()
-:[];
+selectedEquipment =
+    Array.isArray(character.equipment)
+        ? character.equipment.slice()
+        : [];
 
 renderEquipmentOptions();
 
@@ -398,340 +382,355 @@ showScreen("creator");
 
 }
 
-
 /* =========================================================
 EQUIPMENT
 ========================================================= */
 
-function renderEquipmentOptions(){
+function renderEquipmentOptions() {
 
-const data=
-classData[character.class];
+const data = classData[character.class];
 
-const container=
-$("equipmentOptions");
-
-container.innerHTML="";
-
-data.equipment.forEach(function(item){
-
-const wrapper=
-document.createElement("label");
-
-wrapper.className="card";
-
-const checkbox=
-document.createElement("input");
-
-checkbox.type="checkbox";
-checkbox.value=item;
-
-checkbox.checked=
-selectedEquipment.includes(item);
-
-checkbox.style.width="auto";
-
-wrapper.appendChild(checkbox);
-
-wrapper.appendChild(
-document.createTextNode(" "+item)
-);
-
-checkbox.addEventListener("change",function(){
-
-if(checkbox.checked){
-
-if(!selectedEquipment.includes(item)){
-selectedEquipment.push(item);
+if (!data) {
+    return;
 }
 
-}else{
+const container = $("equipmentOptions");
 
-selectedEquipment=
-selectedEquipment.filter(function(x){
-return x!==item;
+container.innerHTML = "";
+
+data.equipment.forEach(function(item) {
+
+    const wrapper =
+        document.createElement("label");
+
+    wrapper.className = "card";
+
+    const checkbox =
+        document.createElement("input");
+
+    checkbox.type = "checkbox";
+    checkbox.value = item;
+
+    checkbox.checked =
+        selectedEquipment.includes(item);
+
+    checkbox.style.width = "auto";
+
+    wrapper.appendChild(checkbox);
+
+    wrapper.appendChild(
+        document.createTextNode(" " + item)
+    );
+
+    checkbox.addEventListener("change", function() {
+
+        if (checkbox.checked) {
+
+            if (!selectedEquipment.includes(item)) {
+                selectedEquipment.push(item);
+            }
+
+        } else {
+
+            selectedEquipment =
+                selectedEquipment.filter(function(x) {
+                    return x !== item;
+                });
+
+        }
+
+    });
+
+    container.appendChild(wrapper);
+
 });
 
 }
 
-});
+/* =========================================================
+SAVE LOCAL CHARACTER
+========================================================= */
 
-container.appendChild(wrapper);
+function saveLocalCharacter() {
 
-});
-
-}
-
-
-function saveLocalCharacter(){
-
-if(!character){
-return;
+if (!character) {
+    return;
 }
 
 localStorage.setItem(
-"soulTrialCharacter",
-JSON.stringify(character)
+    "soulTrialCharacter",
+    JSON.stringify(character)
 );
 
 }
-
 
 /* =========================================================
 SAVE CHARACTER
 ========================================================= */
 
-async function saveCharacter(){
+async function saveCharacter() {
 
-if(!character){
-return;
+if (!character) {
+    alert("No character exists.");
+    return;
 }
-character.personality=
-$("personality").value.trim();
 
-character.ideal=
-$("ideal").value.trim();
+character.personality =
+    $("personality").value.trim();
 
-character.bond=
-$("bond").value.trim();
+character.ideal =
+    $("ideal").value.trim();
 
-character.flaw=
-$("flaw").value.trim();
+character.bond =
+    $("bond").value.trim();
 
-character.backstory=
-$("backstory").value.trim();
+character.flaw =
+    $("flaw").value.trim();
 
-character.equipment=
-Array.from(new Set(selectedEquipment));
+character.backstory =
+    $("backstory").value.trim();
+
+character.equipment =
+    Array.from(new Set(selectedEquipment));
 
 saveLocalCharacter();
 
-try{
+try {
 
-await initializeSupabase();
+    await initializeSupabase();
 
-await saveCharacterToSupabase();
+    if (!currentUser || !currentUser.id) {
+        throw new Error(
+            "Anonymous Supabase session was not available."
+        );
+    }
 
-$("syncStatus").textContent=
-"Character saved and synced with the Soul's Trial realm.";
+    await saveCharacterToSupabase();
 
-$("syncStatus").classList.add("success");
+    $("syncStatus").textContent =
+        "Character saved and synced with the Soul's Trial realm.";
 
-alert(
-"Character saved successfully."
-);
+    $("syncStatus").classList.remove("error");
+    $("syncStatus").classList.add("success");
 
-}catch(error){
+    alert("Character saved successfully.");
 
-console.error(error);
+} catch (error) {
 
-$("syncStatus").textContent=
-"Character saved on this device. Online sync is currently unavailable.";
+    console.error("Character sync error:", error);
 
-$("syncStatus").classList.add("error");
+    $("syncStatus").textContent =
+        "Character saved on this device. Online sync is currently unavailable.";
 
-alert(
-"Character saved locally, but online synchronization failed:\n\n"+
-error.message
-);
+    $("syncStatus").classList.remove("success");
+    $("syncStatus").classList.add("error");
 
+    alert(
+        "Character saved locally, but online synchronization failed:\n\n" +
+        error.message
+    );
 }
 
 }
-
 
 /* =========================================================
 SAVE CHARACTER TO SUPABASE
 ========================================================= */
 
-async function saveCharacterToSupabase(){
+async function saveCharacterToSupabase() {
 
-const payload={
+if (!currentUser || !currentUser.id) {
+    throw new Error("No Supabase user is available.");
+}
 
-player_id:currentUser.id,
+const payload = {
 
-name:character.name,
+    player_id: currentUser.id,
 
-race:character.race,
+    name: character.name,
 
-class:character.class,
+    race: character.race,
+    class: character.class,
+    subclass: character.subclass,
+    background: character.background,
 
-subclass:character.subclass,
+    level: character.level,
 
-background:character.background,
+    strength: character.scores.STR,
+    dexterity: character.scores.DEX,
+    constitution: character.scores.CON,
+    intelligence: character.scores.INT,
+    wisdom: character.scores.WIS,
+    charisma: character.scores.CHA,
 
-level:character.level,
+    max_hp: character.max_hp,
+    current_hp: character.current_hp || character.max_hp,
 
-strength:character.scores.STR,
+    armor_class: character.armor_class,
+    speed: character.speed,
 
-dexterity:character.scores.DEX,
+    proficiency_bonus:
+        character.proficiency_bonus,
 
-constitution:character.scores.CON,
+    hit_dice:
+        character.hit_dice,
 
-intelligence:character.scores.INT,
+    soul_path:
+        character.soulPath,
 
-wisdom:character.scores.WIS,
+    soul_trait:
+        character.soulTrait,
 
-charisma:character.scores.CHA,
+    soul_blessing:
+        character.blessing,
 
-max_hp:character.max_hp,
+    personality:
+        character.personality || "",
 
-current_hp:character.current_hp||character.max_hp,
+    ideal:
+        character.ideal || "",
 
-armor_class:character.armor_class,
+    bond:
+        character.bond || "",
 
-speed:character.speed,
+    flaw:
+        character.flaw || "",
 
-proficiency_bonus:character.proficiency_bonus,
-
-hit_dice:character.hit_dice,
-
-soul_path:character.soulPath,
-
-soul_trait:character.soulTrait,
-
-soul_blessing:character.blessing,
-
-personality:character.personality,
-
-ideal:character.ideal,
-
-bond:character.bond,
-
-flaw:character.flaw,
-
-backstory:character.backstory
+    backstory:
+        character.backstory || ""
 
 };
 
-const existing=
-await supabaseRequest(
-"characters",
-"GET",
-null,
-"?player_id=eq."+
-encodeURIComponent(currentUser.id)+
-"&select=id"+
-"&order=updated_at.desc"+
-"&limit=1"
-);
+const existing =
+    await supabaseRequest(
+        "characters",
+        "GET",
+        null,
+        "?player_id=eq." +
+        encodeURIComponent(currentUser.id) +
+        "&select=id" +
+        "&order=updated_at.desc" +
+        "&limit=1"
+    );
 
-if(existing&&existing.length){
+if (existing && existing.length) {
 
-await supabaseRequest(
-"characters",
-"PATCH",
-payload,
-"?id=eq."+encodeURIComponent(existing[0].id)
-);
+    await supabaseRequest(
+        "characters",
+        "PATCH",
+        payload,
+        "?id=eq." +
+        encodeURIComponent(existing[0].id)
+    );
 
-character.supabaseId=
-existing[0].id;
+    character.supabaseId =
+        existing[0].id;
 
-}else{
+} else {
 
-const created=
-await supabaseRequest(
-"characters",
-"POST",
-payload
-);
+    const created =
+        await supabaseRequest(
+            "characters",
+            "POST",
+            payload
+        );
 
-if(created&&created.length){
+    if (created && created.length) {
 
-character.supabaseId=
-created[0].id;
+        character.supabaseId =
+            created[0].id;
 
-}
+    } else {
 
+        throw new Error(
+            "Supabase created the character but returned no character ID."
+        );
+    }
 }
 
 saveLocalCharacter();
 
 }
 
-
 /* =========================================================
 CHARACTER SHEET
 ========================================================= */
 
-function viewSheet(){
+function viewSheet() {
 
-if(!character){
-
-alert("Create a character first.");
-
-return;
-
+if (!character) {
+    alert("Create a character first.");
+    return;
 }
 
-$("sheetName").textContent=
-character.name;
+$("sheetName").textContent =
+    character.name;
 
-$("sheetIdentity").textContent=
-character.race+
-" • "+
-character.class+
-" • "+
-character.subclass+
-" • Level "+
-character.level+
-" • "+
-character.background;
+$("sheetIdentity").textContent =
+    character.race +
+    " • " +
+    character.class +
+    " • " +
+    character.subclass +
+    " • Level " +
+    character.level +
+    " • " +
+    character.background;
 
-$("sheetHP").textContent=
-character.current_hp||character.max_hp;
+$("sheetHP").textContent =
+    character.current_hp ||
+    character.max_hp;
 
-$("sheetAC").textContent=
-character.armor_class;
+$("sheetAC").textContent =
+    character.armor_class;
 
-$("sheetSpeed").textContent=
-character.speed+" ft";
+$("sheetSpeed").textContent =
+    character.speed + " ft";
 
-$("sheetLevel").textContent=
-character.level;
+$("sheetLevel").textContent =
+    character.level;
 
-$("sheetProficiency").textContent=
-"+"+character.proficiency_bonus;
+$("sheetProficiency").textContent =
+    "+" + character.proficiency_bonus;
 
-$("sheetHitDice").textContent=
-character.hit_dice;
+$("sheetHitDice").textContent =
+    character.hit_dice;
 
-$("sheetStats").innerHTML=
-renderStats(character.scores);
+$("sheetStats").innerHTML =
+    renderStats(character.scores);
 
-$("sheetPath").textContent=
-character.soulPath;
+$("sheetPath").textContent =
+    character.soulPath;
 
-$("sheetPathDescription").textContent=
-character.soulDescription;
+$("sheetPathDescription").textContent =
+    character.soulDescription;
 
-$("sheetTrait").textContent=
-character.soulTrait;
+$("sheetTrait").textContent =
+    character.soulTrait;
 
-$("sheetTraitDescription").textContent=
-character.traitDescription;
+$("sheetTraitDescription").textContent =
+    character.traitDescription;
 
-$("sheetBlessing").textContent=
-character.blessing;
+$("sheetBlessing").textContent =
+    character.blessing;
 
-$("sheetBlessingDescription").textContent=
-character.blessingDescription;
+$("sheetBlessingDescription").textContent =
+    character.blessingDescription;
 
-$("sheetPersonality").textContent=
-character.personality||"—";
+$("sheetPersonality").textContent =
+    character.personality || "—";
 
-$("sheetIdeal").textContent=
-character.ideal||"—";
+$("sheetIdeal").textContent =
+    character.ideal || "—";
 
-$("sheetBond").textContent=
-character.bond||"—";
+$("sheetBond").textContent =
+    character.bond || "—";
 
-$("sheetFlaw").textContent=
-character.flaw||"—";
+$("sheetFlaw").textContent =
+    character.flaw || "—";
 
-$("sheetBackstory").textContent=
-character.backstory||"—";
+$("sheetBackstory").textContent =
+    character.backstory || "—";
 
 renderSheetEquipment();
 
@@ -739,492 +738,559 @@ showScreen("sheet");
 
 }
 
-
 /* =========================================================
 SHEET EQUIPMENT
 ========================================================= */
 
-function renderSheetEquipment(){
+function renderSheetEquipment() {
 
-const container=
-$("sheetEquipment");
+const container =
+    $("sheetEquipment");
 
-container.innerHTML="";
+container.innerHTML = "";
 
-const equipment=
-character.equipment||[];
+const equipment =
+    character.equipment || [];
 
-if(!equipment.length){
+if (!equipment.length) {
 
-container.innerHTML=
-'<div class="card">No equipment selected.</div>';
+    container.innerHTML =
+        '<div class="card">No equipment selected.</div>';
 
-return;
-
+    return;
 }
 
-equipment.forEach(function(item){
+equipment.forEach(function(item) {
 
-const span=
-document.createElement("span");
+    const span =
+        document.createElement("span");
 
-span.className="tag";
+    span.className = "tag";
+    span.textContent = item;
 
-span.textContent=item;
-
-container.appendChild(span);
+    container.appendChild(span);
 
 });
 
 }
-
 
 /* =========================================================
 CAMPAIGNS
 ========================================================= */
 
-async function openCampaigns(){
+async function openCampaigns() {
 
 showScreen("campaigns");
 
-$("campaignAccountNotice").textContent=
-"Connecting your Soul to the campaign realm...";
+$("campaignAccountNotice").textContent =
+    "Connecting your Soul to the campaign realm...";
 
-try{
+try {
 
-await initializeSupabase();
+    await initializeSupabase();
 
-$("campaignAccountNotice").textContent=
-"You are connected anonymously. No login is required.";
+    if (!currentUser || !currentUser.id) {
+        throw new Error(
+            "Anonymous account could not be created."
+        );
+    }
 
-await loadCampaigns();
+    $("campaignAccountNotice").textContent =
+        "You are connected anonymously. No login is required.";
 
-}catch(error){
+    await loadCampaigns();
 
-console.error(error);
+} catch (error) {
 
-$("campaignAccountNotice").textContent=
-"Campaign connection failed: "+error.message;
+    console.error("Campaign connection error:", error);
+
+    $("campaignAccountNotice").textContent =
+        "Campaign connection failed: " +
+        error.message;
 
 }
 
 }
-
 
 /* =========================================================
 CREATE CAMPAIGN UI
 ========================================================= */
 
-function showCreateCampaign(){
+function showCreateCampaign() {
 
 $("campaignCreate").classList.remove("hidden");
-
 $("campaignJoin").classList.add("hidden");
 
-}
+$("campaignMessage").classList.add("hidden");
 
+}
 
 /* =========================================================
 JOIN CAMPAIGN UI
 ========================================================= */
 
-function showJoinCampaign(){
+function showJoinCampaign() {
 
 $("campaignJoin").classList.remove("hidden");
-
 $("campaignCreate").classList.add("hidden");
 
-}
+$("campaignMessage").classList.add("hidden");
 
+}
 
 /* =========================================================
 CREATE CAMPAIGN
 ========================================================= */
 
-async function createCampaign(){
+async function createCampaign() {
 
-try{
+const button =
+    $("confirmCreateCampaign");
 
-await initializeSupabase();
+try {
 
-const name=
-$("campaignName").value.trim();
+    await initializeSupabase();
 
-const description=
-$("campaignDescription").value.trim();
+    if (!currentUser || !currentUser.id) {
+        throw new Error(
+            "Anonymous Supabase account is not available."
+        );
+    }
 
-if(!name){
+    const name =
+        $("campaignName").value.trim();
 
-showCampaignMessage(
-"Enter a campaign name."
-);
+    const description =
+        $("campaignDescription").value.trim();
 
-return;
+    if (!name) {
 
+        showCampaignMessage(
+            "Enter a campaign name."
+        );
+
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "CREATING CAMPAIGN...";
+
+    const created =
+        await supabaseRequest(
+            "campaigns",
+            "POST",
+            {
+                name: name,
+                description: description || null,
+                dm_id: currentUser.id
+            }
+        );
+
+    if (!created || !created.length) {
+
+        throw new Error(
+            "Supabase did not return the newly created campaign."
+        );
+    }
+
+    const campaign =
+        created[0];
+
+    try {
+
+        await supabaseRequest(
+            "campaign_members",
+            "POST",
+            {
+                campaign_id: campaign.id,
+                player_id: currentUser.id,
+                role: "dm"
+            }
+        );
+
+    } catch (memberError) {
+
+        console.error(
+            "Campaign member creation failed:",
+            memberError
+        );
+
+        throw new Error(
+            "Campaign was created, but adding you as DM failed: " +
+            memberError.message
+        );
+    }
+
+    $("campaignName").value = "";
+    $("campaignDescription").value = "";
+
+    $("campaignCreate").classList.add("hidden");
+
+    showCampaignMessage(
+        "Campaign created successfully! Your join code is " +
+        (campaign.join_code || campaign.id),
+        true
+    );
+
+    await loadCampaigns();
+
+} catch (error) {
+
+    console.error(
+        "CREATE CAMPAIGN ERROR:",
+        error
+    );
+
+    showCampaignMessage(
+        "Unable to create campaign: " +
+        (error.message || "Unknown error.")
+    );
+
+} finally {
+
+    button.disabled = false;
+    button.textContent = "CREATE CAMPAIGN";
 }
 
-const created=
-await supabaseRequest(
-"campaigns",
-"POST",
-{
-name:name,
-description:description,
-dm_id:currentUser.id
 }
-);
-
-if(!created||!created.length){
-
-throw new Error(
-"Campaign was not created."
-);
-
-}
-
-const campaign=
-created[0];
-
-await supabaseRequest(
-"campaign_members",
-"POST",
-{
-campaign_id:campaign.id,
-player_id:currentUser.id,
-role:"dm"
-}
-);
-
-$("campaignName").value="";
-$("campaignDescription").value="";
-
-showCampaignMessage(
-"Campaign created successfully.",
-true
-);
-
-await loadCampaigns();
-
-}catch(error){
-
-console.error(error);
-
-showCampaignMessage(
-error.message||
-"Unable to create campaign."
-);
-
-}
-
-}
-
 
 /* =========================================================
 LOAD CAMPAIGNS
 ========================================================= */
 
-async function loadCampaigns(){
+async function loadCampaigns() {
 
-const container=
-$("campaignList");
+const container =
+    $("campaignList");
 
-container.innerHTML=
-'<div class="card">Loading campaigns...</div>';
+container.innerHTML =
+    '<div class="card">Loading campaigns...</div>';
 
-try{
+try {
 
-const campaigns=
-await supabaseRequest(
-"campaigns",
-"GET",
-null,
-"?select=*&order=created_at.desc"
-);
+    await initializeSupabase();
 
-container.innerHTML="";
+    const campaigns =
+        await supabaseRequest(
+            "campaigns",
+            "GET",
+            null,
+            "?select=*&order=created_at.desc"
+        );
 
-if(!campaigns||campaigns.length===0){
+    container.innerHTML = "";
 
-container.innerHTML=
-`
-<div class="info">
-<h2>No Campaigns Yet</h2>
-<p>
-Create a campaign as a DM or join one using the ID provided by your DM.
-</p>
-</div>
-`;
+    if (!campaigns || campaigns.length === 0) {
 
-return;
+        container.innerHTML =
+            `
+            <div class="info">
+                <h2>No Campaigns Yet</h2>
+                <p>
+                    Create a campaign as a DM or join one using
+                    the ID or join code provided by your DM.
+                </p>
+            </div>
+            `;
 
+        return;
+    }
+
+    campaigns.forEach(function(campaign) {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "card";
+
+        const title =
+            document.createElement("h3");
+
+        title.textContent =
+            campaign.name || "Unnamed Campaign";
+
+        const description =
+            document.createElement("p");
+
+        description.textContent =
+            campaign.description ||
+            "No description.";
+
+        const idText =
+            document.createElement("p");
+
+        idText.innerHTML =
+            "<strong>Campaign ID:</strong> ";
+
+        const idSpan =
+            document.createElement("span");
+
+        idSpan.textContent =
+            campaign.id;
+
+        idText.appendChild(idSpan);
+
+        const codeText =
+            document.createElement("p");
+
+        codeText.innerHTML =
+            "<strong>Join Code:</strong> ";
+
+        const codeSpan =
+            document.createElement("span");
+
+        codeSpan.textContent =
+            campaign.join_code ||
+            "Unavailable";
+
+        codeText.appendChild(codeSpan);
+
+        const button =
+            document.createElement("button");
+
+        button.type = "button";
+        button.textContent =
+            "OPEN CAMPAIGN";
+
+        button.addEventListener(
+            "click",
+            function() {
+                openCampaign(campaign);
+            }
+        );
+
+        card.appendChild(title);
+        card.appendChild(description);
+        card.appendChild(idText);
+        card.appendChild(codeText);
+        card.appendChild(button);
+
+        container.appendChild(card);
+
+    });
+
+} catch (error) {
+
+    console.error(
+        "LOAD CAMPAIGNS ERROR:",
+        error
+    );
+
+    container.innerHTML =
+        '<div class="notice error">' +
+        escapeHtml(error.message) +
+        '</div>';
 }
 
-campaigns.forEach(function(campaign){
-
-const card=
-document.createElement("div");
-
-card.className="card";
-
-const title=
-document.createElement("h3");
-
-title.textContent=
-campaign.name||"Unnamed Campaign";
-
-const description=
-document.createElement("p");
-
-description.textContent=
-campaign.description||
-"No description.";
-
-const idText=
-document.createElement("p");
-
-idText.innerHTML=
-"<strong>Campaign ID:</strong> ";
-
-const idSpan=
-document.createElement("span");
-
-idSpan.textContent=
-campaign.id;
-
-idText.appendChild(idSpan);
-
-const button=
-document.createElement("button");
-
-button.type="button";
-button.textContent="OPEN CAMPAIGN";
-
-button.addEventListener(
-"click",
-function(){
-openCampaign(campaign);
 }
-);
-
-card.appendChild(title);
-card.appendChild(description);
-card.appendChild(idText);
-card.appendChild(button);
-
-container.appendChild(card);
-
-});
-
-}catch(error){
-
-console.error(error);
-
-container.innerHTML=
-'<div class="notice error">'+
-escapeHtml(error.message)+
-'</div>';
-
-}
-
-}
-
 
 /* =========================================================
 JOIN CAMPAIGN
 ========================================================= */
 
-async function joinCampaign(){
+async function joinCampaign() {
 
-try{
+const button =
+    $("confirmJoinCampaign");
 
-await initializeSupabase();
+try {
 
-const code=
-$("campaignCode").value.trim();
+    await initializeSupabase();
 
-if(!code){
+    if (!currentUser || !currentUser.id) {
+        throw new Error(
+            "Anonymous Supabase account is not available."
+        );
+    }
 
-showCampaignMessage(
-"Enter a campaign ID or join code."
-);
+    const code =
+        $("campaignCode").value.trim();
 
-return;
+    if (!code) {
 
+        showCampaignMessage(
+            "Enter a campaign ID or join code."
+        );
+
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "JOINING...";
+
+    let campaigns =
+        await supabaseRequest(
+            "campaigns",
+            "GET",
+            null,
+            "?id=eq." +
+            encodeURIComponent(code) +
+            "&select=*"
+        );
+
+    if (!campaigns || campaigns.length === 0) {
+
+        campaigns =
+            await supabaseRequest(
+                "campaigns",
+                "GET",
+                null,
+                "?join_code=eq." +
+                encodeURIComponent(code.toUpperCase()) +
+                "&select=*"
+            );
+    }
+
+    if (!campaigns || campaigns.length === 0) {
+
+        showCampaignMessage(
+            "Campaign not found."
+        );
+
+        return;
+    }
+
+    const campaign =
+        campaigns[0];
+
+    const members =
+        await supabaseRequest(
+            "campaign_members",
+            "GET",
+            null,
+            "?campaign_id=eq." +
+            encodeURIComponent(campaign.id) +
+            "&player_id=eq." +
+            encodeURIComponent(currentUser.id) +
+            "&select=id"
+        );
+
+    if (!members || members.length === 0) {
+
+        await supabaseRequest(
+            "campaign_members",
+            "POST",
+            {
+                campaign_id: campaign.id,
+                player_id: currentUser.id,
+                role: "player"
+            }
+        );
+    }
+
+    if (character) {
+        await attachCharacterToCampaign(
+            campaign.id
+        );
+    }
+
+    $("campaignCode").value = "";
+
+    showCampaignMessage(
+        "You joined " +
+        campaign.name +
+        ".",
+        true
+    );
+
+    await openCampaign(campaign);
+
+} catch (error) {
+
+    console.error(
+        "JOIN CAMPAIGN ERROR:",
+        error
+    );
+
+    showCampaignMessage(
+        "Unable to join campaign: " +
+        (error.message || "Unknown error.")
+    );
+
+} finally {
+
+    button.disabled = false;
+    button.textContent = "JOIN CAMPAIGN";
 }
 
-let campaigns=
-await supabaseRequest(
-"campaigns",
-"GET",
-null,
-"?id=eq."+
-encodeURIComponent(code)+
-"&select=*"
-);
-
-if(!campaigns||campaigns.length===0){
-
-campaigns=
-await supabaseRequest(
-"campaigns",
-"GET",
-null,
-"?join_code=eq."+
-encodeURIComponent(code)+
-"&select=*"
-);
-
 }
-
-if(!campaigns||campaigns.length===0){
-
-showCampaignMessage(
-"Campaign not found."
-);
-
-return;
-
-}
-
-const campaign=
-campaigns[0];
-
-const members=
-await supabaseRequest(
-"campaign_members",
-"GET",
-null,
-"?campaign_id=eq."+
-encodeURIComponent(campaign.id)+
-"&player_id=eq."+
-encodeURIComponent(currentUser.id)+
-"&select=id"
-);
-
-if(!members||members.length===0){
-
-await supabaseRequest(
-"campaign_members",
-"POST",
-{
-campaign_id:campaign.id,
-player_id:currentUser.id,
-role:"player"
-}
-);
-
-}
-
-if(character){
-
-await attachCharacterToCampaign(
-campaign.id
-);
-
-}
-
-$("campaignCode").value="";
-
-showCampaignMessage(
-"You joined "+campaign.name+".",
-true
-);
-
-await openCampaign(campaign);
-
-}catch(error){
-
-console.error(error);
-
-showCampaignMessage(
-error.message||
-"Unable to join campaign."
-);
-
-}
-
-}
-
 
 /* =========================================================
 ATTACH CHARACTER
 ========================================================= */
 
-async function attachCharacterToCampaign(campaignId){
+async function attachCharacterToCampaign(campaignId) {
 
-if(!character){
-return;
+if (!character) {
+    return;
 }
 
 await initializeSupabase();
 
-let characterId=
-character.supabaseId;
+let characterId =
+    character.supabaseId;
 
-if(!characterId){
+if (!characterId) {
 
-const rows=
-await supabaseRequest(
-"characters",
-"GET",
-null,
-"?player_id=eq."+
-encodeURIComponent(currentUser.id)+
-"&select=id"+
-"&order=updated_at.desc"+
-"&limit=1"
-);
+    const rows =
+        await supabaseRequest(
+            "characters",
+            "GET",
+            null,
+            "?player_id=eq." +
+            encodeURIComponent(currentUser.id) +
+            "&select=id" +
+            "&order=updated_at.desc" +
+            "&limit=1"
+        );
 
-if(rows&&rows.length){
-characterId=rows[0].id;
+    if (rows && rows.length) {
+        characterId = rows[0].id;
+    }
+}
+
+if (!characterId) {
+
+    await saveCharacterToSupabase();
+
+    characterId =
+        character.supabaseId;
+}
+
+if (characterId) {
+
+    await supabaseRequest(
+        "characters",
+        "PATCH",
+        {
+            campaign_id: campaignId
+        },
+        "?id=eq." +
+        encodeURIComponent(characterId)
+    );
+
+    character.campaignId =
+        campaignId;
+
+    saveLocalCharacter();
 }
 
 }
-
-if(!characterId){
-
-await saveCharacterToSupabase();
-
-characterId=
-character.supabaseId;
-
-}
-
-if(characterId){
-
-await supabaseRequest(
-"characters",
-"PATCH",
-{
-campaign_id:campaignId
-},
-"?id=eq."+encodeURIComponent(characterId)
-);
-
-character.campaignId=
-campaignId;
-
-saveLocalCharacter();
-
-}
-
-}
-
 
 /* =========================================================
 OPEN CAMPAIGN
 ========================================================= */
 
-async function openCampaign(campaign){
+async function openCampaign(campaign) {
 
-currentCampaign=campaign;
+currentCampaign = campaign;
 
-$("campaignTitle").textContent=
-campaign.name||"Campaign";
+$("campaignTitle").textContent =
+    campaign.name || "Campaign";
 
-$("campaignDescription").textContent=
-campaign.description||
-"No campaign description.";
+$("campaignDescription").textContent =
+    campaign.description ||
+    "No campaign description.";
 
 showScreen("campaignDashboard");
 
@@ -1232,435 +1298,451 @@ await loadCampaignMembers();
 
 }
 
-
 /* =========================================================
 CAMPAIGN MEMBERS
 ========================================================= */
 
-async function loadCampaignMembers(){
+async function loadCampaignMembers() {
 
-if(!currentCampaign){
-return;
+if (!currentCampaign) {
+    return;
 }
 
-const container=
-$("campaignDashboardContent");
+const container =
+    $("campaignDashboardContent");
 
-container.innerHTML=
-'<div class="card">Loading campaign roster...</div>';
+container.innerHTML =
+    '<div class="card">Loading campaign roster...</div>';
 
-try{
+try {
 
-const members=
-await supabaseRequest(
-"campaign_members",
-"GET",
-null,
-"?campaign_id=eq."+
-encodeURIComponent(currentCampaign.id)+
-"&select=*"+
-"&order=joined_at.asc"
-);
+    const characters =
+        await supabaseRequest(
+            "characters",
+            "GET",
+            null,
+            "?campaign_id=eq." +
+            encodeURIComponent(currentCampaign.id) +
+            "&select=*" +
+            "&order=created_at.asc"
+        );
 
-const characters=
-await supabaseRequest(
-"characters",
-"GET",
-null,
-"?campaign_id=eq."+
-encodeURIComponent(currentCampaign.id)+
-"&select=*"+
-"&order=created_at.asc"
-);
+    container.innerHTML = "";
 
-container.innerHTML="";
+    const header =
+        document.createElement("div");
 
-const header=
-document.createElement("div");
+    header.className = "info";
 
-header.className="info";
+    const heading =
+        document.createElement("h2");
 
-const heading=
-document.createElement("h2");
+    heading.textContent =
+        "Campaign Roster";
 
-heading.textContent=
-"Campaign Roster";
+    const id =
+        document.createElement("p");
 
-const id=
-document.createElement("p");
+    id.innerHTML =
+        "<strong>Campaign ID:</strong> " +
+        escapeHtml(currentCampaign.id);
 
-id.innerHTML=
-"<strong>Campaign ID:</strong> "+
-escapeHtml(currentCampaign.id);
+    const joinCode =
+        document.createElement("p");
 
-header.appendChild(heading);
-header.appendChild(id);
+    joinCode.innerHTML =
+        "<strong>Join Code:</strong> " +
+        escapeHtml(
+            currentCampaign.join_code ||
+            "Unavailable"
+        );
 
-container.appendChild(header);
+    header.appendChild(heading);
+    header.appendChild(id);
+    header.appendChild(joinCode);
 
-if(!characters||characters.length===0){
+    container.appendChild(header);
 
-const empty=
-document.createElement("div");
+    if (!characters || characters.length === 0) {
 
-empty.className="card";
+        const empty =
+            document.createElement("div");
 
-empty.innerHTML=
-"<p>No characters have joined this campaign yet.</p>";
+        empty.className = "card";
 
-container.appendChild(empty);
+        empty.innerHTML =
+            "<p>No characters have joined this campaign yet.</p>";
 
-return;
+        container.appendChild(empty);
 
+        return;
+    }
+
+    characters.forEach(function(char) {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "card";
+
+        const title =
+            document.createElement("h3");
+
+        title.textContent =
+            char.name ||
+            "Unnamed Character";
+
+        const identity =
+            document.createElement("p");
+
+        identity.textContent =
+            [
+                char.race,
+                char.class,
+                char.subclass,
+                "Level " + char.level
+            ]
+            .filter(Boolean)
+            .join(" • ");
+
+        const soul =
+            document.createElement("p");
+
+        soul.innerHTML =
+            "<strong>Soul:</strong> " +
+            escapeHtml(
+                char.soul_path ||
+                "Unknown"
+            );
+
+        const background =
+            document.createElement("p");
+
+        background.innerHTML =
+            "<strong>Background:</strong> " +
+            escapeHtml(
+                char.background ||
+                "Unknown"
+            );
+
+        card.appendChild(title);
+        card.appendChild(identity);
+        card.appendChild(soul);
+        card.appendChild(background);
+
+        container.appendChild(card);
+
+    });
+
+} catch (error) {
+
+    console.error(
+        "CAMPAIGN ROSTER ERROR:",
+        error
+    );
+
+    container.innerHTML =
+        '<div class="notice error">' +
+        escapeHtml(error.message) +
+        '</div>';
 }
 
-characters.forEach(function(char){
-
-const card=
-document.createElement("div");
-
-card.className="card";
-
-const title=
-document.createElement("h3");
-
-title.textContent=
-char.name||"Unnamed Character";
-
-const identity=
-document.createElement("p");
-
-identity.textContent=
-[
-char.race,
-char.class,
-char.subclass,
-"Level "+char.level
-].filter(Boolean).join(" • ");
-
-const soul=
-document.createElement("p");
-
-soul.innerHTML=
-"<strong>Soul:</strong> "+
-escapeHtml(char.soul_path||"Unknown");
-
-const background=
-document.createElement("p");
-
-background.innerHTML=
-"<strong>Background:</strong> "+
-escapeHtml(char.background||"Unknown");
-
-card.appendChild(title);
-card.appendChild(identity);
-card.appendChild(soul);
-card.appendChild(background);
-
-container.appendChild(card);
-
-});
-
-}catch(error){
-
-console.error(error);
-
-container.innerHTML=
-'<div class="notice error">'+
-escapeHtml(error.message)+
-'</div>';
-
 }
-
-}
-
 
 /* =========================================================
 CAMPAIGN INFO
 ========================================================= */
 
-function showCampaignInfo(){
+function showCampaignInfo() {
 
-if(!currentCampaign){
-return;
+if (!currentCampaign) {
+    return;
 }
 
-const container=
-$("campaignDashboardContent");
+const container =
+    $("campaignDashboardContent");
 
-container.innerHTML="";
+container.innerHTML = "";
 
-const info=
-document.createElement("div");
+const info =
+    document.createElement("div");
 
-info.className="info";
+info.className = "info";
 
-const title=
-document.createElement("h2");
+const title =
+    document.createElement("h2");
 
-title.textContent=
-currentCampaign.name;
+title.textContent =
+    currentCampaign.name;
 
-const description=
-document.createElement("p");
+const description =
+    document.createElement("p");
 
-description.textContent=
-currentCampaign.description||
-"No description.";
+description.textContent =
+    currentCampaign.description ||
+    "No description.";
 
-const id=
-document.createElement("div");
+const id =
+    document.createElement("div");
 
-id.className="notice";
+id.className = "notice";
 
-id.innerHTML=
-"<strong>Campaign ID:</strong> "+
-escapeHtml(currentCampaign.id);
+id.innerHTML =
+    "<strong>Campaign ID:</strong> " +
+    escapeHtml(currentCampaign.id);
 
 info.appendChild(title);
 info.appendChild(description);
 info.appendChild(id);
 
-if(currentCampaign.join_code){
+if (currentCampaign.join_code) {
 
-const joinCode=
-document.createElement("div");
+    const joinCode =
+        document.createElement("div");
 
-joinCode.className="notice";
+    joinCode.className = "notice";
 
-joinCode.innerHTML=
-"<strong>Join Code:</strong> "+
-escapeHtml(currentCampaign.join_code);
+    joinCode.innerHTML =
+        "<strong>Join Code:</strong> " +
+        escapeHtml(
+            currentCampaign.join_code
+        );
 
-info.appendChild(joinCode);
-
+    info.appendChild(joinCode);
 }
 
 container.appendChild(info);
 
 }
 
-
 /* =========================================================
-MESSAGES
+CAMPAIGN MESSAGE
 ========================================================= */
 
-function showCampaignMessage(message,success=false){
+function showCampaignMessage(
+message,
+success = false
+) {
 
-const box=
-$("campaignMessage");
+const box =
+    $("campaignMessage");
 
-box.textContent=message;
+box.textContent =
+    message;
 
 box.classList.remove("hidden");
 
-box.classList.toggle("success",success);
-box.classList.toggle("error",!success);
+box.classList.toggle(
+    "success",
+    success
+);
+
+box.classList.toggle(
+    "error",
+    !success
+);
 
 }
-
 
 /* =========================================================
 STATS
 ========================================================= */
 
-function renderStats(statScores){
+function renderStats(statScores) {
 
-return Object.entries(statScores).map(function(entry){
+return Object.entries(statScores)
+    .map(function(entry) {
 
-const stat=entry[0];
-const value=entry[1];
+        const stat = entry[0];
+        const value = entry[1];
 
-const mod=modifier(value);
+        const mod =
+            modifier(value);
 
-return `
-<div class="stat">
-<strong>${escapeHtml(value)}</strong>
-${escapeHtml(stat)}
-<br>
-<span class="small">
-${mod>=0?"+":""}${mod}
-</span>
-</div>
-`;
+        return `
+            <div class="stat">
+                <strong>${escapeHtml(value)}</strong>
+                ${escapeHtml(stat)}
+                <br>
+                <span class="small">
+                    ${mod >= 0 ? "+" : ""}${mod}
+                </span>
+            </div>
+        `;
 
-}).join("");
+    })
+    .join("");
 
 }
-
 
 /* =========================================================
 ESCAPE HTML
 ========================================================= */
 
-function escapeHtml(value){
+function escapeHtml(value) {
 
-return String(value??"")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
 }
-
 
 /* =========================================================
-LOCAL CHARACTER
+LOAD LOCAL CHARACTER
 ========================================================= */
 
-function loadLocalCharacter(){
+function loadLocalCharacter() {
 
-const saved=
-localStorage.getItem(
-"soulTrialCharacter"
-);
+const saved =
+    localStorage.getItem(
+        "soulTrialCharacter"
+    );
 
-if(!saved){
-return;
+if (!saved) {
+    return;
 }
 
-try{
+try {
 
-character=
-JSON.parse(saved);
+    character =
+        JSON.parse(saved);
 
-}catch(error){
+} catch (error) {
 
-console.warn(
-"Saved character could not be loaded."
-);
+    console.warn(
+        "Saved character could not be loaded."
+    );
 
-character=null;
-
+    character = null;
 }
 
 }
-
 
 /* =========================================================
 BUTTONS
 ========================================================= */
 
-function wireButtons(){
+function wireButtons() {
 
 $("beginButton").addEventListener(
-"click",
-beginTrial
+    "click",
+    beginTrial
 );
 
 $("campaignHomeButton").addEventListener(
-"click",
-openCampaigns
+    "click",
+    openCampaigns
 );
 
 $("continueName").addEventListener(
-"click",
-startQuestions
+    "click",
+    startQuestions
 );
 
 $("backFromName").addEventListener(
-"click",
-function(){
-showScreen("home");
-}
+    "click",
+    function() {
+        showScreen("home");
+    }
 );
 
 $("continueToCreator").addEventListener(
-"click",
-openCharacterCreator
+    "click",
+    openCharacterCreator
 );
 
 $("saveCharacterButton").addEventListener(
-"click",
-saveCharacter
+    "click",
+    saveCharacter
 );
 
 $("viewSheetButton").addEventListener(
-"click",
-viewSheet
+    "click",
+    viewSheet
 );
 
 $("editCharacterButton").addEventListener(
-"click",
-openCharacterCreator
+    "click",
+    openCharacterCreator
 );
 
 $("campaignsButton").addEventListener(
-"click",
-openCampaigns
+    "click",
+    openCampaigns
 );
 
 $("sheetHomeButton").addEventListener(
-"click",
-function(){
-showScreen("home");
-}
+    "click",
+    function() {
+        showScreen("home");
+    }
 );
 
 $("createCampaignButton").addEventListener(
-"click",
-showCreateCampaign
+    "click",
+    showCreateCampaign
 );
 
 $("joinCampaignButton").addEventListener(
-"click",
-showJoinCampaign
+    "click",
+    showJoinCampaign
 );
 
 $("campaignCharacterButton").addEventListener(
-"click",
-function(){
+    "click",
+    function() {
 
-if(character){
-viewSheet();
-}else{
-beginTrial();
-}
+        if (character) {
+            viewSheet();
+        } else {
+            beginTrial();
+        }
 
-}
+    }
 );
 
 $("campaignHomeButton2").addEventListener(
-"click",
-function(){
-showScreen("home");
-}
+    "click",
+    function() {
+        showScreen("home");
+    }
 );
 
 $("confirmCreateCampaign").addEventListener(
-"click",
-createCampaign
+    "click",
+    createCampaign
 );
 
 $("confirmJoinCampaign").addEventListener(
-"click",
-joinCampaign
+    "click",
+    joinCampaign
 );
 
 $("playersButton").addEventListener(
-"click",
-loadCampaignMembers
+    "click",
+    loadCampaignMembers
 );
 
 $("campaignInfoButton").addEventListener(
-"click",
-showCampaignInfo
+    "click",
+    showCampaignInfo
 );
 
 $("backCampaignsButton").addEventListener(
-"click",
-openCampaigns
+    "click",
+    openCampaigns
 );
 
 }
-
 
 /* =========================================================
 START APP
 ========================================================= */
 
-function initialize(){
+function initialize() {
 
 loadLocalCharacter();
 
@@ -1670,15 +1752,19 @@ showScreen("home");
 
 }
 
-if(document.readyState==="loading"){
+/* =========================================================
+DOM READY
+========================================================= */
+
+if (document.readyState === "loading") {
 
 document.addEventListener(
-"DOMContentLoaded",
-initialize
+    "DOMContentLoaded",
+    initialize
 );
 
-}else{
+} else {
 
 initialize();
 
-  }
+          }
