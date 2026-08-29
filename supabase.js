@@ -1,20 +1,12 @@
 "use strict";
 
-/* =========================================================
-SUPABASE CONFIGURATION
-========================================================= */
-
 const SUPABASE_URL =
 "https://hcvofqqbtppycgqxzaoi.supabase.co";
 
 const SUPABASE_KEY =
 "sb_publishable_5NMRF_b1yMCDPr4LwYa_Ow_cveLPlLI";
 
-
-/* =========================================================
-CURRENT USER
-========================================================= */
-
+let supabaseSession = null;
 let currentUser = null;
 
 
@@ -29,31 +21,29 @@ body=null,
 query=""
 ){
 
-const token =
-localStorage.getItem("soulTrialAccessToken");
+if(!supabaseSession){
 
-const headers = {
+await initializeSupabase();
+
+}
+
+const headers={
 "apikey":SUPABASE_KEY,
+"Authorization":"Bearer "+supabaseSession.access_token,
 "Content-Type":"application/json",
 "Prefer":"return=representation"
 };
 
-if(token){
-headers["Authorization"]="Bearer "+token;
-}else{
-headers["Authorization"]="Bearer "+SUPABASE_KEY;
-}
-
-const options = {
-method:method,
-headers:headers
+const options={
+method,
+headers
 };
 
-if(body !== null){
+if(body!==null){
 options.body=JSON.stringify(body);
 }
 
-const response =
+const response=
 await fetch(
 SUPABASE_URL+
 "/rest/v1/"+
@@ -62,8 +52,7 @@ query,
 options
 );
 
-const text =
-await response.text();
+const text=await response.text();
 
 let data=null;
 
@@ -79,24 +68,19 @@ data=text;
 
 if(!response.ok){
 
-let message =
-"Supabase request failed.";
+let message="Supabase request failed.";
 
 if(data){
 
 if(typeof data==="object"){
-
-message =
+message=
 data.message||
 data.msg||
 data.hint||
 data.error_description||
 JSON.stringify(data);
-
 }else{
-
 message=String(data);
-
 }
 
 }
@@ -111,12 +95,12 @@ return data;
 
 
 /* =========================================================
-SIGN UP
+CREATE ANONYMOUS USER
 ========================================================= */
 
-async function signupUser(email,password){
+async function createAnonymousSession(){
 
-const response =
+const response=
 await fetch(
 SUPABASE_URL+
 "/auth/v1/signup",
@@ -126,15 +110,11 @@ headers:{
 "apikey":SUPABASE_KEY,
 "Content-Type":"application/json"
 },
-body:JSON.stringify({
-email:email,
-password:password
-})
+body:JSON.stringify({})
 }
 );
 
-const data =
-await response.json();
+const data=await response.json();
 
 if(!response.ok){
 
@@ -142,61 +122,7 @@ throw new Error(
 data.msg||
 data.message||
 data.error_description||
-"Unable to create account."
-);
-
-}
-
-if(data.access_token){
-
-localStorage.setItem(
-"soulTrialAccessToken",
-data.access_token
-);
-
-currentUser =
-data.user||null;
-
-}
-
-return data;
-
-}
-
-
-/* =========================================================
-LOGIN
-========================================================= */
-
-async function loginUser(email,password){
-
-const response =
-await fetch(
-SUPABASE_URL+
-"/auth/v1/token?grant_type=password",
-{
-method:"POST",
-headers:{
-"apikey":SUPABASE_KEY,
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-email:email,
-password:password
-})
-}
-);
-
-const data =
-await response.json();
-
-if(!response.ok){
-
-throw new Error(
-data.error_description||
-data.msg||
-data.message||
-"Login failed."
+"Unable to create anonymous session. Make sure Anonymous Sign-Ins are enabled in Supabase."
 );
 
 }
@@ -204,18 +130,19 @@ data.message||
 if(!data.access_token){
 
 throw new Error(
-"Supabase did not return a login token."
+"Supabase did not return an anonymous access token."
 );
 
 }
 
-localStorage.setItem(
-"soulTrialAccessToken",
-data.access_token
-);
+supabaseSession=data;
 
-currentUser =
-data.user||null;
+currentUser=data.user;
+
+localStorage.setItem(
+"soulTrialSupabaseSession",
+JSON.stringify(data)
+);
 
 return data;
 
@@ -223,522 +150,83 @@ return data;
 
 
 /* =========================================================
-RESTORE SESSION
+RESTORE OR CREATE SESSION
 ========================================================= */
 
-async function restoreSupabaseSession(){
+async function initializeSupabase(){
 
-const token =
+if(supabaseSession&&currentUser){
+return supabaseSession;
+}
+
+const saved=
 localStorage.getItem(
-"soulTrialAccessToken"
+"soulTrialSupabaseSession"
 );
 
-if(!token){
-return null;
-}
+if(saved){
 
 try{
 
-const response =
+const parsed=
+JSON.parse(saved);
+
+if(parsed.access_token){
+
+const response=
 await fetch(
-SUPABASE_URL+
-"/auth/v1/user",
+SUPABASE_URL+"/auth/v1/user",
 {
-method:"GET",
 headers:{
 "apikey":SUPABASE_KEY,
-"Authorization":"Bearer "+token
+"Authorization":"Bearer "+parsed.access_token
 }
 }
 );
 
-if(!response.ok){
+if(response.ok){
 
-localStorage.removeItem(
-"soulTrialAccessToken"
-);
-
-currentUser=null;
-
-return null;
-
-}
-
-currentUser =
+const user=
 await response.json();
 
-return currentUser;
+supabaseSession=parsed;
+currentUser=user;
 
-}catch(error){
-
-console.warn(
-"Session restore failed:",
-error
-);
-
-return null;
+return parsed;
 
 }
-
-}
-
-
-/* =========================================================
-PROFILE
-========================================================= */
-
-async function ensureProfile(){
-
-if(!currentUser){
-return;
-}
-
-try{
-
-const existing =
-await supabaseRequest(
-"profiles",
-"GET",
-null,
-"?id=eq."+
-encodeURIComponent(currentUser.id)+
-"&select=*"
-);
-
-if(!existing || existing.length===0){
-
-const email =
-currentUser.email||
-"player@example.com";
-
-const username =
-email.split("@")[0];
-
-await supabaseRequest(
-"profiles",
-"POST",
-{
-id:currentUser.id,
-username:username,
-display_name:username
-}
-);
 
 }
 
 }catch(error){
 
 console.warn(
-"Profile setup warning:",
+"Stored Supabase session could not be restored:",
 error.message
 );
 
 }
 
-}
-
-
-/* =========================================================
-SAVE CHARACTER
-========================================================= */
-
-async function saveCharacterToSupabase(character){
-
-if(!currentUser || !character){
-throw new Error(
-"You must be signed in to sync a character."
-);
-}
-
-const payload = {
-
-player_id:currentUser.id,
-
-name:character.name,
-
-race:character.race,
-
-class:character.class,
-
-subclass:character.subclass,
-
-background:character.background,
-
-level:character.level,
-
-strength:character.scores.STR,
-
-dexterity:character.scores.DEX,
-
-constitution:character.scores.CON,
-
-intelligence:character.scores.INT,
-
-wisdom:character.scores.WIS,
-
-charisma:character.scores.CHA,
-
-max_hp:character.max_hp,
-
-armor_class:character.armor_class,
-
-speed:character.speed,
-
-hit_dice:character.hit_dice,
-
-soul_path:character.soulPath,
-
-soul_trait:character.soulTrait,
-
-soul_blessing:character.blessing,
-
-personality:character.personality||"",
-
-ideal:character.ideal||"",
-
-bond:character.bond||"",
-
-flaw:character.flaw||"",
-
-backstory:character.backstory||""
-
-};
-
-const existing =
-await supabaseRequest(
-"characters",
-"GET",
-null,
-"?player_id=eq."+
-encodeURIComponent(currentUser.id)+
-"&campaign_id=is.null"+
-"&select=id"+
-"&limit=1"
-);
-
-if(existing && existing.length){
-
-return await supabaseRequest(
-"characters",
-"PATCH",
-payload,
-"?id=eq."+
-encodeURIComponent(existing[0].id)
+localStorage.removeItem(
+"soulTrialSupabaseSession"
 );
 
 }
 
-return await supabaseRequest(
-"characters",
-"POST",
-payload
-);
+return await createAnonymousSession();
 
 }
 
 
 /* =========================================================
-LOAD CHARACTER
+INITIALIZE
 ========================================================= */
 
-async function loadCharacterFromSupabase(){
-
-if(!currentUser){
-return null;
-}
-
-try{
-
-const rows =
-await supabaseRequest(
-"characters",
-"GET",
-null,
-"?player_id=eq."+
-encodeURIComponent(currentUser.id)+
-"&campaign_id=is.null"+
-"&select=*"+
-"&order=id.desc"+
-"&limit=1"
-);
-
-if(!rows || !rows.length){
-return null;
-}
-
-const row=rows[0];
-
-return {
-
-id:row.id,
-
-name:row.name,
-
-race:row.race,
-
-class:row.class,
-
-subclass:row.subclass,
-
-background:row.background,
-
-level:row.level||1,
-
-scores:{
-STR:row.strength||10,
-DEX:row.dexterity||10,
-CON:row.constitution||10,
-INT:row.intelligence||10,
-WIS:row.wisdom||10,
-CHA:row.charisma||10
-},
-
-max_hp:row.max_hp,
-
-armor_class:row.armor_class,
-
-speed:row.speed,
-
-hit_dice:row.hit_dice,
-
-soulPath:row.soul_path,
-
-soulTrait:row.soul_trait,
-
-blessing:row.soul_blessing,
-
-personality:row.personality||"",
-
-ideal:row.ideal||"",
-
-bond:row.bond||"",
-
-flaw:row.flaw||"",
-
-backstory:row.backstory||"",
-
-equipment:[]
-
-};
-
-}catch(error){
+initializeSupabase().catch(function(error){
 
 console.warn(
-"Unable to load character:",
+"Supabase anonymous session unavailable:",
 error.message
 );
 
-return null;
-
-}
-
-}
-
-
-/* =========================================================
-CREATE CAMPAIGN
-========================================================= */
-
-async function createCampaignInSupabase(
-name,
-description
-){
-
-if(!currentUser){
-
-throw new Error(
-"You must be signed in."
-);
-
-}
-
-const created =
-await supabaseRequest(
-"campaigns",
-"POST",
-{
-name:name,
-description:description
-}
-);
-
-if(!created || !created.length){
-
-throw new Error(
-"Campaign was not created."
-);
-
-}
-
-const campaign=created[0];
-
-try{
-
-await supabaseRequest(
-"campaign_members",
-"POST",
-{
-player_id:currentUser.id,
-campaign_id:campaign.id,
-role:"dm"
-}
-);
-
-}catch(error){
-
-console.warn(
-"Campaign owner membership warning:",
-error.message
-);
-
-}
-
-return campaign;
-
-}
-
-
-/* =========================================================
-GET CAMPAIGNS
-========================================================= */
-
-async function getCampaigns(){
-
-return await supabaseRequest(
-"campaigns",
-"GET",
-null,
-"?select=*&order=id.desc"
-);
-
-}
-
-
-/* =========================================================
-JOIN CAMPAIGN
-========================================================= */
-
-async function joinCampaignInSupabase(
-campaignId
-){
-
-if(!currentUser){
-
-throw new Error(
-"You must be signed in."
-);
-
-}
-
-const campaigns =
-await supabaseRequest(
-"campaigns",
-"GET",
-null,
-"?id=eq."+
-encodeURIComponent(campaignId)+
-"&select=*"
-);
-
-if(!campaigns || !campaigns.length){
-
-throw new Error(
-"Campaign not found."
-);
-
-}
-
-const campaign=campaigns[0];
-
-try{
-
-await supabaseRequest(
-"campaign_members",
-"POST",
-{
-player_id:currentUser.id,
-campaign_id:campaign.id,
-role:"player"
-}
-);
-
-}catch(error){
-
-const message =
-(error.message||"").toLowerCase();
-
-if(
-!message.includes("duplicate") &&
-!message.includes("unique")
-){
-
-throw error;
-
-}
-
-}
-
-return campaign;
-
-}
-
-
-/* =========================================================
-GET CAMPAIGN MEMBERS
-========================================================= */
-
-async function getCampaignMembers(
-campaignId
-){
-
-return await supabaseRequest(
-"campaign_members",
-"GET",
-null,
-"?campaign_id=eq."+
-encodeURIComponent(campaignId)+
-"&select=*"
-);
-
-}
-
-
-/* =========================================================
-ATTACH CHARACTER TO CAMPAIGN
-========================================================= */
-
-async function attachCharacterToCampaignInSupabase(
-campaignId
-){
-
-if(!currentUser){
-return;
-}
-
-const rows =
-await supabaseRequest(
-"characters",
-"GET",
-null,
-"?player_id=eq."+
-encodeURIComponent(currentUser.id)+
-"&campaign_id=is.null"+
-"&select=id"+
-"&limit=1"
-);
-
-if(rows && rows.length){
-
-await supabaseRequest(
-"characters",
-"PATCH",
-{
-campaign_id:campaignId
-},
-"?id=eq."+
-encodeURIComponent(rows[0].id)
-);
-
-}
-
-}
+});
