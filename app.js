@@ -1,38 +1,13 @@
 "use strict";
 
-/*
-=========================================================
-THE SOUL'S TRIAL
-APP.JS
-=========================================================
-
-FLOW
-
-HOME
- ├── BEGIN THE TRIAL
- │     └── NAME
- │          └── QUIZ
- │               └── RESULT
- │                    └── CHARACTER CREATION
- │                         └── CHARACTER SHEET
- │
- └── CAMPAIGNS
-       ├── I'M A DM
-       │     └── CREATE CAMPAIGN
-       │          └── DM DASHBOARD
-       │
-       └── I'M A PLAYER
-             └── SOUL'S TRIAL
-                  └── CHARACTER
-                       └── JOIN CAMPAIGN
-                            └── CAMPAIGN
-=========================================================
-*/
-
+/* =========================================================
+   THE SOUL'S TRIAL
+   COMPLETE APPLICATION SCRIPT
+   ========================================================= */
 
 /* =========================================================
-GLOBAL STATE
-========================================================= */
+   GLOBAL STATE
+   ========================================================= */
 
 let character = null;
 let currentCampaign = null;
@@ -50,10 +25,12 @@ let scores = {
 
 let selectedEquipment = [];
 
+let currentMode = null;
+
 
 /* =========================================================
-DOM HELPER
-========================================================= */
+   DOM HELPER
+   ========================================================= */
 
 function $(id) {
     return document.getElementById(id);
@@ -61,8 +38,8 @@ function $(id) {
 
 
 /* =========================================================
-SCREEN CONTROL
-========================================================= */
+   SCREEN CONTROL
+   ========================================================= */
 
 function showScreen(id) {
 
@@ -87,26 +64,16 @@ function showScreen(id) {
 
 
 /* =========================================================
-HOME
-========================================================= */
+   PLAYER FLOW
+   ========================================================= */
 
-function goHome() {
+function beginPlayerFlow() {
 
-    showScreen("home");
+    console.log("BEGIN AS PLAYER");
 
-}
+    currentMode = "player";
 
-
-/* =========================================================
-PLAYER FLOW
-========================================================= */
-
-/*
-This is the ONLY place the player begins
-the Soul's Trial.
-*/
-
-function beginTrial() {
+    questionIndex = 0;
 
     scores = {
         STR: 0,
@@ -116,8 +83,6 @@ function beginTrial() {
         WIS: 0,
         CHA: 0
     };
-
-    questionIndex = 0;
 
     selectedEquipment = [];
 
@@ -134,23 +99,89 @@ function beginTrial() {
 
 
 /* =========================================================
-START QUIZ
-========================================================= */
+   DM FLOW
+   ========================================================= */
+
+async function beginDMFlow() {
+
+    console.log("BEGIN AS DM");
+
+    currentMode = "dm";
+
+    showScreen("campaigns");
+
+    const notice = $("campaignAccountNotice");
+
+    if (notice) {
+        notice.textContent =
+            "Connecting you to the campaign realm...";
+    }
+
+    try {
+
+        await initializeSupabase();
+
+        if (!currentUser) {
+            throw new Error(
+                "Anonymous session could not be created."
+            );
+        }
+
+        if (notice) {
+            notice.textContent =
+                "You are connected anonymously. No login is required.";
+        }
+
+        await loadCampaigns();
+
+    } catch (error) {
+
+        console.error("DM connection error:", error);
+
+        if (notice) {
+            notice.textContent =
+                "Campaign connection failed: " +
+                (error.message || error);
+        }
+
+    }
+}
+
+
+/* =========================================================
+   OLD BEGIN TRIAL SUPPORT
+   ========================================================= */
+
+function beginTrial() {
+
+    beginPlayerFlow();
+
+}
+
+
+/* =========================================================
+   START QUIZ
+   ========================================================= */
 
 function startQuestions() {
 
-    const input = $("playerName");
+    const nameInput = $("playerName");
 
-    if (!input) {
-        alert("Character name field could not be found.");
+    if (!nameInput) {
+        alert("Character name input could not be found.");
         return;
     }
 
-    const name = input.value.trim();
+    const name = nameInput.value.trim();
 
     if (!name) {
-        alert("Your soul must have a name.");
-        input.focus();
+
+        alert(
+            "Your soul must have a name."
+        );
+
+        nameInput.focus();
+
         return;
     }
 
@@ -168,16 +199,18 @@ function startQuestions() {
 
 
 /* =========================================================
-DISPLAY QUESTION
-========================================================= */
+   DISPLAY QUESTION
+   ========================================================= */
 
 function displayQuestion() {
 
-    if (!Array.isArray(questions) || !questions.length) {
+    if (!questions || !questions.length) {
 
-        alert("The Soul's Trial questions could not be loaded.");
+        console.error("No questions found in data.js.");
 
-        console.error("questions array is missing or empty.");
+        alert(
+            "The Soul's Trial questions could not be loaded."
+        );
 
         return;
     }
@@ -185,14 +218,7 @@ function displayQuestion() {
     const current = questions[questionIndex];
 
     if (!current) {
-
-        console.error(
-            "Question does not exist:",
-            questionIndex
-        );
-
         calculateSoul();
-
         return;
     }
 
@@ -215,7 +241,8 @@ function displayQuestion() {
     if (progressBar) {
 
         progressBar.style.width =
-            ((questionIndex / questions.length) * 100) + "%";
+            ((questionIndex / questions.length) * 100) +
+            "%";
 
     }
 
@@ -228,7 +255,7 @@ function displayQuestion() {
     }
 
     if (!answers) {
-        console.error("answers container not found.");
+        console.error("Answers container not found.");
         return;
     }
 
@@ -240,25 +267,30 @@ function displayQuestion() {
             document.createElement("button");
 
         button.type = "button";
-
         button.className = "choice";
-
         button.textContent = option[0];
 
         button.addEventListener("click", function() {
 
-            Object.entries(option[1]).forEach(function(entry) {
+            Object.entries(option[1]).forEach(
+                function(entry) {
 
-                const stat = entry[0];
-                const points = entry[1];
+                    const stat = entry[0];
+                    const amount = entry[1];
 
-                if (scores[stat] === undefined) {
-                    scores[stat] = 0;
+                    if (
+                        Object.prototype.hasOwnProperty.call(
+                            scores,
+                            stat
+                        )
+                    ) {
+
+                        scores[stat] += amount;
+
+                    }
+
                 }
-
-                scores[stat] += points;
-
-            });
+            );
 
             questionIndex++;
 
@@ -282,8 +314,8 @@ function displayQuestion() {
 
 
 /* =========================================================
-MODIFIER
-========================================================= */
+   ABILITY MODIFIER
+   ========================================================= */
 
 function modifier(score) {
 
@@ -295,25 +327,29 @@ function modifier(score) {
 
 
 /* =========================================================
-CALCULATE SOUL
-========================================================= */
+   CALCULATE SOUL
+   ========================================================= */
 
 function calculateSoul() {
 
     const sorted =
-        Object.entries(scores).sort(function(a, b) {
+        Object.entries(scores).sort(
+            function(a, b) {
 
-            if (b[1] !== a[1]) {
-                return b[1] - a[1];
+                if (b[1] !== a[1]) {
+                    return b[1] - a[1];
+                }
+
+                return a[0].localeCompare(b[0]);
+
             }
+        );
 
-            return a[0].localeCompare(b[0]);
+    const highest =
+        sorted[0][0];
 
-        });
-
-    const highest = sorted[0][0];
-
-    const path = soulPaths[highest];
+    const path =
+        soulPaths[highest];
 
     if (!path) {
 
@@ -322,7 +358,9 @@ function calculateSoul() {
             highest
         );
 
-        alert("The Soul's Trial could not determine your soul.");
+        alert(
+            "The Soul's Trial could not determine your path."
+        );
 
         return;
     }
@@ -345,12 +383,14 @@ function calculateSoul() {
         CHA: 10
     };
 
-    sorted.forEach(function(entry, index) {
+    sorted.forEach(
+        function(entry, index) {
 
-        finalScores[entry[0]] =
-            standard[index];
+            finalScores[entry[0]] =
+                standard[index];
 
-    });
+        }
+    );
 
     const chosenClass =
         path.classes[0];
@@ -364,9 +404,24 @@ function calculateSoul() {
     const data =
         classData[chosenClass];
 
+    if (!data) {
+
+        console.error(
+            "Class data not found:",
+            chosenClass
+        );
+
+        alert(
+            "Character class data could not be loaded."
+        );
+
+        return;
+    }
+
     character.race = race;
 
-    character.dominantStat = highest;
+    character.dominantStat =
+        highest;
 
     character.soulPath =
         path.name;
@@ -425,114 +480,172 @@ function calculateSoul() {
     saveLocalCharacter();
 
     renderResult();
-
 }
 
 
 /* =========================================================
-RESULT
-========================================================= */
+   RESULT SCREEN
+   ========================================================= */
 
 function renderResult() {
 
-    $("resultName").textContent =
-        character.name;
+    if (!character) {
+        return;
+    }
 
-    $("soulPath").textContent =
-        character.soulPath;
+    if ($("resultName")) {
+        $("resultName").textContent =
+            character.name;
+    }
 
-    $("soulDescription").textContent =
-        character.soulDescription;
+    if ($("soulPath")) {
+        $("soulPath").textContent =
+            character.soulPath;
+    }
 
-    $("resultRace").textContent =
-        character.race;
+    if ($("soulDescription")) {
+        $("soulDescription").textContent =
+            character.soulDescription;
+    }
 
-    $("resultClass").textContent =
-        character.class;
+    if ($("resultRace")) {
+        $("resultRace").textContent =
+            character.race;
+    }
 
-    $("resultSubclass").textContent =
-        character.subclass;
+    if ($("resultClass")) {
+        $("resultClass").textContent =
+            character.class;
+    }
 
-    $("resultBackground").textContent =
-        character.background;
+    if ($("resultSubclass")) {
+        $("resultSubclass").textContent =
+            character.subclass;
+    }
 
-    $("resultStats").innerHTML =
-        renderStats(character.scores);
+    if ($("resultBackground")) {
+        $("resultBackground").textContent =
+            character.background;
+    }
 
-    $("soulTrait").textContent =
-        character.soulTrait;
+    if ($("resultStats")) {
+        $("resultStats").innerHTML =
+            renderStats(character.scores);
+    }
 
-    $("traitDescription").textContent =
-        character.traitDescription;
+    if ($("soulTrait")) {
+        $("soulTrait").textContent =
+            character.soulTrait;
+    }
 
-    $("awakeningBlessing").textContent =
-        character.blessing;
+    if ($("traitDescription")) {
+        $("traitDescription").textContent =
+            character.traitDescription;
+    }
 
-    $("blessingDescription").textContent =
-        character.blessingDescription;
+    if ($("awakeningBlessing")) {
+        $("awakeningBlessing").textContent =
+            character.blessing;
+    }
+
+    if ($("blessingDescription")) {
+        $("blessingDescription").textContent =
+            character.blessingDescription;
+    }
 
     showScreen("result");
-
 }
 
 
 /* =========================================================
-CHARACTER CREATOR
-========================================================= */
+   CHARACTER CREATOR
+   ========================================================= */
 
 function openCharacterCreator() {
 
     if (!character) {
 
-        alert("No character exists yet.");
+        alert(
+            "No character exists yet."
+        );
 
         return;
     }
 
-    $("characterName").textContent =
-        character.name;
+    if ($("characterName")) {
+        $("characterName").textContent =
+            character.name;
+    }
 
-    $("creatorRace").textContent =
-        character.race;
+    if ($("creatorRace")) {
+        $("creatorRace").textContent =
+            character.race;
+    }
 
-    $("creatorClass").textContent =
-        character.class;
+    if ($("creatorClass")) {
+        $("creatorClass").textContent =
+            character.class;
+    }
 
-    $("creatorSubclass").textContent =
-        character.subclass;
+    if ($("creatorSubclass")) {
+        $("creatorSubclass").textContent =
+            character.subclass;
+    }
 
-    $("creatorBackground").textContent =
-        character.background;
+    if ($("creatorBackground")) {
+        $("creatorBackground").textContent =
+            character.background;
+    }
 
-    $("creatorLevel").textContent =
-        character.level;
+    if ($("creatorLevel")) {
+        $("creatorLevel").textContent =
+            character.level;
+    }
 
-    $("abilityScores").innerHTML =
-        renderStats(character.scores);
+    if ($("abilityScores")) {
+        $("abilityScores").innerHTML =
+            renderStats(character.scores);
+    }
 
-    $("creatorHP").textContent =
-        character.max_hp;
+    if ($("creatorHP")) {
+        $("creatorHP").textContent =
+            character.max_hp;
+    }
 
-    $("creatorAC").textContent =
-        character.armor_class;
+    if ($("creatorAC")) {
+        $("creatorAC").textContent =
+            character.armor_class;
+    }
 
-    $("creatorSpeed").textContent =
-        character.speed + " ft";
+    if ($("creatorSpeed")) {
+        $("creatorSpeed").textContent =
+            character.speed + " ft";
+    }
 
-    $("personality").value =
-        character.personality || "";
+    if ($("personality")) {
+        $("personality").value =
+            character.personality || "";
+    }
 
-    $("ideal").value =
-        character.ideal || "";
+    if ($("ideal")) {
+        $("ideal").value =
+            character.ideal || "";
+    }
 
-    $("bond").value =
-        character.bond || "";
+    if ($("bond")) {
+        $("bond").value =
+            character.bond || "";
+    }
 
-    $("flaw").value =
-        character.flaw || "";
+    if ($("flaw")) {
+        $("flaw").value =
+            character.flaw || "";
+    }
 
-    $("backstory").value =
-        character.backstory || "";
+    if ($("backstory")) {
+        $("backstory").value =
+            character.backstory || "";
+    }
 
     selectedEquipment =
         Array.isArray(character.equipment)
@@ -542,13 +655,12 @@ function openCharacterCreator() {
     renderEquipmentOptions();
 
     showScreen("creator");
-
 }
 
 
 /* =========================================================
-EQUIPMENT
-========================================================= */
+   EQUIPMENT
+   ========================================================= */
 
 function renderEquipmentOptions() {
 
@@ -579,7 +691,6 @@ function renderEquipmentOptions() {
             document.createElement("input");
 
         checkbox.type = "checkbox";
-
         checkbox.value = item;
 
         checkbox.checked =
@@ -590,7 +701,9 @@ function renderEquipmentOptions() {
         wrapper.appendChild(checkbox);
 
         wrapper.appendChild(
-            document.createTextNode(" " + item)
+            document.createTextNode(
+                " " + item
+            )
         );
 
         checkbox.addEventListener(
@@ -599,8 +712,12 @@ function renderEquipmentOptions() {
 
                 if (checkbox.checked) {
 
-                    if (!selectedEquipment.includes(item)) {
+                    if (
+                        !selectedEquipment.includes(item)
+                    ) {
+
                         selectedEquipment.push(item);
+
                     }
 
                 } else {
@@ -625,8 +742,8 @@ function renderEquipmentOptions() {
 
 
 /* =========================================================
-SAVE LOCAL CHARACTER
-========================================================= */
+   LOCAL CHARACTER SAVE
+   ========================================================= */
 
 function saveLocalCharacter() {
 
@@ -634,41 +751,64 @@ function saveLocalCharacter() {
         return;
     }
 
-    localStorage.setItem(
-        "soulTrialCharacter",
-        JSON.stringify(character)
-    );
+    try {
+
+        localStorage.setItem(
+            "soulTrialCharacter",
+            JSON.stringify(character)
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Unable to save character locally:",
+            error
+        );
+
+    }
 
 }
 
 
 /* =========================================================
-SAVE CHARACTER
-========================================================= */
+   SAVE CHARACTER
+   ========================================================= */
 
 async function saveCharacter() {
 
     if (!character) {
 
-        alert("No character exists.");
+        alert(
+            "Create a character first."
+        );
 
         return;
     }
 
-    character.personality =
-        $("personality").value.trim();
+    if ($("personality")) {
+        character.personality =
+            $("personality").value.trim();
+    }
 
-    character.ideal =
-        $("ideal").value.trim();
+    if ($("ideal")) {
+        character.ideal =
+            $("ideal").value.trim();
+    }
 
-    character.bond =
-        $("bond").value.trim();
+    if ($("bond")) {
+        character.bond =
+            $("bond").value.trim();
+    }
 
-    character.flaw =
-        $("flaw").value.trim();
+    if ($("flaw")) {
+        character.flaw =
+            $("flaw").value.trim();
+    }
 
-    character.backstory =
-        $("backstory").value.trim();
+    if ($("backstory")) {
+        character.backstory =
+            $("backstory").value.trim();
+    }
 
     character.equipment =
         Array.from(
@@ -692,7 +832,6 @@ async function saveCharacter() {
                 "Character saved and synced with the Soul's Trial realm.";
 
             status.classList.remove("error");
-
             status.classList.add("success");
 
         }
@@ -703,7 +842,10 @@ async function saveCharacter() {
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Character sync failed:",
+            error
+        );
 
         const status =
             $("syncStatus");
@@ -714,14 +856,13 @@ async function saveCharacter() {
                 "Character saved on this device. Online sync is currently unavailable.";
 
             status.classList.remove("success");
-
             status.classList.add("error");
 
         }
 
         alert(
             "Character saved locally, but online synchronization failed:\n\n" +
-            error.message
+            (error.message || error)
         );
 
     }
@@ -730,17 +871,23 @@ async function saveCharacter() {
 
 
 /* =========================================================
-SAVE CHARACTER TO SUPABASE
-========================================================= */
+   SAVE CHARACTER TO SUPABASE
+   ========================================================= */
 
 async function saveCharacterToSupabase() {
 
-    if (!currentUser) {
-
+    if (!character) {
         throw new Error(
-            "No anonymous player session is available."
+            "No character exists."
         );
+    }
 
+    await initializeSupabase();
+
+    if (!currentUser) {
+        throw new Error(
+            "Anonymous session unavailable."
+        );
     }
 
     const payload = {
@@ -799,19 +946,19 @@ async function saveCharacterToSupabase() {
             character.blessing,
 
         personality:
-            character.personality,
+            character.personality || "",
 
         ideal:
-            character.ideal,
+            character.ideal || "",
 
         bond:
-            character.bond,
+            character.bond || "",
 
         flaw:
-            character.flaw,
+            character.flaw || "",
 
         backstory:
-            character.backstory
+            character.backstory || ""
 
     };
 
@@ -827,14 +974,19 @@ async function saveCharacterToSupabase() {
             "&limit=1"
         );
 
-    if (existing && existing.length) {
+    if (
+        existing &&
+        existing.length
+    ) {
 
         await supabaseRequest(
             "characters",
             "PATCH",
             payload,
             "?id=eq." +
-            encodeURIComponent(existing[0].id)
+            encodeURIComponent(
+                existing[0].id
+            )
         );
 
         character.supabaseId =
@@ -849,7 +1001,10 @@ async function saveCharacterToSupabase() {
                 payload
             );
 
-        if (created && created.length) {
+        if (
+            created &&
+            created.length
+        ) {
 
             character.supabaseId =
                 created[0].id;
@@ -859,103 +1014,145 @@ async function saveCharacterToSupabase() {
     }
 
     saveLocalCharacter();
-
 }
 
 
 /* =========================================================
-CHARACTER SHEET
-========================================================= */
+   CHARACTER SHEET
+   ========================================================= */
 
 function viewSheet() {
 
     if (!character) {
 
-        alert("Create a character first.");
+        alert(
+            "Create a character first."
+        );
 
         return;
     }
 
-    $("sheetName").textContent =
-        character.name;
+    if ($("sheetName")) {
+        $("sheetName").textContent =
+            character.name;
+    }
 
-    $("sheetIdentity").textContent =
-        character.race +
-        " • " +
-        character.class +
-        " • " +
-        character.subclass +
-        " • Level " +
-        character.level +
-        " • " +
-        character.background;
+    if ($("sheetIdentity")) {
 
-    $("sheetHP").textContent =
-        character.current_hp ||
-        character.max_hp;
+        $("sheetIdentity").textContent =
+            character.race +
+            " • " +
+            character.class +
+            " • " +
+            character.subclass +
+            " • Level " +
+            character.level +
+            " • " +
+            character.background;
 
-    $("sheetAC").textContent =
-        character.armor_class;
+    }
 
-    $("sheetSpeed").textContent =
-        character.speed + " ft";
+    if ($("sheetHP")) {
+        $("sheetHP").textContent =
+            character.current_hp ||
+            character.max_hp;
+    }
 
-    $("sheetLevel").textContent =
-        character.level;
+    if ($("sheetAC")) {
+        $("sheetAC").textContent =
+            character.armor_class;
+    }
 
-    $("sheetProficiency").textContent =
-        "+" +
-        character.proficiency_bonus;
+    if ($("sheetSpeed")) {
+        $("sheetSpeed").textContent =
+            character.speed + " ft";
+    }
 
-    $("sheetHitDice").textContent =
-        character.hit_dice;
+    if ($("sheetLevel")) {
+        $("sheetLevel").textContent =
+            character.level;
+    }
 
-    $("sheetStats").innerHTML =
-        renderStats(character.scores);
+    if ($("sheetProficiency")) {
+        $("sheetProficiency").textContent =
+            "+" +
+            character.proficiency_bonus;
+    }
 
-    $("sheetPath").textContent =
-        character.soulPath;
+    if ($("sheetHitDice")) {
+        $("sheetHitDice").textContent =
+            character.hit_dice;
+    }
 
-    $("sheetPathDescription").textContent =
-        character.soulDescription;
+    if ($("sheetStats")) {
+        $("sheetStats").innerHTML =
+            renderStats(character.scores);
+    }
 
-    $("sheetTrait").textContent =
-        character.soulTrait;
+    if ($("sheetPath")) {
+        $("sheetPath").textContent =
+            character.soulPath;
+    }
 
-    $("sheetTraitDescription").textContent =
-        character.traitDescription;
+    if ($("sheetPathDescription")) {
+        $("sheetPathDescription").textContent =
+            character.soulDescription;
+    }
 
-    $("sheetBlessing").textContent =
-        character.blessing;
+    if ($("sheetTrait")) {
+        $("sheetTrait").textContent =
+            character.soulTrait;
+    }
 
-    $("sheetBlessingDescription").textContent =
-        character.blessingDescription;
+    if ($("sheetTraitDescription")) {
+        $("sheetTraitDescription").textContent =
+            character.traitDescription;
+    }
 
-    $("sheetPersonality").textContent =
-        character.personality || "—";
+    if ($("sheetBlessing")) {
+        $("sheetBlessing").textContent =
+            character.blessing;
+    }
 
-    $("sheetIdeal").textContent =
-        character.ideal || "—";
+    if ($("sheetBlessingDescription")) {
+        $("sheetBlessingDescription").textContent =
+            character.blessingDescription;
+    }
 
-    $("sheetBond").textContent =
-        character.bond || "—";
+    if ($("sheetPersonality")) {
+        $("sheetPersonality").textContent =
+            character.personality || "—";
+    }
 
-    $("sheetFlaw").textContent =
-        character.flaw || "—";
+    if ($("sheetIdeal")) {
+        $("sheetIdeal").textContent =
+            character.ideal || "—";
+    }
 
-    $("sheetBackstory").textContent =
-        character.backstory || "—";
+    if ($("sheetBond")) {
+        $("sheetBond").textContent =
+            character.bond || "—";
+    }
+
+    if ($("sheetFlaw")) {
+        $("sheetFlaw").textContent =
+            character.flaw || "—";
+    }
+
+    if ($("sheetBackstory")) {
+        $("sheetBackstory").textContent =
+            character.backstory || "—";
+    }
 
     renderSheetEquipment();
 
     showScreen("sheet");
-
 }
 
 
 /* =========================================================
-SHEET EQUIPMENT
-========================================================= */
+   SHEET EQUIPMENT
+   ========================================================= */
 
 function renderSheetEquipment() {
 
@@ -969,7 +1166,10 @@ function renderSheetEquipment() {
     container.innerHTML = "";
 
     const equipment =
-        character.equipment || [];
+        character &&
+        Array.isArray(character.equipment)
+            ? character.equipment
+            : [];
 
     if (!equipment.length) {
 
@@ -996,21 +1196,8 @@ function renderSheetEquipment() {
 
 
 /* =========================================================
-CAMPAIGN ROLE SCREEN
-========================================================= */
-
-/*
-We use the existing campaigns section.
-
-The two main buttons now have clear jobs:
-
-CREATE CAMPAIGN = DM
-
-JOIN CAMPAIGN = PLAYER
-
-The CHARACTER button lets an existing player
-return to their character sheet.
-*/
+   CAMPAIGN SCREEN
+   ========================================================= */
 
 async function openCampaigns() {
 
@@ -1022,7 +1209,7 @@ async function openCampaigns() {
     if (notice) {
 
         notice.textContent =
-            "Connecting you to the realm...";
+            "Connecting your Soul to the campaign realm...";
 
     }
 
@@ -1030,10 +1217,18 @@ async function openCampaigns() {
 
         await initializeSupabase();
 
+        if (!currentUser) {
+
+            throw new Error(
+                "Anonymous session unavailable."
+            );
+
+        }
+
         if (notice) {
 
             notice.textContent =
-                "Choose your role: create a campaign as a DM, or enter the Soul's Trial as a player.";
+                "You are connected anonymously. No login is required.";
 
         }
 
@@ -1041,13 +1236,16 @@ async function openCampaigns() {
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Campaign connection failed:",
+            error
+        );
 
         if (notice) {
 
             notice.textContent =
                 "Campaign connection failed: " +
-                error.message;
+                (error.message || error);
 
         }
 
@@ -1057,10 +1255,14 @@ async function openCampaigns() {
 
 
 /* =========================================================
-DM BUTTON
-========================================================= */
+   SHOW CREATE CAMPAIGN
+   ========================================================= */
 
 function showCreateCampaign() {
+
+    console.log(
+        "CREATE CAMPAIGN MENU OPENED"
+    );
 
     const createBox =
         $("campaignCreate");
@@ -1088,11 +1290,12 @@ function showCreateCampaign() {
 
     if (nameInput) {
 
-        setTimeout(function() {
-
-            nameInput.focus();
-
-        }, 100);
+        setTimeout(
+            function() {
+                nameInput.focus();
+            },
+            100
+        );
 
     }
 
@@ -1100,40 +1303,14 @@ function showCreateCampaign() {
 
 
 /* =========================================================
-PLAYER BUTTON
-========================================================= */
-
-/*
-A player should NOT create a campaign.
-
-This button starts the player path.
-If they already have a character, they can
-go directly to the character sheet instead.
-*/
-
-function startPlayerFlow() {
-
-    $("campaignCreate").classList.add("hidden");
-
-    $("campaignJoin").classList.add("hidden");
-
-    if (character) {
-
-        viewSheet();
-
-        return;
-    }
-
-    beginTrial();
-
-}
-
-
-/* =========================================================
-JOIN BOX
-========================================================= */
+   SHOW JOIN CAMPAIGN
+   ========================================================= */
 
 function showJoinCampaign() {
+
+    console.log(
+        "JOIN CAMPAIGN MENU OPENED"
+    );
 
     const joinBox =
         $("campaignJoin");
@@ -1161,11 +1338,12 @@ function showJoinCampaign() {
 
     if (codeInput) {
 
-        setTimeout(function() {
-
-            codeInput.focus();
-
-        }, 100);
+        setTimeout(
+            function() {
+                codeInput.focus();
+            },
+            100
+        );
 
     }
 
@@ -1173,8 +1351,8 @@ function showJoinCampaign() {
 
 
 /* =========================================================
-CREATE CAMPAIGN
-========================================================= */
+   CREATE CAMPAIGN
+   ========================================================= */
 
 async function createCampaign() {
 
@@ -1192,6 +1370,10 @@ async function createCampaign() {
 
         alert(
             "Campaign name input was not found."
+        );
+
+        console.error(
+            "campaignName element missing."
         );
 
         return;
@@ -1228,9 +1410,10 @@ async function createCampaign() {
 
         }
 
-        /*
-        DM creates the campaign.
-        */
+        console.log(
+            "Authenticated as:",
+            currentUser.id
+        );
 
         const campaignResult =
             await supabaseRequest(
@@ -1242,6 +1425,11 @@ async function createCampaign() {
                     dm_id: currentUser.id
                 }
             );
+
+        console.log(
+            "Campaign creation result:",
+            campaignResult
+        );
 
         if (
             !campaignResult ||
@@ -1257,10 +1445,6 @@ async function createCampaign() {
 
         const campaign =
             campaignResult[0];
-
-        /*
-        Add the DM to campaign_members.
-        */
 
         await supabaseRequest(
             "campaign_members",
@@ -1278,18 +1462,22 @@ async function createCampaign() {
             descriptionInput.value = "";
         }
 
-        $("campaignCreate").classList.add("hidden");
+        const createBox =
+            $("campaignCreate");
+
+        if (createBox) {
+            createBox.classList.add("hidden");
+        }
 
         showCampaignMessage(
-            "Campaign created successfully.",
+            "Campaign created successfully! Campaign ID: " +
+            campaign.id,
             true
         );
 
-        /*
-        Immediately open the DM dashboard.
-        */
-
-        await openCampaign(campaign);
+        await openCampaign(
+            campaign
+        );
 
     } catch (error) {
 
@@ -1304,14 +1492,19 @@ async function createCampaign() {
             false
         );
 
+        alert(
+            "Campaign creation failed:\n\n" +
+            (error.message || error)
+        );
+
     }
 
 }
 
 
 /* =========================================================
-LOAD CAMPAIGNS
-========================================================= */
+   LOAD CAMPAIGNS
+   ========================================================= */
 
 async function loadCampaigns() {
 
@@ -1327,100 +1520,114 @@ async function loadCampaigns() {
 
     try {
 
-        /*
-        Only load campaigns the current anonymous
-        user is actually a member of.
-
-        This prevents every player from seeing
-        every campaign in the database.
-        */
-
-        if (!currentUser) {
-            await initializeSupabase();
-        }
-
-        if (!currentUser) {
-            throw new Error(
-                "No anonymous session available."
-            );
-        }
-
-        const memberships =
+        const campaigns =
             await supabaseRequest(
-                "campaign_members",
+                "campaigns",
                 "GET",
                 null,
-                "?player_id=eq." +
-                encodeURIComponent(currentUser.id) +
-                "&select=campaign_id"
+                "?select=*&order=created_at.desc"
             );
 
         container.innerHTML = "";
 
         if (
-            !memberships ||
-            memberships.length === 0
+            !campaigns ||
+            campaigns.length === 0
         ) {
 
-            container.innerHTML =
-                `
+            container.innerHTML = `
                 <div class="info">
                     <h2>No Campaigns Yet</h2>
                     <p>
-                        If you are a DM, create a campaign above.
-                        If you are a player, ask your DM for a campaign ID or join code.
+                        Create a campaign as a DM or join one using the ID provided by your DM.
                     </p>
                 </div>
-                `;
+            `;
 
             return;
         }
 
-        for (
-            let i = 0;
-            i < memberships.length;
-            i++
-        ) {
+        campaigns.forEach(
+            function(campaign) {
 
-            const membership =
-                memberships[i];
+                const card =
+                    document.createElement("div");
 
-            const campaigns =
-                await supabaseRequest(
-                    "campaigns",
-                    "GET",
-                    null,
-                    "?id=eq." +
-                    encodeURIComponent(
-                        membership.campaign_id
-                    ) +
-                    "&select=*"
+                card.className = "card";
+
+                const title =
+                    document.createElement("h3");
+
+                title.textContent =
+                    campaign.name ||
+                    "Unnamed Campaign";
+
+                const description =
+                    document.createElement("p");
+
+                description.textContent =
+                    campaign.description ||
+                    "No description.";
+
+                const idText =
+                    document.createElement("p");
+
+                const strong =
+                    document.createElement("strong");
+
+                strong.textContent =
+                    "Campaign ID: ";
+
+                const idSpan =
+                    document.createElement("span");
+
+                idSpan.textContent =
+                    campaign.id;
+
+                idText.appendChild(strong);
+                idText.appendChild(idSpan);
+
+                const button =
+                    document.createElement("button");
+
+                button.type = "button";
+
+                button.textContent =
+                    "OPEN CAMPAIGN";
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        openCampaign(
+                            campaign
+                        );
+
+                    }
                 );
 
-            if (
-                !campaigns ||
-                !campaigns.length
-            ) {
-                continue;
+                card.appendChild(title);
+                card.appendChild(description);
+                card.appendChild(idText);
+                card.appendChild(button);
+
+                container.appendChild(card);
+
             }
-
-            const campaign =
-                campaigns[0];
-
-            renderCampaignCard(
-                campaign,
-                container
-            );
-
-        }
+        );
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "LOAD CAMPAIGNS ERROR:",
+            error
+        );
 
         container.innerHTML =
             '<div class="notice error">' +
-            escapeHtml(error.message) +
+            escapeHtml(
+                error.message || error
+            ) +
             '</div>';
 
     }
@@ -1429,111 +1636,14 @@ async function loadCampaigns() {
 
 
 /* =========================================================
-CAMPAIGN CARD
-========================================================= */
-
-function renderCampaignCard(
-    campaign,
-    container
-) {
-
-    const card =
-        document.createElement("div");
-
-    card.className = "card";
-
-    const title =
-        document.createElement("h3");
-
-    title.textContent =
-        campaign.name ||
-        "Unnamed Campaign";
-
-    const description =
-        document.createElement("p");
-
-    description.textContent =
-        campaign.description ||
-        "No description.";
-
-    const idText =
-        document.createElement("p");
-
-    const strong =
-        document.createElement("strong");
-
-    strong.textContent =
-        "Campaign ID: ";
-
-    const idSpan =
-        document.createElement("span");
-
-    idSpan.textContent =
-        campaign.id;
-
-    idText.appendChild(strong);
-    idText.appendChild(idSpan);
-
-    const button =
-        document.createElement("button");
-
-    button.type = "button";
-
-    button.textContent =
-        "OPEN CAMPAIGN";
-
-    button.addEventListener(
-        "click",
-        function() {
-
-            openCampaign(campaign);
-
-        }
-    );
-
-    card.appendChild(title);
-
-    card.appendChild(description);
-
-    card.appendChild(idText);
-
-    if (campaign.join_code) {
-
-        const join =
-            document.createElement("p");
-
-        const joinStrong =
-            document.createElement("strong");
-
-        joinStrong.textContent =
-            "Join Code: ";
-
-        const joinValue =
-            document.createElement("span");
-
-        joinValue.textContent =
-            campaign.join_code;
-
-        join.appendChild(joinStrong);
-
-        join.appendChild(joinValue);
-
-        card.appendChild(join);
-
-    }
-
-    card.appendChild(button);
-
-    container.appendChild(card);
-
-}
-
-
-/* =========================================================
-JOIN CAMPAIGN
-========================================================= */
+   JOIN CAMPAIGN
+   ========================================================= */
 
 async function joinCampaign() {
+
+    console.log(
+        "JOIN CAMPAIGN BUTTON PRESSED"
+    );
 
     try {
 
@@ -1542,24 +1652,24 @@ async function joinCampaign() {
         if (!currentUser) {
 
             throw new Error(
-                "Anonymous player session is unavailable."
+                "Anonymous session unavailable."
             );
 
         }
 
-        const input =
+        const codeInput =
             $("campaignCode");
 
-        if (!input) {
+        if (!codeInput) {
 
             throw new Error(
-                "Campaign code field was not found."
+                "Campaign code input was not found."
             );
 
         }
 
         const code =
-            input.value.trim();
+            codeInput.value.trim();
 
         if (!code) {
 
@@ -1567,14 +1677,10 @@ async function joinCampaign() {
                 "Enter a campaign ID or join code."
             );
 
-            input.focus();
+            codeInput.focus();
 
             return;
         }
-
-        /*
-        First try campaign ID.
-        */
 
         let campaigns =
             await supabaseRequest(
@@ -1585,10 +1691,6 @@ async function joinCampaign() {
                 encodeURIComponent(code) +
                 "&select=*"
             );
-
-        /*
-        If ID didn't work, try join code.
-        */
 
         if (
             !campaigns ||
@@ -1622,20 +1724,19 @@ async function joinCampaign() {
         const campaign =
             campaigns[0];
 
-        /*
-        Check whether this anonymous player
-        is already a member.
-        */
-
         const members =
             await supabaseRequest(
                 "campaign_members",
                 "GET",
                 null,
                 "?campaign_id=eq." +
-                encodeURIComponent(campaign.id) +
+                encodeURIComponent(
+                    campaign.id
+                ) +
                 "&player_id=eq." +
-                encodeURIComponent(currentUser.id) +
+                encodeURIComponent(
+                    currentUser.id
+                ) +
                 "&select=id"
             );
 
@@ -1648,17 +1749,18 @@ async function joinCampaign() {
                 "campaign_members",
                 "POST",
                 {
-                    campaign_id: campaign.id,
-                    player_id: currentUser.id,
-                    role: "player"
+                    campaign_id:
+                        campaign.id,
+
+                    player_id:
+                        currentUser.id,
+
+                    role:
+                        "player"
                 }
             );
 
         }
-
-        /*
-        Attach player's character if one exists.
-        */
 
         if (character) {
 
@@ -1668,7 +1770,7 @@ async function joinCampaign() {
 
         }
 
-        input.value = "";
+        codeInput.value = "";
 
         showCampaignMessage(
             "You joined " +
@@ -1677,11 +1779,16 @@ async function joinCampaign() {
             true
         );
 
-        await openCampaign(campaign);
+        await openCampaign(
+            campaign
+        );
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "JOIN CAMPAIGN ERROR:",
+            error
+        );
 
         showCampaignMessage(
             error.message ||
@@ -1694,8 +1801,8 @@ async function joinCampaign() {
 
 
 /* =========================================================
-ATTACH CHARACTER TO CAMPAIGN
-========================================================= */
+   ATTACH CHARACTER TO CAMPAIGN
+   ========================================================= */
 
 async function attachCharacterToCampaign(
     campaignId
@@ -1707,12 +1814,16 @@ async function attachCharacterToCampaign(
 
     await initializeSupabase();
 
+    if (!currentUser) {
+
+        throw new Error(
+            "Anonymous session unavailable."
+        );
+
+    }
+
     let characterId =
         character.supabaseId;
-
-    /*
-    Find existing character if necessary.
-    */
 
     if (!characterId) {
 
@@ -1722,7 +1833,9 @@ async function attachCharacterToCampaign(
                 "GET",
                 null,
                 "?player_id=eq." +
-                encodeURIComponent(currentUser.id) +
+                encodeURIComponent(
+                    currentUser.id
+                ) +
                 "&select=id" +
                 "&order=updated_at.desc" +
                 "&limit=1"
@@ -1740,11 +1853,6 @@ async function attachCharacterToCampaign(
 
     }
 
-    /*
-    If the character hasn't been uploaded,
-    upload it first.
-    */
-
     if (!characterId) {
 
         await saveCharacterToSupabase();
@@ -1760,10 +1868,13 @@ async function attachCharacterToCampaign(
             "characters",
             "PATCH",
             {
-                campaign_id: campaignId
+                campaign_id:
+                    campaignId
             },
             "?id=eq." +
-            encodeURIComponent(characterId)
+            encodeURIComponent(
+                characterId
+            )
         );
 
         character.campaignId =
@@ -1777,23 +1888,35 @@ async function attachCharacterToCampaign(
 
 
 /* =========================================================
-OPEN CAMPAIGN
-========================================================= */
+   OPEN CAMPAIGN
+   ========================================================= */
 
 async function openCampaign(
     campaign
 ) {
 
+    if (!campaign) {
+        return;
+    }
+
     currentCampaign =
         campaign;
 
-    $("campaignTitle").textContent =
-        campaign.name ||
-        "Campaign";
+    if ($("campaignTitle")) {
 
-    $("campaignDescription").textContent =
-        campaign.description ||
-        "No campaign description.";
+        $("campaignTitle").textContent =
+            campaign.name ||
+            "Campaign";
+
+    }
+
+    if ($("campaignDescription")) {
+
+        $("campaignDescription").textContent =
+            campaign.description ||
+            "No campaign description.";
+
+    }
 
     showScreen(
         "campaignDashboard"
@@ -1805,8 +1928,8 @@ async function openCampaign(
 
 
 /* =========================================================
-CAMPAIGN MEMBERS
-========================================================= */
+   LOAD CAMPAIGN MEMBERS
+   ========================================================= */
 
 async function loadCampaignMembers() {
 
@@ -1826,6 +1949,19 @@ async function loadCampaignMembers() {
 
     try {
 
+        const members =
+            await supabaseRequest(
+                "campaign_members",
+                "GET",
+                null,
+                "?campaign_id=eq." +
+                encodeURIComponent(
+                    currentCampaign.id
+                ) +
+                "&select=*" +
+                "&order=joined_at.asc"
+            );
+
         const characters =
             await supabaseRequest(
                 "characters",
@@ -1840,10 +1976,6 @@ async function loadCampaignMembers() {
             );
 
         container.innerHTML = "";
-
-        /*
-        Campaign information at the top.
-        */
 
         const header =
             document.createElement("div");
@@ -1860,30 +1992,23 @@ async function loadCampaignMembers() {
         const id =
             document.createElement("p");
 
-        id.innerHTML =
-            "<strong>Campaign ID:</strong> " +
-            escapeHtml(
-                currentCampaign.id
-            );
+        const strong =
+            document.createElement("strong");
+
+        strong.textContent =
+            "Campaign ID: ";
+
+        const idValue =
+            document.createElement("span");
+
+        idValue.textContent =
+            currentCampaign.id;
+
+        id.appendChild(strong);
+        id.appendChild(idValue);
 
         header.appendChild(heading);
-
         header.appendChild(id);
-
-        if (currentCampaign.join_code) {
-
-            const join =
-                document.createElement("p");
-
-            join.innerHTML =
-                "<strong>Join Code:</strong> " +
-                escapeHtml(
-                    currentCampaign.join_code
-                );
-
-            header.appendChild(join);
-
-        }
 
         container.appendChild(header);
 
@@ -1901,7 +2026,9 @@ async function loadCampaignMembers() {
             empty.innerHTML =
                 "<p>No characters have joined this campaign yet.</p>";
 
-            container.appendChild(empty);
+            container.appendChild(
+                empty
+            );
 
             return;
         }
@@ -1939,29 +2066,46 @@ async function loadCampaignMembers() {
                 const soul =
                     document.createElement("p");
 
-                soul.innerHTML =
-                    "<strong>Soul:</strong> " +
-                    escapeHtml(
+                const soulStrong =
+                    document.createElement("strong");
+
+                soulStrong.textContent =
+                    "Soul: ";
+
+                soul.appendChild(
+                    soulStrong
+                );
+
+                soul.appendChild(
+                    document.createTextNode(
                         char.soul_path ||
                         "Unknown"
-                    );
+                    )
+                );
 
                 const background =
                     document.createElement("p");
 
-                background.innerHTML =
-                    "<strong>Background:</strong> " +
-                    escapeHtml(
+                const backgroundStrong =
+                    document.createElement("strong");
+
+                backgroundStrong.textContent =
+                    "Background: ";
+
+                background.appendChild(
+                    backgroundStrong
+                );
+
+                background.appendChild(
+                    document.createTextNode(
                         char.background ||
                         "Unknown"
-                    );
+                    )
+                );
 
                 card.appendChild(title);
-
                 card.appendChild(identity);
-
                 card.appendChild(soul);
-
                 card.appendChild(background);
 
                 container.appendChild(card);
@@ -1971,11 +2115,16 @@ async function loadCampaignMembers() {
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "LOAD CAMPAIGN MEMBERS ERROR:",
+            error
+        );
 
         container.innerHTML =
             '<div class="notice error">' +
-            escapeHtml(error.message) +
+            escapeHtml(
+                error.message || error
+            ) +
             '</div>';
 
     }
@@ -1984,8 +2133,8 @@ async function loadCampaignMembers() {
 
 
 /* =========================================================
-CAMPAIGN INFO
-========================================================= */
+   CAMPAIGN INFO
+   ========================================================= */
 
 function showCampaignInfo() {
 
@@ -2027,16 +2176,22 @@ function showCampaignInfo() {
     id.className =
         "notice";
 
-    id.innerHTML =
-        "<strong>Campaign ID:</strong> " +
-        escapeHtml(
+    const idStrong =
+        document.createElement("strong");
+
+    idStrong.textContent =
+        "Campaign ID: ";
+
+    id.appendChild(idStrong);
+
+    id.appendChild(
+        document.createTextNode(
             currentCampaign.id
-        );
+        )
+    );
 
     info.appendChild(title);
-
     info.appendChild(description);
-
     info.appendChild(id);
 
     if (currentCampaign.join_code) {
@@ -2047,24 +2202,38 @@ function showCampaignInfo() {
         joinCode.className =
             "notice";
 
-        joinCode.innerHTML =
-            "<strong>Join Code:</strong> " +
-            escapeHtml(
-                currentCampaign.join_code
-            );
+        const codeStrong =
+            document.createElement("strong");
 
-        info.appendChild(joinCode);
+        codeStrong.textContent =
+            "Join Code: ";
+
+        joinCode.appendChild(
+            codeStrong
+        );
+
+        joinCode.appendChild(
+            document.createTextNode(
+                currentCampaign.join_code
+            )
+        );
+
+        info.appendChild(
+            joinCode
+        );
 
     }
 
-    container.appendChild(info);
+    container.appendChild(
+        info
+    );
 
 }
 
 
 /* =========================================================
-CAMPAIGN MESSAGE
-========================================================= */
+   CAMPAIGN MESSAGE
+   ========================================================= */
 
 function showCampaignMessage(
     message,
@@ -2075,6 +2244,10 @@ function showCampaignMessage(
         $("campaignMessage");
 
     if (!box) {
+        console.warn(
+            "campaignMessage element not found:",
+            message
+        );
         return;
     }
 
@@ -2099,63 +2272,86 @@ function showCampaignMessage(
 
 
 /* =========================================================
-STATS
-========================================================= */
+   RENDER STATS
+   ========================================================= */
 
 function renderStats(
     statScores
 ) {
 
+    if (!statScores) {
+        return "";
+    }
+
     return Object.entries(
         statScores
     )
-    .map(function(entry) {
+    .map(
+        function(entry) {
 
-        const stat =
-            entry[0];
+            const stat =
+                entry[0];
 
-        const value =
-            entry[1];
+            const value =
+                entry[1];
 
-        const mod =
-            modifier(value);
+            const mod =
+                modifier(value);
 
-        return `
-            <div class="stat">
-                <strong>${escapeHtml(value)}</strong>
-                ${escapeHtml(stat)}
-                <br>
-                <span class="small">
-                    ${mod >= 0 ? "+" : ""}${mod}
-                </span>
-            </div>
-        `;
+            return `
+                <div class="stat">
+                    <strong>${escapeHtml(value)}</strong>
+                    ${escapeHtml(stat)}
+                    <br>
+                    <span class="small">
+                        ${mod >= 0 ? "+" : ""}${mod}
+                    </span>
+                </div>
+            `;
 
-    })
+        }
+    )
     .join("");
 
 }
 
 
 /* =========================================================
-ESCAPE HTML
-========================================================= */
+   ESCAPE HTML
+   ========================================================= */
 
 function escapeHtml(value) {
 
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
 
 }
 
 
 /* =========================================================
-LOAD LOCAL CHARACTER
-========================================================= */
+   LOAD LOCAL CHARACTER
+   ========================================================= */
 
 function loadLocalCharacter() {
 
@@ -2187,312 +2383,217 @@ function loadLocalCharacter() {
 
 
 /* =========================================================
-BUTTONS
-========================================================= */
+   SAFE BUTTON WIRING
+   ========================================================= */
 
-function wireButtons() {
+function addButtonListener(
+    id,
+    handler
+) {
 
-    /*
-    HOME
-    */
+    const button =
+        $(id);
 
-    const beginButton =
-        $("beginButton");
+    if (!button) {
 
-    if (beginButton) {
-
-        beginButton.addEventListener(
-            "click",
-            beginTrial
+        console.warn(
+            "Button not found:",
+            id
         );
 
+        return;
     }
 
-
-    const campaignHomeButton =
-        $("campaignHomeButton");
-
-    if (campaignHomeButton) {
-
-        campaignHomeButton.addEventListener(
-            "click",
-            openCampaigns
-        );
-
-    }
-
-
-    /*
-    NAME
-    */
-
-    const continueName =
-        $("continueName");
-
-    if (continueName) {
-
-        continueName.addEventListener(
-            "click",
-            startQuestions
-        );
-
-    }
-
-
-    const backFromName =
-        $("backFromName");
-
-    if (backFromName) {
-
-        backFromName.addEventListener(
-            "click",
-            function() {
-
-                showScreen("home");
-
-            }
-        );
-
-    }
-
-
-    /*
-    RESULT
-    */
-
-    const continueToCreator =
-        $("continueToCreator");
-
-    if (continueToCreator) {
-
-        continueToCreator.addEventListener(
-            "click",
-            openCharacterCreator
-        );
-
-    }
-
-
-    /*
-    CHARACTER CREATOR
-    */
-
-    const saveCharacterButton =
-        $("saveCharacterButton");
-
-    if (saveCharacterButton) {
-
-        saveCharacterButton.addEventListener(
-            "click",
-            saveCharacter
-        );
-
-    }
-
-
-    const viewSheetButton =
-        $("viewSheetButton");
-
-    if (viewSheetButton) {
-
-        viewSheetButton.addEventListener(
-            "click",
-            viewSheet
-        );
-
-    }
-
-
-    /*
-    CHARACTER SHEET
-    */
-
-    const editCharacterButton =
-        $("editCharacterButton");
-
-    if (editCharacterButton) {
-
-        editCharacterButton.addEventListener(
-            "click",
-            openCharacterCreator
-        );
-
-    }
-
-
-    const campaignsButton =
-        $("campaignsButton");
-
-    if (campaignsButton) {
-
-        campaignsButton.addEventListener(
-            "click",
-            openCampaigns
-        );
-
-    }
-
-
-    const sheetHomeButton =
-        $("sheetHomeButton");
-
-    if (sheetHomeButton) {
-
-        sheetHomeButton.addEventListener(
-            "click",
-            goHome
-        );
-
-    }
-
-
-    /*
-    CAMPAIGN SCREEN
-
-    CREATE CAMPAIGN = DM
-    JOIN CAMPAIGN = PLAYER JOIN
-    CHARACTER = PLAYER CHARACTER
-    */
-
-    const createCampaignButton =
-        $("createCampaignButton");
-
-    if (createCampaignButton) {
-
-        createCampaignButton.addEventListener(
-            "click",
-            showCreateCampaign
-        );
-
-    }
-
-
-    const joinCampaignButton =
-        $("joinCampaignButton");
-
-    if (joinCampaignButton) {
-
-        joinCampaignButton.addEventListener(
-            "click",
-            showJoinCampaign
-        );
-
-    }
-
-
-    const campaignCharacterButton =
-        $("campaignCharacterButton");
-
-    if (campaignCharacterButton) {
-
-        campaignCharacterButton.addEventListener(
-            "click",
-            startPlayerFlow
-        );
-
-    }
-
-
-    const campaignHomeButton2 =
-        $("campaignHomeButton2");
-
-    if (campaignHomeButton2) {
-
-        campaignHomeButton2.addEventListener(
-            "click",
-            goHome
-        );
-
-    }
-
-
-    /*
-    CAMPAIGN CREATE FORM
-    */
-
-    const confirmCreateCampaign =
-        $("confirmCreateCampaign");
-
-    if (confirmCreateCampaign) {
-
-        confirmCreateCampaign.addEventListener(
-            "click",
-            createCampaign
-        );
-
-    }
-
-
-    /*
-    CAMPAIGN JOIN FORM
-    */
-
-    const confirmJoinCampaign =
-        $("confirmJoinCampaign");
-
-    if (confirmJoinCampaign) {
-
-        confirmJoinCampaign.addEventListener(
-            "click",
-            joinCampaign
-        );
-
-    }
-
-
-    /*
-    CAMPAIGN DASHBOARD
-    */
-
-    const playersButton =
-        $("playersButton");
-
-    if (playersButton) {
-
-        playersButton.addEventListener(
-            "click",
-            loadCampaignMembers
-        );
-
-    }
-
-
-    const campaignInfoButton =
-        $("campaignInfoButton");
-
-    if (campaignInfoButton) {
-
-        campaignInfoButton.addEventListener(
-            "click",
-            showCampaignInfo
-        );
-
-    }
-
-
-    const backCampaignsButton =
-        $("backCampaignsButton");
-
-    if (backCampaignsButton) {
-
-        backCampaignsButton.addEventListener(
-            "click",
-            openCampaigns
-        );
-
-    }
+    button.addEventListener(
+        "click",
+        handler
+    );
+
+    console.log(
+        "Button wired:",
+        id
+    );
 
 }
 
 
 /* =========================================================
-START APP
-========================================================= */
+   WIRE ALL BUTTONS
+   ========================================================= */
+
+function wireButtons() {
+
+    console.log(
+        "Wiring Soul's Trial buttons..."
+    );
+
+
+    /* PLAYER / DM */
+
+    addButtonListener(
+        "playerButton",
+        beginPlayerFlow
+    );
+
+    addButtonListener(
+        "dmButton",
+        beginDMFlow
+    );
+
+
+    /* OLD BEGIN BUTTON SUPPORT */
+
+    addButtonListener(
+        "beginButton",
+        beginPlayerFlow
+    );
+
+
+    /* NAME */
+
+    addButtonListener(
+        "continueName",
+        startQuestions
+    );
+
+    addButtonListener(
+        "backFromName",
+        function() {
+
+            showScreen("home");
+
+        }
+    );
+
+
+    /* RESULT */
+
+    addButtonListener(
+        "continueToCreator",
+        openCharacterCreator
+    );
+
+
+    /* CHARACTER CREATOR */
+
+    addButtonListener(
+        "saveCharacterButton",
+        saveCharacter
+    );
+
+    addButtonListener(
+        "viewSheetButton",
+        viewSheet
+    );
+
+
+    /* SHEET */
+
+    addButtonListener(
+        "editCharacterButton",
+        openCharacterCreator
+    );
+
+    addButtonListener(
+        "campaignsButton",
+        openCampaigns
+    );
+
+    addButtonListener(
+        "sheetHomeButton",
+        function() {
+
+            showScreen("home");
+
+        }
+    );
+
+
+    /* CAMPAIGNS */
+
+    addButtonListener(
+        "campaignHomeButton",
+        openCampaigns
+    );
+
+    addButtonListener(
+        "createCampaignButton",
+        showCreateCampaign
+    );
+
+    addButtonListener(
+        "joinCampaignButton",
+        showJoinCampaign
+    );
+
+    addButtonListener(
+        "campaignCharacterButton",
+        function() {
+
+            if (character) {
+
+                viewSheet();
+
+            } else {
+
+                beginPlayerFlow();
+
+            }
+
+        }
+    );
+
+    addButtonListener(
+        "campaignHomeButton2",
+        function() {
+
+            showScreen("home");
+
+        }
+    );
+
+
+    /* CREATE / JOIN */
+
+    addButtonListener(
+        "confirmCreateCampaign",
+        createCampaign
+    );
+
+    addButtonListener(
+        "confirmJoinCampaign",
+        joinCampaign
+    );
+
+
+    /* CAMPAIGN DASHBOARD */
+
+    addButtonListener(
+        "playersButton",
+        loadCampaignMembers
+    );
+
+    addButtonListener(
+        "campaignInfoButton",
+        showCampaignInfo
+    );
+
+    addButtonListener(
+        "backCampaignsButton",
+        openCampaigns
+    );
+
+}
+
+
+/* =========================================================
+   INITIALIZE APPLICATION
+   ========================================================= */
 
 function initialize() {
 
     console.log(
-        "The Soul's Trial initializing..."
+        "Initializing The Soul's Trial..."
     );
 
     loadLocalCharacter();
@@ -2501,49 +2602,16 @@ function initialize() {
 
     showScreen("home");
 
-    /*
-    Start anonymous Supabase connection
-    in the background.
-
-    The quiz itself does NOT depend on Supabase.
-    */
-
-    if (
-        typeof initializeSupabase ===
-        "function"
-    ) {
-
-        initializeSupabase()
-            .then(function() {
-
-                console.log(
-                    "Anonymous Supabase session ready."
-                );
-
-            })
-            .catch(function(error) {
-
-                console.warn(
-                    "Supabase connection unavailable:",
-                    error.message
-                );
-
-            });
-
-    } else {
-
-        console.warn(
-            "initializeSupabase() was not found."
-        );
-
-    }
+    console.log(
+        "The Soul's Trial initialized."
+    );
 
 }
 
 
 /* =========================================================
-DOM READY
-========================================================= */
+   START
+   ========================================================= */
 
 if (
     document.readyState ===
@@ -2559,4 +2627,4 @@ if (
 
     initialize();
 
-        }
+                                           }
