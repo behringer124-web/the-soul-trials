@@ -478,6 +478,8 @@ localStorage.setItem(
 JSON.stringify(character)
 );
 
+}
+
 
 /* =========================================================
 SAVE CHARACTER
