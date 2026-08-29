@@ -903,801 +903,977 @@ equipment.forEach(function(item) {
 });
 
 }
-
+    
 /* =========================================================
-CAMPAIGNS
+CAMPAIGNS - COMPLETE SYSTEM
 ========================================================= */
 
-async function openCampaigns() {
+async function openCampaigns(){
 
 showScreen("campaigns");
 
-const notice =
-    $("campaignAccountNotice");
+const notice=$("campaignAccountNotice");
 
-if (notice) {
+if(notice){
+notice.textContent=
+"Connecting your Soul to the campaign realm...";
+}
 
-    notice.textContent =
-        "Connecting your Soul to the campaign realm...";
+try{
+
+await initializeSupabase();
+
+if(!currentUser){
+
+throw new Error(
+"Anonymous session unavailable."
+);
 
 }
 
-try {
+if(notice){
 
-    await initializeSupabase();
+notice.textContent=
+"You are connected anonymously. No login is required.";
 
-    if (!currentUser) {
-        throw new Error("Anonymous session unavailable.");
-    }
+}
 
-    if (notice) {
+await loadCampaigns();
 
-        notice.textContent =
-            "You are connected anonymously. No login is required.";
+}catch(error){
 
-    }
+console.error("CAMPAIGN CONNECTION ERROR:",error);
 
-    await loadCampaigns();
+if(notice){
 
-} catch (error) {
-
-    console.error(error);
-
-    if (notice) {
-
-        notice.textContent =
-            "Campaign connection failed: " +
-            error.message;
-
-    }
+notice.textContent=
+"Campaign connection failed: "+
+(error.message||error);
 
 }
 
 }
+
+}
+
 
 /* =========================================================
-SHOW CREATE CAMPAIGN
+SHOW CREATE FORM
 ========================================================= */
 
-function showCreateCampaign() {
+function showCreateCampaign(){
 
-const create =
-    $("campaignCreate");
+const createBox=$("campaignCreate");
+const joinBox=$("campaignJoin");
 
-const join =
-    $("campaignJoin");
+if(!createBox){
 
-if (create) {
-    create.classList.remove("hidden");
-}
+console.error(
+"campaignCreate element not found."
+);
 
-if (join) {
-    join.classList.add("hidden");
-}
-
-const message =
-    $("campaignMessage");
-
-if (message) {
-    message.classList.add("hidden");
-}
+return;
 
 }
+
+if(joinBox){
+
+joinBox.classList.add("hidden");
+
+}
+
+createBox.classList.remove("hidden");
+
+const input=$("campaignName");
+
+if(input){
+
+setTimeout(function(){
+
+input.focus();
+
+},100);
+
+}
+
+}
+
 
 /* =========================================================
-SHOW JOIN CAMPAIGN
+SHOW JOIN FORM
 ========================================================= */
 
-function showJoinCampaign() {
+function showJoinCampaign(){
 
-const join =
-    $("campaignJoin");
+const joinBox=$("campaignJoin");
+const createBox=$("campaignCreate");
 
-const create =
-    $("campaignCreate");
+if(!joinBox){
 
-if (join) {
-    join.classList.remove("hidden");
-}
+console.error(
+"campaignJoin element not found."
+);
 
-if (create) {
-    create.classList.add("hidden");
-}
-
-const message =
-    $("campaignMessage");
-
-if (message) {
-    message.classList.add("hidden");
-}
+return;
 
 }
+
+if(createBox){
+
+createBox.classList.add("hidden");
+
+}
+
+joinBox.classList.remove("hidden");
+
+const input=$("campaignCode");
+
+if(input){
+
+setTimeout(function(){
+
+input.focus();
+
+},100);
+
+}
+
+}
+
 
 /* =========================================================
 CREATE CAMPAIGN
 ========================================================= */
 
-async function createCampaign() {
+async function createCampaign(){
 
-const button =
-    $("confirmCreateCampaign");
+console.log(
+"CREATE CAMPAIGN BUTTON PRESSED"
+);
 
-try {
+const nameInput=$("campaignName");
+const descriptionInput=$("campaignDescription");
 
-    await initializeSupabase();
+if(!nameInput){
 
-    if (!currentUser) {
-        throw new Error("Anonymous session unavailable.");
-    }
+alert(
+"Campaign name input was not found."
+);
 
-    const name =
-        $("campaignName").value.trim();
+return;
 
-    const description =
-        $("campaignDescription").value.trim();
+}
 
-    if (!name) {
+const name=
+nameInput.value.trim();
 
-        showCampaignMessage(
-            "Enter a campaign name."
-        );
+const description=
+descriptionInput
+?descriptionInput.value.trim()
+:"";
 
-        $("campaignName").focus();
+if(!name){
 
-        return;
-    }
+alert(
+"Please enter a campaign name."
+);
 
-    if (button) {
-        button.disabled = true;
-        button.textContent = "CREATING CAMPAIGN...";
-    }
+nameInput.focus();
 
-    const created =
-        await supabaseRequest(
-            "campaigns",
-            "POST",
-            {
-                name: name,
-                description: description,
-                dm_id: currentUser.id
-            }
-        );
+return;
 
-    if (!created || !created.length) {
+}
 
-        throw new Error(
-            "Campaign was not created."
-        );
+try{
 
-    }
+await initializeSupabase();
 
-    const campaign =
-        created[0];
+if(!currentUser){
 
-    await supabaseRequest(
-        "campaign_members",
-        "POST",
-        {
-            campaign_id: campaign.id,
-            player_id: currentUser.id,
-            role: "dm"
-        }
-    );
+throw new Error(
+"Anonymous session unavailable."
+);
 
-    $("campaignName").value = "";
+}
 
-    $("campaignDescription").value = "";
+console.log(
+"Creating campaign for:",
+currentUser.id
+);
 
-    showCampaignMessage(
-        "Campaign created successfully!",
-        true
-    );
 
-    await loadCampaigns();
+/* CREATE CAMPAIGN */
 
-} catch (error) {
+const result=
+await supabaseRequest(
+"campaigns",
+"POST",
+{
+name:name,
+description:description,
+dm_id:currentUser.id
+}
+);
 
-    console.error(
-        "CREATE CAMPAIGN ERROR:",
-        error
-    );
+if(
+!result||
+!Array.isArray(result)||
+!result.length
+){
 
-    showCampaignMessage(
-        error.message ||
-        "Unable to create campaign."
-    );
+throw new Error(
+"Supabase did not return the campaign."
+);
 
-} finally {
+}
 
-    if (button) {
+const campaign=result[0];
 
-        button.disabled = false;
+console.log(
+"Campaign created:",
+campaign
+);
 
-        button.textContent =
-            "CREATE CAMPAIGN";
 
-    }
+/* ADD DM AS MEMBER */
+
+await supabaseRequest(
+"campaign_members",
+"POST",
+{
+campaign_id:campaign.id,
+player_id:currentUser.id,
+role:"dm"
+}
+);
+
+
+/* CLEAR FORM */
+
+nameInput.value="";
+
+if(descriptionInput){
+
+descriptionInput.value="";
+
+}
+
+
+/* HIDE CREATE FORM */
+
+$("campaignCreate").classList.add(
+"hidden"
+);
+
+
+/* SHOW CAMPAIGN */
+
+showCampaignMessage(
+"Campaign created successfully! Your Campaign ID is: "+
+campaign.id,
+true
+);
+
+await openCampaign(campaign);
+
+}catch(error){
+
+console.error(
+"CREATE CAMPAIGN ERROR:",
+error
+);
+
+showCampaignMessage(
+"Unable to create campaign: "+
+(error.message||error),
+false
+);
+
+alert(
+"Campaign creation failed:\n\n"+
+(error.message||error)
+);
 
 }
 
 }
 
-/* =========================================================
-LOAD CAMPAIGNS
-========================================================= */
-
-async function loadCampaigns() {
-
-const container =
-    $("campaignList");
-
-if (!container) {
-    return;
-}
-
-container.innerHTML =
-    '<div class="card">Loading campaigns...</div>';
-
-try {
-
-    await initializeSupabase();
-
-    const campaigns =
-        await supabaseRequest(
-            "campaigns",
-            "GET",
-            null,
-            "?select=*&order=created_at.desc"
-        );
-
-    container.innerHTML = "";
-
-    if (!campaigns || !campaigns.length) {
-
-        container.innerHTML = `
-            <div class="info">
-                <h2>No Campaigns Yet</h2>
-                <p>
-                    Create a campaign as a DM or join one using the ID provided by your DM.
-                </p>
-            </div>
-        `;
-
-        return;
-    }
-
-    campaigns.forEach(function(campaign) {
-
-        const card =
-            document.createElement("div");
-
-        card.className = "card";
-
-        const title =
-            document.createElement("h3");
-
-        title.textContent =
-            campaign.name ||
-            "Unnamed Campaign";
-
-        const description =
-            document.createElement("p");
-
-        description.textContent =
-            campaign.description ||
-            "No description.";
-
-        const idText =
-            document.createElement("p");
-
-        const strong =
-            document.createElement("strong");
-
-        strong.textContent =
-            "Campaign ID: ";
-
-        const idSpan =
-            document.createElement("span");
-
-        idSpan.textContent =
-            campaign.id;
-
-        idText.appendChild(strong);
-
-        idText.appendChild(idSpan);
-
-        const button =
-            document.createElement("button");
-
-        button.type = "button";
-
-        button.textContent =
-            "OPEN CAMPAIGN";
-
-        button.addEventListener(
-            "click",
-            function() {
-                openCampaign(campaign);
-            }
-        );
-
-        card.appendChild(title);
-
-        card.appendChild(description);
-
-        card.appendChild(idText);
-
-        card.appendChild(button);
-
-        container.appendChild(card);
-
-    });
-
-} catch (error) {
-
-    console.error(error);
-
-    container.innerHTML =
-        '<div class="notice error">' +
-        escapeHtml(error.message) +
-        '</div>';
-
-}
-
-}
 
 /* =========================================================
 JOIN CAMPAIGN
 ========================================================= */
 
-async function joinCampaign() {
+async function joinCampaign(){
 
-const button =
-    $("confirmJoinCampaign");
+console.log(
+"JOIN CAMPAIGN BUTTON PRESSED"
+);
 
-try {
+const codeInput=$("campaignCode");
 
-    await initializeSupabase();
+if(!codeInput){
 
-    if (!currentUser) {
-        throw new Error("Anonymous session unavailable.");
-    }
+alert(
+"Campaign code input was not found."
+);
 
-    const code =
-        $("campaignCode").value.trim();
+return;
 
-    if (!code) {
+}
 
-        showCampaignMessage(
-            "Enter a campaign ID or join code."
-        );
+const code=
+codeInput.value.trim();
 
-        $("campaignCode").focus();
+if(!code){
 
-        return;
-    }
+alert(
+"Please enter a Campaign ID or Join Code."
+);
 
-    if (button) {
+codeInput.focus();
 
-        button.disabled = true;
+return;
 
-        button.textContent =
-            "JOINING CAMPAIGN...";
+}
 
-    }
+try{
 
-    let campaigns =
-        await supabaseRequest(
-            "campaigns",
-            "GET",
-            null,
-            "?id=eq." +
-            encodeURIComponent(code) +
-            "&select=*"
-        );
+await initializeSupabase();
 
-    if (!campaigns || !campaigns.length) {
+if(!currentUser){
 
-        campaigns =
-            await supabaseRequest(
-                "campaigns",
-                "GET",
-                null,
-                "?join_code=eq." +
-                encodeURIComponent(code) +
-                "&select=*"
-            );
+throw new Error(
+"Anonymous session unavailable."
+);
 
-    }
+}
 
-    if (!campaigns || !campaigns.length) {
 
-        showCampaignMessage(
-            "Campaign not found."
-        );
+/* FIND BY CAMPAIGN ID */
 
-        return;
-    }
+let campaigns=
+await supabaseRequest(
+"campaigns",
+"GET",
+null,
+"?id=eq."+
+encodeURIComponent(code)+
+"&select=*"
+);
 
-    const campaign =
-        campaigns[0];
 
-    const members =
-        await supabaseRequest(
-            "campaign_members",
-            "GET",
-            null,
-            "?campaign_id=eq." +
-            encodeURIComponent(campaign.id) +
-            "&player_id=eq." +
-            encodeURIComponent(currentUser.id) +
-            "&select=id"
-        );
+/* FIND BY JOIN CODE */
 
-    if (!members || !members.length) {
+if(
+!campaigns||
+campaigns.length===0
+){
 
-        await supabaseRequest(
-            "campaign_members",
-            "POST",
-            {
-                campaign_id: campaign.id,
-                player_id: currentUser.id,
-                role: "player"
-            }
-        );
+campaigns=
+await supabaseRequest(
+"campaigns",
+"GET",
+null,
+"?join_code=eq."+
+encodeURIComponent(code)+
+"&select=*"
+);
 
-    }
+}
 
-    if (character) {
 
-        await attachCharacterToCampaign(
-            campaign.id
-        );
+if(
+!campaigns||
+campaigns.length===0
+){
 
-    }
+throw new Error(
+"Campaign not found."
+);
 
-    $("campaignCode").value = "";
+}
 
-    showCampaignMessage(
-        "You joined " +
-        campaign.name +
-        ".",
-        true
-    );
+const campaign=
+campaigns[0];
 
-    await openCampaign(campaign);
+console.log(
+"Campaign found:",
+campaign
+);
 
-} catch (error) {
 
-    console.error(error);
+/* CHECK MEMBERSHIP */
 
-    showCampaignMessage(
-        error.message ||
-        "Unable to join campaign."
-    );
+const members=
+await supabaseRequest(
+"campaign_members",
+"GET",
+null,
+"?campaign_id=eq."+
+encodeURIComponent(campaign.id)+
+"&player_id=eq."+
+encodeURIComponent(currentUser.id)+
+"&select=id"
+);
 
-} finally {
 
-    if (button) {
+/* ADD PLAYER */
 
-        button.disabled = false;
+if(
+!members||
+members.length===0
+){
 
-        button.textContent =
-            "JOIN CAMPAIGN";
+await supabaseRequest(
+"campaign_members",
+"POST",
+{
+campaign_id:campaign.id,
+player_id:currentUser.id,
+role:"player"
+}
+);
 
-    }
+}
+
+
+/* ATTACH CHARACTER */
+
+if(character){
+
+await attachCharacterToCampaign(
+campaign.id
+);
+
+}
+
+
+/* CLEAR INPUT */
+
+codeInput.value="";
+
+showCampaignMessage(
+"You joined "+campaign.name+"!",
+true
+);
+
+
+/* OPEN CAMPAIGN */
+
+await openCampaign(campaign);
+
+}catch(error){
+
+console.error(
+"JOIN CAMPAIGN ERROR:",
+error
+);
+
+showCampaignMessage(
+"Unable to join campaign: "+
+(error.message||error),
+false
+);
+
+alert(
+"Unable to join campaign:\n\n"+
+(error.message||error)
+);
 
 }
 
 }
+
+
+/* =========================================================
+LOAD CAMPAIGNS
+========================================================= */
+
+async function loadCampaigns(){
+
+const container=$("campaignList");
+
+if(!container){
+return;
+}
+
+container.innerHTML=
+'<div class="card">Loading campaigns...</div>';
+
+try{
+
+await initializeSupabase();
+
+const campaigns=
+await supabaseRequest(
+"campaigns",
+"GET",
+null,
+"?select=*&order=created_at.desc"
+);
+
+container.innerHTML="";
+
+if(
+!campaigns||
+campaigns.length===0
+){
+
+container.innerHTML=
+`
+<div class="info">
+<h2>No Campaigns Yet</h2>
+<p>
+Create a campaign as a DM or join one using the Campaign ID provided by your DM.
+</p>
+</div>
+`;
+
+return;
+
+}
+
+
+campaigns.forEach(function(campaign){
+
+const card=
+document.createElement("div");
+
+card.className="card";
+
+
+const title=
+document.createElement("h3");
+
+title.textContent=
+campaign.name||
+"Unnamed Campaign";
+
+
+const description=
+document.createElement("p");
+
+description.textContent=
+campaign.description||
+"No description.";
+
+
+const id=
+document.createElement("p");
+
+id.textContent=
+"Campaign ID: "+
+campaign.id;
+
+
+const button=
+document.createElement("button");
+
+button.type="button";
+
+button.textContent=
+"OPEN CAMPAIGN";
+
+button.addEventListener(
+"click",
+function(){
+
+openCampaign(campaign);
+
+}
+);
+
+
+card.appendChild(title);
+
+card.appendChild(description);
+
+card.appendChild(id);
+
+card.appendChild(button);
+
+container.appendChild(card);
+
+});
+
+}catch(error){
+
+console.error(
+"LOAD CAMPAIGNS ERROR:",
+error
+);
+
+container.innerHTML=
+'<div class="notice error">'+
+escapeHtml(error.message)+
+'</div>';
+
+}
+
+}
+
 
 /* =========================================================
 ATTACH CHARACTER TO CAMPAIGN
 ========================================================= */
 
-async function attachCharacterToCampaign(campaignId) {
+async function attachCharacterToCampaign(
+campaignId
+){
 
-if (!character) {
-    return;
+if(!character){
+return;
 }
 
 await initializeSupabase();
 
-let characterId =
-    character.supabaseId;
+let characterId=
+character.supabaseId;
 
-if (!characterId) {
 
-    const rows =
-        await supabaseRequest(
-            "characters",
-            "GET",
-            null,
-            "?player_id=eq." +
-            encodeURIComponent(currentUser.id) +
-            "&select=id" +
-            "&order=updated_at.desc" +
-            "&limit=1"
-        );
+/* FIND EXISTING CHARACTER */
 
-    if (rows && rows.length) {
+if(!characterId){
 
-        characterId =
-            rows[0].id;
+const rows=
+await supabaseRequest(
+"characters",
+"GET",
+null,
+"?player_id=eq."+
+encodeURIComponent(currentUser.id)+
+"&select=id"+
+"&order=updated_at.desc"+
+"&limit=1"
+);
 
-    }
+if(
+rows&&
+rows.length
+){
 
-}
-
-if (!characterId) {
-
-    await saveCharacterToSupabase();
-
-    characterId =
-        character.supabaseId;
-
-}
-
-if (characterId) {
-
-    await supabaseRequest(
-        "characters",
-        "PATCH",
-        {
-            campaign_id: campaignId
-        },
-        "?id=eq." +
-        encodeURIComponent(characterId)
-    );
-
-    character.campaignId =
-        campaignId;
-
-    saveLocalCharacter();
+characterId=
+rows[0].id;
 
 }
 
 }
+
+
+/* SAVE CHARACTER IF NEEDED */
+
+if(!characterId){
+
+await saveCharacterToSupabase();
+
+characterId=
+character.supabaseId;
+
+}
+
+
+/* CONNECT CHARACTER */
+
+if(characterId){
+
+await supabaseRequest(
+"characters",
+"PATCH",
+{
+campaign_id:campaignId
+},
+"?id=eq."+
+encodeURIComponent(characterId)
+);
+
+character.campaignId=
+campaignId;
+
+saveLocalCharacter();
+
+}
+
+}
+
 
 /* =========================================================
 OPEN CAMPAIGN
 ========================================================= */
 
-async function openCampaign(campaign) {
+async function openCampaign(
+campaign
+){
 
-if (!campaign) {
-    return;
+if(!campaign){
+return;
 }
 
-currentCampaign =
-    campaign;
+currentCampaign=
+campaign;
 
-$("campaignTitle").textContent =
-    campaign.name ||
-    "Campaign";
+$("campaignTitle").textContent=
+campaign.name||
+"Campaign";
 
-$("campaignDescription").textContent =
-    campaign.description ||
-    "No campaign description.";
+$("campaignDescription").textContent=
+campaign.description||
+"No campaign description.";
 
 showScreen(
-    "campaignDashboard"
+"campaignDashboard"
 );
 
 await loadCampaignMembers();
 
 }
 
+
 /* =========================================================
 LOAD CAMPAIGN MEMBERS
 ========================================================= */
 
-async function loadCampaignMembers() {
+async function loadCampaignMembers(){
 
-if (!currentCampaign) {
-    return;
+if(!currentCampaign){
+return;
 }
 
-const container =
-    $("campaignDashboardContent");
+const container=
+$("campaignDashboardContent");
 
-if (!container) {
-    return;
+if(!container){
+return;
 }
 
-container.innerHTML =
-    '<div class="card">Loading campaign roster...</div>';
+container.innerHTML=
+'<div class="card">Loading campaign roster...</div>';
 
-try {
+try{
 
-    const characters =
-        await supabaseRequest(
-            "characters",
-            "GET",
-            null,
-            "?campaign_id=eq." +
-            encodeURIComponent(currentCampaign.id) +
-            "&select=*" +
-            "&order=created_at.asc"
-        );
+await initializeSupabase();
 
-    container.innerHTML = "";
 
-    const header =
-        document.createElement("div");
+const members=
+await supabaseRequest(
+"campaign_members",
+"GET",
+null,
+"?campaign_id=eq."+
+encodeURIComponent(
+currentCampaign.id
+)+
+"&select=*"+
+"&order=joined_at.asc"
+);
 
-    header.className =
-        "info";
 
-    const heading =
-        document.createElement("h2");
+const characters=
+await supabaseRequest(
+"characters",
+"GET",
+null,
+"?campaign_id=eq."+
+encodeURIComponent(
+currentCampaign.id
+)+
+"&select=*"+
+"&order=created_at.asc"
+);
 
-    heading.textContent =
-        "Campaign Roster";
 
-    const id =
-        document.createElement("p");
+container.innerHTML="";
 
-    const strong =
-        document.createElement("strong");
 
-    strong.textContent =
-        "Campaign ID: ";
+/* HEADER */
 
-    id.appendChild(strong);
+const header=
+document.createElement("div");
 
-    id.appendChild(
-        document.createTextNode(
-            currentCampaign.id
-        )
-    );
+header.className="info";
 
-    header.appendChild(heading);
 
-    header.appendChild(id);
+const heading=
+document.createElement("h2");
 
-    container.appendChild(header);
+heading.textContent=
+"Campaign Roster";
 
-    if (!characters || !characters.length) {
 
-        const empty =
-            document.createElement("div");
+const id=
+document.createElement("p");
 
-        empty.className =
-            "card";
+id.innerHTML=
+"<strong>Campaign ID:</strong> "+
+escapeHtml(
+currentCampaign.id
+);
 
-        empty.innerHTML =
-            "<p>No characters have joined this campaign yet.</p>";
 
-        container.appendChild(empty);
+header.appendChild(heading);
 
-        return;
-    }
+header.appendChild(id);
 
-    characters.forEach(function(char) {
+container.appendChild(header);
 
-        const card =
-            document.createElement("div");
 
-        card.className =
-            "card";
+/* EMPTY */
 
-        const title =
-            document.createElement("h3");
+if(
+!characters||
+characters.length===0
+){
 
-        title.textContent =
-            char.name ||
-            "Unnamed Character";
+const empty=
+document.createElement("div");
 
-        const identity =
-            document.createElement("p");
+empty.className="card";
 
-        identity.textContent =
-            [
-                char.race,
-                char.class,
-                char.subclass,
-                char.level
-                    ? "Level " + char.level
-                    : null
-            ]
-            .filter(Boolean)
-            .join(" • ");
+empty.innerHTML=
+"<p>No characters have joined this campaign yet.</p>";
 
-        const soul =
-            document.createElement("p");
+container.appendChild(empty);
 
-        soul.innerHTML =
-            "<strong>Soul:</strong> " +
-            escapeHtml(
-                char.soul_path ||
-                "Unknown"
-            );
-
-        const background =
-            document.createElement("p");
-
-        background.innerHTML =
-            "<strong>Background:</strong> " +
-            escapeHtml(
-                char.background ||
-                "Unknown"
-            );
-
-        card.appendChild(title);
-
-        card.appendChild(identity);
-
-        card.appendChild(soul);
-
-        card.appendChild(background);
-
-        container.appendChild(card);
-
-    });
-
-} catch (error) {
-
-    console.error(error);
-
-    container.innerHTML =
-        '<div class="notice error">' +
-        escapeHtml(error.message) +
-        '</div>';
+return;
 
 }
 
+
+/* CHARACTERS */
+
+characters.forEach(function(char){
+
+const card=
+document.createElement("div");
+
+card.className="card";
+
+
+const title=
+document.createElement("h3");
+
+title.textContent=
+char.name||
+"Unnamed Character";
+
+
+const identity=
+document.createElement("p");
+
+identity.textContent=
+[
+char.race,
+char.class,
+char.subclass,
+char.level
+?
+"Level "+char.level
+:null
+]
+.filter(Boolean)
+.join(" • ");
+
+
+const soul=
+document.createElement("p");
+
+soul.innerHTML=
+"<strong>Soul:</strong> "+
+escapeHtml(
+char.soul_path||
+"Unknown"
+);
+
+
+const background=
+document.createElement("p");
+
+background.innerHTML=
+"<strong>Background:</strong> "+
+escapeHtml(
+char.background||
+"Unknown"
+);
+
+
+card.appendChild(title);
+
+card.appendChild(identity);
+
+card.appendChild(soul);
+
+card.appendChild(background);
+
+container.appendChild(card);
+
+});
+
+}catch(error){
+
+console.error(
+"LOAD CAMPAIGN MEMBERS ERROR:",
+error
+);
+
+container.innerHTML=
+'<div class="notice error">'+
+escapeHtml(
+error.message
+)+
+'</div>';
+
 }
+
+}
+
 
 /* =========================================================
 CAMPAIGN INFO
 ========================================================= */
 
-function showCampaignInfo() {
+function showCampaignInfo(){
 
-if (!currentCampaign) {
-    return;
+if(!currentCampaign){
+return;
 }
 
-const container =
-    $("campaignDashboardContent");
+const container=
+$("campaignDashboardContent");
 
-if (!container) {
-    return;
-}
+container.innerHTML="";
 
-container.innerHTML = "";
 
-const info =
-    document.createElement("div");
+const info=
+document.createElement("div");
 
-info.className =
-    "info";
+info.className="info";
 
-const title =
-    document.createElement("h2");
 
-title.textContent =
-    currentCampaign.name;
+const title=
+document.createElement("h2");
 
-const description =
-    document.createElement("p");
+title.textContent=
+currentCampaign.name;
 
-description.textContent =
-    currentCampaign.description ||
-    "No description.";
 
-const id =
-    document.createElement("div");
+const description=
+document.createElement("p");
 
-id.className =
-    "notice";
+description.textContent=
+currentCampaign.description||
+"No description.";
 
-id.innerHTML =
-    "<strong>Campaign ID:</strong> " +
-    escapeHtml(
-        currentCampaign.id
-    );
+
+const id=
+document.createElement("div");
+
+id.className="notice";
+
+id.innerHTML=
+"<strong>Campaign ID:</strong> "+
+escapeHtml(
+currentCampaign.id
+);
+
 
 info.appendChild(title);
 
@@ -1705,27 +1881,83 @@ info.appendChild(description);
 
 info.appendChild(id);
 
-if (currentCampaign.join_code) {
 
-    const joinCode =
-        document.createElement("div");
+if(currentCampaign.join_code){
 
-    joinCode.className =
-        "notice";
+const joinCode=
+document.createElement("div");
 
-    joinCode.innerHTML =
-        "<strong>Join Code:</strong> " +
-        escapeHtml(
-            currentCampaign.join_code
-        );
+joinCode.className="notice";
 
-    info.appendChild(joinCode);
+joinCode.innerHTML=
+"<strong>Join Code:</strong> "+
+escapeHtml(
+currentCampaign.join_code
+);
+
+info.appendChild(joinCode);
 
 }
+
 
 container.appendChild(info);
 
 }
+
+/* =========================================================
+INITIALIZE CAMPAIGN BUTTONS
+========================================================= */
+
+wireCampaignButtons();  
+$("createCampaignButton").addEventListener(
+"click",
+showCreateCampaign
+);
+
+$("joinCampaignButton").addEventListener(
+"click",
+showJoinCampaign
+);
+
+$("campaignCharacterButton").addEventListener(
+"click",
+function(){
+...
+}
+);
+
+$("campaignHomeButton2").addEventListener(
+"click",
+function(){
+...
+}
+);
+
+$("confirmCreateCampaign").addEventListener(
+"click",
+createCampaign
+);
+
+$("confirmJoinCampaign").addEventListener(
+"click",
+joinCampaign
+);
+
+$("playersButton").addEventListener(
+"click",
+loadCampaignMembers
+);
+
+$("campaignInfoButton").addEventListener(
+"click",
+showCampaignInfo
+);
+
+$("backCampaignsButton").addEventListener(
+"click",
+openCampaigns
+);
+
 
 /* =========================================================
 CAMPAIGN MESSAGE
