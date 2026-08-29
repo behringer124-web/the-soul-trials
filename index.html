@@ -8,38 +8,50 @@
 <style>
 *{box-sizing:border-box}
 
-body{
+html,body{
 margin:0;
-min-height:100vh;
+padding:0;
+min-height:100%;
+}
+
+body{
 background:
-radial-gradient(circle at top,#29233b 0%,#0b0c12 52%,#050609 100%);
+radial-gradient(circle at top,#302844 0%,#11131c 45%,#06070b 100%);
 color:#eee;
 font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 
+button,input,select,textarea{
+font:inherit;
+}
+
 .container{
 width:100%;
-max-width:1000px;
+max-width:1050px;
 margin:auto;
 padding:14px;
 }
 
 .panel{
-background:rgba(18,21,31,.97);
+background:rgba(15,18,27,.97);
 border:1px solid #625a48;
 border-radius:18px;
 padding:25px;
 box-shadow:0 15px 55px rgba(0,0,0,.55);
 }
 
-section{animation:fade .25s ease}
+section{
+animation:fade .2s ease;
+}
 
 @keyframes fade{
 from{opacity:0;transform:translateY(5px)}
 to{opacity:1;transform:translateY(0)}
 }
 
-.hidden{display:none!important}
+.hidden{
+display:none!important;
+}
 
 h1,h2,h3{
 font-family:Georgia,serif;
@@ -48,26 +60,39 @@ color:#dfc47a;
 
 h1{
 text-align:center;
-font-size:clamp(2.3rem,8vw,4.4rem);
-margin:15px 0;
+font-size:clamp(2.2rem,8vw,4.3rem);
+margin:12px 0 18px;
 }
 
-h2{margin-top:28px}
+h2{
+margin-top:26px;
+}
+
+h3{
+margin-top:10px;
+}
 
 p{
 line-height:1.6;
-color:#c7c7c7;
+color:#c9c9c9;
 }
 
-.center{text-align:center}
-.muted{color:#999}
+.center{
+text-align:center;
+}
 
-button,input,select,textarea{
+.muted{
+color:#999;
+}
+
+button,
+input,
+select,
+textarea{
 width:100%;
 padding:13px;
 margin:6px 0;
 border-radius:10px;
-font:inherit;
 }
 
 button{
@@ -94,19 +119,21 @@ background:#542c2c;
 border-color:#9b5555;
 }
 
-.choice{
+button.choice{
 background:#202737;
 border-color:#514d43;
 text-align:left;
 padding:16px;
 }
 
-.choice:hover{
+button.choice:hover{
 border-color:#dfc47a;
 background:#282f41;
 }
 
-input,select,textarea{
+input,
+select,
+textarea{
 background:#0d121b;
 color:#fff;
 border:1px solid #484848;
@@ -117,27 +144,24 @@ min-height:110px;
 resize:vertical;
 }
 
-.progress{
-height:9px;
-background:#292e38;
-border-radius:20px;
-margin:15px 0 25px;
-overflow:hidden;
-}
-
-.progress-bar{
-height:100%;
-width:0%;
-background:#dfc47a;
-transition:width .25s;
-}
-
 .info{
 background:#101520;
 border:1px solid #454238;
 border-radius:12px;
 padding:16px;
 margin:14px 0;
+}
+
+.card{
+background:#171c28;
+border:1px solid #3f4350;
+border-radius:12px;
+padding:15px;
+margin:9px 0;
+}
+
+.card h3{
+margin-top:0;
 }
 
 .grid{
@@ -163,53 +187,7 @@ text-align:center;
 .stat strong{
 display:block;
 color:#dfc47a;
-font-size:1.5rem;
-}
-
-.tag{
-display:inline-block;
-padding:7px 11px;
-margin:3px;
-border-radius:20px;
-border:1px solid #625a48;
-color:#dfc47a;
-background:#151923;
-}
-
-.card{
-background:#171c28;
-border:1px solid #3f4350;
-border-radius:12px;
-padding:14px;
-margin:8px 0;
-}
-
-.card h3{
-margin-top:0;
-}
-
-.section-title{
-border-bottom:1px solid #3d3a34;
-padding-bottom:8px;
-}
-
-.small{
-font-size:.88rem;
-}
-
-.notice{
-border-left:4px solid #dfc47a;
-padding:10px 14px;
-background:#151923;
-margin:12px 0;
-}
-
-.success{
-border-left-color:#617d60;
-}
-
-.error{
-border-left-color:#8b4b4b;
+font-size:1.45rem;
 }
 
 .nav{
@@ -225,6 +203,46 @@ flex:1;
 min-width:120px;
 }
 
+.progress{
+height:9px;
+background:#292e38;
+border-radius:20px;
+margin:15px 0 25px;
+overflow:hidden;
+}
+
+.progress-bar{
+height:100%;
+width:0%;
+background:#dfc47a;
+transition:width .25s;
+}
+
+.notice{
+border-left:4px solid #dfc47a;
+padding:10px 14px;
+background:#151923;
+margin:12px 0;
+}
+
+.notice.success{
+border-left-color:#617d60;
+}
+
+.notice.error{
+border-left-color:#9b5555;
+}
+
+.tag{
+display:inline-block;
+padding:7px 11px;
+margin:3px;
+border-radius:20px;
+border:1px solid #625a48;
+color:#dfc47a;
+background:#151923;
+}
+
 .badge{
 display:inline-block;
 font-size:.8rem;
@@ -234,23 +252,53 @@ background:#292e38;
 color:#ddd;
 }
 
+.section-title{
+border-bottom:1px solid #3d3a34;
+padding-bottom:8px;
+}
+
+.small{
+font-size:.88rem;
+}
+
+.check-card{
+display:block;
+cursor:pointer;
+}
+
+.check-card input{
+width:auto;
+margin-right:8px;
+}
+
 ul{
 line-height:1.8;
 }
 
-.loading{
-text-align:center;
-padding:25px;
-color:#aaa;
+@media(max-width:650px){
+.container{
+padding:7px;
 }
 
-@media(max-width:650px){
-.container{padding:7px}
-.panel{padding:17px 13px}
-.grid{grid-template-columns:1fr}
-.stats{grid-template-columns:repeat(2,1fr)}
-.nav{flex-direction:column}
-.nav button{width:100%}
+.panel{
+padding:17px 13px;
+}
+
+.grid{
+grid-template-columns:1fr;
+}
+
+.stats{
+grid-template-columns:repeat(2,1fr);
+}
+
+.nav{
+flex-direction:column;
+}
+
+.nav button{
+width:100%;
+}
 }
 </style>
 </head>
@@ -260,7 +308,10 @@ color:#aaa;
 <div class="container">
 <div class="panel">
 
-<!-- HOME -->
+<!-- =========================================================
+HOME
+========================================================= -->
+
 <section id="home">
 
 <h1>The Soul's Trial</h1>
@@ -286,29 +337,34 @@ your soul must first be judged.
 </p>
 
 <p class="center">
-Your choices will determine who you were,
-what you become,
-and the path your new life will take.
+Your choices will determine your race,
+class, subclass, background,
+ability scores, and the path your new life will take.
 </p>
 
 </div>
 
-<button onclick="beginTrial()">BEGIN THE TRIAL</button>
+<button id="beginTrialButton" type="button">
+BEGIN THE TRIAL
+</button>
 
-<button class="secondary" onclick="showLogin()">
+<button id="playerLoginButton" class="secondary" type="button">
 PLAYER LOGIN
 </button>
 
 </section>
 
 
-<!-- LOGIN -->
+<!-- =========================================================
+LOGIN
+========================================================= -->
+
 <section id="login" class="hidden">
 
 <h1>Enter the Realm</h1>
 
 <p class="center">
-Sign in to save your characters and connect them to campaigns.
+Sign in to save your character and connect to campaigns.
 </p>
 
 <div class="info">
@@ -325,15 +381,19 @@ type="password"
 autocomplete="current-password"
 placeholder="Password">
 
-<button onclick="login()">
+<button id="signInButton" type="button">
 SIGN IN
 </button>
 
-<button class="secondary" onclick="signup()">
+<button id="createAccountButton" class="secondary" type="button">
 CREATE ACCOUNT
 </button>
 
-<button class="secondary" onclick="showScreen('home')">
+<button id="forgotPasswordButton" class="secondary" type="button">
+RESET PASSWORD
+</button>
+
+<button id="loginBackButton" class="secondary" type="button">
 BACK
 </button>
 
@@ -344,7 +404,10 @@ BACK
 </section>
 
 
-<!-- NAME -->
+<!-- =========================================================
+NAME
+========================================================= -->
+
 <section id="name" class="hidden">
 
 <h1>Before the Trial</h1>
@@ -358,18 +421,21 @@ id="playerName"
 maxlength="40"
 placeholder="Enter your character's name">
 
-<button onclick="startQuestions()">
+<button id="continueNameButton" type="button">
 CONTINUE
 </button>
 
-<button class="secondary" onclick="showScreen('home')">
+<button id="nameBackButton" class="secondary" type="button">
 BACK
 </button>
 
 </section>
 
 
-<!-- QUIZ -->
+<!-- =========================================================
+QUIZ
+========================================================= -->
+
 <section id="quiz" class="hidden">
 
 <p id="questionNumber" class="muted"></p>
@@ -387,7 +453,10 @@ BACK
 </section>
 
 
-<!-- RESULT -->
+<!-- =========================================================
+RESULT
+========================================================= -->
+
 <section id="result" class="hidden">
 
 <h1 id="resultName"></h1>
@@ -445,21 +514,28 @@ Your soul has spoken.
 
 </div>
 
-<button onclick="openCharacterCreator()">
+<button id="continueCharacterButton" type="button">
 CONTINUE TO CHARACTER CREATION
+</button>
+
+<button id="resultHomeButton" class="secondary" type="button">
+HOME
 </button>
 
 </section>
 
 
-<!-- CREATOR -->
+<!-- =========================================================
+CHARACTER CREATOR
+========================================================= -->
+
 <section id="creator" class="hidden">
 
 <h1 id="characterName"></h1>
 
 <div class="notice">
-Your Soul's Trial has determined the core of this character.
-Your race, class, subclass, background, level, and ability scores
+The Soul's Trial has determined the core of this character.
+Race, class, subclass, background, level, and ability scores
 are determined by the Trial.
 </div>
 
@@ -467,15 +543,30 @@ are determined by the Trial.
 
 <h2>Identity</h2>
 
-<p><strong>Race:</strong> <span id="creatorRace"></span></p>
+<p>
+<strong>Race:</strong>
+<span id="creatorRace"></span>
+</p>
 
-<p><strong>Class:</strong> <span id="creatorClass"></span></p>
+<p>
+<strong>Class:</strong>
+<span id="creatorClass"></span>
+</p>
 
-<p><strong>Subclass:</strong> <span id="creatorSubclass"></span></p>
+<p>
+<strong>Subclass:</strong>
+<span id="creatorSubclass"></span>
+</p>
 
-<p><strong>Background:</strong> <span id="creatorBackground"></span></p>
+<p>
+<strong>Background:</strong>
+<span id="creatorBackground"></span>
+</p>
 
-<p><strong>Level:</strong> <span id="creatorLevel"></span></p>
+<p>
+<strong>Level:</strong>
+<span id="creatorLevel"></span>
+</p>
 
 </div>
 
@@ -502,14 +593,24 @@ Armor Class
 Speed
 </div>
 
+<div class="stat">
+<strong id="creatorProficiency"></strong>
+Proficiency
 </div>
 
-<h2>Equipment</h2>
+<div class="stat">
+<strong id="creatorHitDice"></strong>
+Hit Dice
+</div>
+
+</div>
+
+<h2>Starting Equipment</h2>
 
 <div class="info">
 
 <p>
-Choose from the equipment available to your class.
+Select the equipment your character receives.
 </p>
 
 <div id="equipmentOptions"></div>
@@ -518,28 +619,45 @@ Choose from the equipment available to your class.
 
 <h2>Character Details</h2>
 
-<textarea id="personality" placeholder="Personality"></textarea>
+<textarea
+id="personality"
+placeholder="Personality"></textarea>
 
-<textarea id="ideal" placeholder="Ideal"></textarea>
+<textarea
+id="ideal"
+placeholder="Ideal"></textarea>
 
-<textarea id="bond" placeholder="Bond"></textarea>
+<textarea
+id="bond"
+placeholder="Bond"></textarea>
 
-<textarea id="flaw" placeholder="Flaw"></textarea>
+<textarea
+id="flaw"
+placeholder="Flaw"></textarea>
 
-<textarea id="backstory" placeholder="Backstory"></textarea>
+<textarea
+id="backstory"
+placeholder="Backstory"></textarea>
 
-<button onclick="saveCharacter()">
+<button id="saveCharacterButton" type="button">
 SAVE CHARACTER
 </button>
 
-<button class="secondary" onclick="viewSheet()">
+<button id="viewSheetButton" class="secondary" type="button">
 VIEW CHARACTER SHEET
+</button>
+
+<button id="creatorHomeButton" class="secondary" type="button">
+HOME
 </button>
 
 </section>
 
 
-<!-- SHEET -->
+<!-- =========================================================
+CHARACTER SHEET
+========================================================= -->
+
 <section id="sheet" class="hidden">
 
 <h1 id="sheetName"></h1>
@@ -548,19 +666,19 @@ VIEW CHARACTER SHEET
 
 <div class="nav">
 
-<button onclick="openCharacterCreator()">
+<button id="sheetEditButton" type="button">
 EDIT
 </button>
 
-<button onclick="openCampaigns()">
+<button id="sheetCampaignButton" type="button">
 CAMPAIGNS
 </button>
 
-<button class="secondary" onclick="logout()">
-LOG OUT
+<button id="sheetLogoutButton" class="secondary" type="button">
+SIGN OUT
 </button>
 
-<button class="secondary" onclick="showScreen('home')">
+<button id="sheetHomeButton" class="secondary" type="button">
 HOME
 </button>
 
@@ -656,22 +774,25 @@ Hit Dice
 </section>
 
 
-<!-- CAMPAIGNS -->
+<!-- =========================================================
+CAMPAIGNS
+========================================================= -->
+
 <section id="campaigns" class="hidden">
 
 <h1>Campaigns</h1>
 
 <div class="nav">
 
-<button onclick="showCreateCampaign()">
+<button id="createCampaignButton" type="button">
 CREATE CAMPAIGN
 </button>
 
-<button onclick="showJoinCampaign()">
+<button id="joinCampaignButton" type="button">
 JOIN CAMPAIGN
 </button>
 
-<button class="secondary" onclick="viewSheet()">
+<button id="campaignCharacterButton" class="secondary" type="button">
 CHARACTER
 </button>
 
@@ -694,8 +815,8 @@ placeholder="Campaign name">
 id="campaignDescription"
 placeholder="Campaign description"></textarea>
 
-<button onclick="createCampaign()">
-CREATE
+<button id="confirmCreateCampaignButton" type="button">
+CREATE CAMPAIGN
 </button>
 
 </div>
@@ -710,11 +831,11 @@ CREATE
 
 <input
 id="campaignCode"
-maxlength="20"
-placeholder="Enter campaign ID">
+maxlength="40"
+placeholder="Campaign ID">
 
-<button onclick="joinCampaign()">
-JOIN
+<button id="confirmJoinCampaignButton" type="button">
+JOIN CAMPAIGN
 </button>
 
 </div>
@@ -726,7 +847,10 @@ JOIN
 </section>
 
 
-<!-- CAMPAIGN DASHBOARD -->
+<!-- =========================================================
+CAMPAIGN DASHBOARD
+========================================================= -->
+
 <section id="campaignDashboard" class="hidden">
 
 <h1 id="campaignTitle"></h1>
@@ -735,15 +859,15 @@ JOIN
 
 <div class="nav">
 
-<button onclick="loadCampaignMembers()">
+<button id="campaignPlayersButton" type="button">
 PLAYERS
 </button>
 
-<button onclick="showCampaignInfo()">
+<button id="campaignInfoButton" type="button">
 INFO
 </button>
 
-<button class="secondary" onclick="openCampaigns()">
+<button id="campaignBackButton" class="secondary" type="button">
 BACK
 </button>
 
@@ -753,15 +877,16 @@ BACK
 
 </section>
 
+
 </div>
 </div>
 
 
 <script>
 
-/* ============================================================
-   SUPABASE CONFIGURATION
-============================================================ */
+/* =========================================================
+CONFIGURATION
+========================================================= */
 
 const SUPABASE_URL =
 "https://hcvofqqbtppycgqxzaoi.supabase.co";
@@ -769,636 +894,116 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_5NMRF_b1yMCDPr4LwYa_Ow_cveLPlLI";
 
+
+/* =========================================================
+GLOBAL STATE
+========================================================= */
+
 let currentUser = null;
 let currentCampaign = null;
 
+let character = null;
 
-/* ============================================================
-   SUPABASE REST CLIENT
-============================================================ */
+let questionIndex = 0;
 
-async function supabaseRequest(
-table,
-method="GET",
-body=null,
-query=""
-){
-
-const token =
-localStorage.getItem("soulTrialAccessToken");
-
-const headers={
-"apikey":SUPABASE_KEY,
-"Content-Type":"application/json",
-"Prefer":"return=representation"
+let scores = {
+STR:0,
+DEX:0,
+CON:0,
+INT:0,
+WIS:0,
+CHA:0
 };
 
-if(token){
+let selectedEquipment = [];
 
-headers["Authorization"]=
-"Bearer "+token;
 
-}else{
+/* =========================================================
+SCREEN SYSTEM
+========================================================= */
 
-headers["Authorization"]=
-"Bearer "+SUPABASE_KEY;
+function showScreen(id){
 
+document.querySelectorAll("section").forEach(section=>{
+section.classList.add("hidden");
+});
+
+const screen=document.getElementById(id);
+
+if(screen){
+screen.classList.remove("hidden");
 }
 
-const options={
-method:method,
-headers:headers
-};
-
-if(body!==null){
-
-options.body=
-JSON.stringify(body);
-
-}
-
-const response=
-await fetch(
-SUPABASE_URL+
-"/rest/v1/"+
-table+
-query,
-options
-);
-
-const text=
-await response.text();
-
-let data=null;
-
-try{
-
-data=
-text
-?JSON.parse(text)
-:null;
-
-}catch{
-
-data=text;
-
-}
-
-if(!response.ok){
-
-throw new Error(
-typeof data==="object"
-?
-(
-data.message||
-data.hint||
-data.details||
-data.error||
-JSON.stringify(data)
-)
-:
-data
-);
-
-}
-
-return data;
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
 
 }
 
 
-/* ============================================================
-   AUTHENTICATION
-============================================================ */
+/* =========================================================
+UTILITY
+========================================================= */
 
-async function signup(){
+function escapeHtml(value){
 
-const email=
-document.getElementById("loginEmail")
-.value
-.trim();
-
-const password=
-document.getElementById("loginPassword")
-.value;
-
-if(!email||!password){
-
-showAuthMessage(
-"Please enter an email and password."
-);
-
-return;
-
-}
-
-if(password.length<6){
-
-showAuthMessage(
-"Password must be at least 6 characters."
-);
-
-return;
-
-}
-
-try{
-
-showAuthMessage(
-"Creating your account...",
-true
-);
-
-const response=
-await fetch(
-SUPABASE_URL+
-"/auth/v1/signup",
-{
-method:"POST",
-headers:{
-"apikey":SUPABASE_KEY,
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-email:email,
-password:password
-})
-}
-);
-
-const data=
-await response.json();
-
-if(!response.ok){
-
-throw new Error(
-data.error_description||
-data.msg||
-data.message||
-data.error||
-"Unable to create account."
-);
-
-}
-
-if(data.access_token){
-
-localStorage.setItem(
-"soulTrialAccessToken",
-data.access_token
-);
-
-if(data.refresh_token){
-
-localStorage.setItem(
-"soulTrialRefreshToken",
-data.refresh_token
-);
-
-}
-
-currentUser=data.user;
-
-await ensureProfile();
-
-showAuthMessage(
-"Account created successfully.",
-true
-);
-
-setTimeout(
-()=>{
-showScreen("home");
-},
-500
-);
-
-}else{
-
-showAuthMessage(
-"Account created. Check your email to confirm your account, then return here and sign in.",
-true
-);
-
-}
-
-}catch(error){
-
-console.error(
-"Signup error:",
-error
-);
-
-showAuthMessage(
-getAuthErrorMessage(error.message)
-);
-
-}
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
 
 }
 
 
-async function login(){
+function modifier(score){
 
-const email=
-document.getElementById("loginEmail")
-.value
-.trim();
-
-const password=
-document.getElementById("loginPassword")
-.value;
-
-if(!email||!password){
-
-showAuthMessage(
-"Please enter your email and password."
-);
-
-return;
-
-}
-
-try{
-
-showAuthMessage(
-"Signing in...",
-true
-);
-
-const response=
-await fetch(
-SUPABASE_URL+
-"/auth/v1/token?grant_type=password",
-{
-method:"POST",
-headers:{
-"apikey":SUPABASE_KEY,
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-email:email,
-password:password
-})
-}
-);
-
-const data=
-await response.json();
-
-if(!response.ok){
-
-throw new Error(
-data.error_description||
-data.msg||
-data.message||
-data.error||
-"Login failed."
-);
-
-}
-
-if(!data.access_token){
-
-throw new Error(
-"Supabase did not return a login session."
-);
-
-}
-
-localStorage.setItem(
-"soulTrialAccessToken",
-data.access_token
-);
-
-if(data.refresh_token){
-
-localStorage.setItem(
-"soulTrialRefreshToken",
-data.refresh_token
-);
-
-}
-
-currentUser=data.user;
-
-await ensureProfile();
-
-showAuthMessage(
-"Signed in successfully.",
-true
-);
-
-setTimeout(
-()=>{
-if(character){
-
-viewSheet();
-
-}else{
-
-showScreen("home");
-
-}
-},
-400
-);
-
-}catch(error){
-
-console.error(
-"Login error:",
-error
-);
-
-showAuthMessage(
-getAuthErrorMessage(error.message)
-);
-
-}
+return Math.floor((score-10)/2);
 
 }
 
 
-async function ensureProfile(){
+function renderStats(stats){
 
-if(!currentUser)return;
+return Object.entries(stats).map(([stat,value])=>{
 
-try{
+const mod=modifier(value);
 
-const existing=
-await supabaseRequest(
-"profiles",
-"GET",
-null,
-"?id=eq."+
-encodeURIComponent(
-currentUser.id
-)+
-"&select=*"
-);
+return `
+<div class="stat">
+<strong>${value}</strong>
+${stat}
+<br>
+<span class="small">
+${mod>=0?"+":""}${mod}
+</span>
+</div>
+`;
 
-if(
-!existing||
-!existing.length
-){
-
-const username=
-(
-currentUser.email||
-"player"
-)
-.split("@")[0];
-
-await supabaseRequest(
-"profiles",
-"POST",
-{
-id:currentUser.id,
-username:username,
-display_name:username
-}
-);
-
-}
-
-}catch(error){
-
-console.warn(
-"Profile setup warning:",
-error.message
-);
-
-}
+}).join("");
 
 }
 
 
-async function restoreSession(){
+function showMessage(id,message,success=false){
 
-const token=
-localStorage.getItem(
-"soulTrialAccessToken"
-);
+const box=document.getElementById(id);
 
-if(!token){
+if(!box)return;
 
-currentUser=null;
-
-return;
-
-}
-
-try{
-
-const response=
-await fetch(
-SUPABASE_URL+
-"/auth/v1/user",
-{
-method:"GET",
-headers:{
-"apikey":SUPABASE_KEY,
-"Authorization":
-"Bearer "+token
-}
-}
-);
-
-if(!response.ok){
-
-localStorage.removeItem(
-"soulTrialAccessToken"
-);
-
-localStorage.removeItem(
-"soulTrialRefreshToken"
-);
-
-currentUser=null;
-
-return;
-
-}
-
-currentUser=
-await response.json();
-
-await ensureProfile();
-
-console.log(
-"Soul Trial session restored."
-);
-
-}catch(error){
-
-console.warn(
-"Session restore failed:",
-error.message
-);
-
-localStorage.removeItem(
-"soulTrialAccessToken"
-);
-
-currentUser=null;
-
-}
-
-}
-
-
-function logout(){
-
-localStorage.removeItem(
-"soulTrialAccessToken"
-);
-
-localStorage.removeItem(
-"soulTrialRefreshToken"
-);
-
-currentUser=null;
-
-currentCampaign=null;
-
-showScreen("home");
-
-}
-
-
-function getAuthErrorMessage(message){
-
-const error=
-String(message||"")
-.toLowerCase();
-
-if(
-error.includes("email not confirmed")||
-error.includes("email_not_confirmed")
-){
-
-return "Your email has not been confirmed yet. Check your email for the confirmation message.";
-
-}
-
-if(
-error.includes("invalid login credentials")||
-error.includes("invalid credentials")
-){
-
-return "Incorrect email or password.";
-
-}
-
-if(
-error.includes("user already registered")||
-error.includes("already registered")
-){
-
-return "An account with this email already exists. Try signing in instead.";
-
-}
-
-if(
-error.includes("rate limit")||
-error.includes("too many")
-){
-
-return "Too many attempts. Please wait a moment and try again.";
-
-}
-
-return message||
-"Authentication failed. Please try again.";
-
-}
-
-
-function showLogin(){
-
-showScreen("login");
-
-const message=
-document.getElementById(
-"authMessage"
-);
-
-message.classList.add(
-"hidden"
-);
-
-message.textContent="";
-
-}
-
-
-function showAuthMessage(
-message,
-success=false
-){
-
-const box=
-document.getElementById(
-"authMessage"
-);
-
-box.classList.remove(
-"hidden"
-);
-
-box.classList.toggle(
-"success",
-success
-);
-
-box.classList.toggle(
-"error",
-!success
-);
-
+box.classList.remove("hidden");
+box.classList.toggle("success",success);
+box.classList.toggle("error",!success);
 box.textContent=message;
 
 }
 
 
-/* ============================================================
-   SCREEN CONTROL
-============================================================ */
-
-function showScreen(id){
-
-document
-.querySelectorAll("section")
-.forEach(
-section=>
-section.classList.add("hidden")
-);
-
-const screen=
-document.getElementById(id);
-
-if(screen){
-
-screen.classList.remove(
-"hidden"
-);
-
-}
-
-window.scrollTo(
-{
-top:0,
-behavior:"smooth"
-}
-);
-
-}
-
-
-/* ============================================================
-   SOUL TRIAL QUESTIONS
-============================================================ */
+/* =========================================================
+SOUL TRIAL QUESTIONS
+========================================================= */
 
 const questions=[
 
@@ -1417,7 +1022,7 @@ const questions=[
 "You notice something valuable has been left unattended.",
 "Nobody would know if you took it.",
 [
-["Take it.",{DEX:1,CHA:1}],
+["Take it.",{DEX:2}],
 ["Leave it alone.",{WIS:2}],
 ["Investigate who it belongs to.",{INT:2,WIS:1}],
 ["Secure it somewhere safe.",{CON:1,WIS:1}]
@@ -1452,7 +1057,7 @@ const questions=[
 [
 ["Keep moving until you find your way.",{CON:2}],
 ["Look for landmarks.",{WIS:2}],
-["Figure out the map and terrain.",{INT:2}],
+["Figure out the terrain.",{INT:2}],
 ["Ask someone for directions.",{CHA:2}]
 ]
 ],
@@ -1497,7 +1102,7 @@ const questions=[
 ["Push yourself through it.",{CON:2}],
 ["Find the fastest technique.",{DEX:2}],
 ["Study how it works first.",{INT:2}],
-["Ask someone to teach you.",{CHA:1,WIS:1}]
+["Find someone who can teach you.",{CHA:1,WIS:1}]
 ]
 ],
 
@@ -1530,7 +1135,7 @@ const questions=[
 ["Take command.",{CHA:2}],
 ["Create a strategy.",{INT:2}],
 ["Wait and observe.",{WIS:2}],
-["Volunteer to handle the dangerous part.",{STR:1,CON:1}]
+["Volunteer for the dangerous part.",{STR:1,CON:1}]
 ]
 ],
 
@@ -1574,7 +1179,7 @@ const questions=[
 ["Fight head-on.",{STR:2}],
 ["Look for an opening.",{DEX:2}],
 ["Protect everyone.",{CON:1,WIS:1}],
-["Look for a way to end the fight without killing.",{WIS:2}]
+["Look for a way to end it without killing.",{WIS:2}]
 ]
 ],
 
@@ -1664,119 +1269,177 @@ const questions=[
 ["Study the consequences.",{INT:2}],
 ["Refuse to abandon those you love.",{CON:1,CHA:1}]
 ]
+],
+
+[
+"You discover a forgotten shrine.",
+"The power inside seems connected to your soul.",
+[
+["Approach without fear.",{STR:2}],
+["Search for hidden mechanisms.",{DEX:1,INT:1}],
+["Study its history.",{INT:2}],
+["Listen to what your instincts tell you.",{WIS:2}]
+]
+],
+
+[
+"A powerful creature offers you protection.",
+"In exchange, it wants your loyalty.",
+[
+["Accept the bargain.",{CHA:2}],
+["Demand to know its true intentions.",{INT:1,WIS:1}],
+["Refuse to be controlled.",{CON:2}],
+["Look for another solution.",{DEX:1,WIS:1}]
+]
+],
+
+[
+"You are given the chance to rewrite one mistake from your past.",
+"No one else will ever know what you changed.",
+[
+["Correct the mistake.",{WIS:2}],
+["Accept that the past cannot change.",{CON:2}],
+["Find a clever third option.",{INT:2}],
+["Use the opportunity to help someone else.",{CHA:2}]
+]
 ]
 
 ];
 
 
-/* ============================================================
-   SOUL PATHS
-============================================================ */
+/* =========================================================
+SOUL PATH DATA
+========================================================= */
 
 const soulPaths={
 
 STR:{
 name:"The Vanguard",
-description:"Your soul responds to adversity with strength, courage, and decisive action. You are most alive when something stands between you and victory.",
+description:
+"Your soul answers adversity with courage, force, and decisive action. You are built to stand where others hesitate.",
 classes:["Fighter","Barbarian","Paladin"],
-subclass:{
+race:["Half-Orc","Dragonborn","Human","Dwarf"],
+background:["Soldier","Folk Hero"],
+trait:"Unyielding",
+traitDescription:
+"You refuse to surrender while there is still strength left in you.",
+blessing:"Titan's Resolve",
+blessingDescription:
+"Once per long rest, when reduced to 0 HP, you may remain at 1 HP instead.",
+subclasses:{
 Fighter:"Champion",
 Barbarian:"Berserker",
 Paladin:"Oath of Devotion"
-},
-background:"Soldier",
-trait:"Unyielding",
-traitDescription:"You refuse to back down when others would surrender.",
-blessing:"Titan's Resolve",
-blessingDescription:"Once per long rest, when reduced to 0 HP, you may remain at 1 HP instead."
+}
 },
 
 DEX:{
 name:"The Shadow",
-description:"Your soul favors speed, precision, awareness, and adaptability. You survive by recognizing the opening others overlook.",
+description:
+"Your soul favors speed, precision, stealth, and adaptability. You survive by recognizing the opening others miss.",
 classes:["Rogue","Ranger","Monk"],
-subclass:{
+race:["Elf","Halfling","Human","Half-Elf"],
+background:["Criminal","Urchin"],
+trait:"Quickstep",
+traitDescription:
+"You instinctively recognize openings and react faster than most.",
+blessing:"Veilstep",
+blessingDescription:
+"Once per short rest, you may move 10 feet as a reaction when targeted by an attack.",
+subclasses:{
 Rogue:"Thief",
 Ranger:"Hunter",
 Monk:"Way of the Open Hand"
-},
-background:"Criminal",
-trait:"Quickstep",
-traitDescription:"You instinctively recognize openings and react quickly.",
-blessing:"Veilstep",
-blessingDescription:"Once per short rest, you may move 10 feet as a reaction when targeted by an attack."
+}
 },
 
 CON:{
 name:"The Unbroken",
-description:"Your defining strength is endurance. You keep moving when others fall and refuse to let hardship decide your fate.",
-classes:["Barbarian","Fighter"],
-subclass:{
-Barbarian:"Berserker",
-Fighter:"Champion"
-},
-background:"Outlander",
+description:
+"Your defining strength is endurance. Hardship does not decide your fate. You do.",
+classes:["Barbarian","Fighter","Paladin"],
+race:["Dwarf","Half-Orc","Human","Dragonborn"],
+background:["Outlander","Soldier"],
 trait:"Iron Will",
-traitDescription:"Pain and exhaustion rarely convince you to surrender.",
+traitDescription:
+"Pain and exhaustion rarely convince you to surrender.",
 blessing:"Last Stand",
-blessingDescription:"Once per long rest, gain temporary hit points equal to your level when you fall below half your maximum HP."
+blessingDescription:
+"Once per long rest, when you fall below half your maximum HP, gain temporary hit points equal to your level.",
+subclasses:{
+Barbarian:"Berserker",
+Fighter:"Champion",
+Paladin:"Oath of Devotion"
+}
 },
 
 INT:{
 name:"The Arcanist",
-description:"Your mind is your greatest weapon. Knowledge, patterns, magic, and understanding come naturally to you.",
-classes:["Wizard","Artificer"],
-subclass:{
-Wizard:"School of Evocation",
-Artificer:"Alchemist"
-},
-background:"Sage",
+description:
+"Your mind is your greatest weapon. Knowledge, patterns, magic, and understanding come naturally to you.",
+classes:["Wizard","Rogue"],
+race:["High Elf","Gnome","Human","Tiefling"],
+background:["Sage","Guild Artisan"],
 trait:"Analytical Mind",
-traitDescription:"You instinctively break complicated problems into patterns.",
+traitDescription:
+"You instinctively break complicated problems into understandable patterns.",
 blessing:"Arcane Insight",
-blessingDescription:"Once per long rest, gain advantage on an Intelligence check involving magic, history, or arcana."
+blessingDescription:
+"Once per long rest, gain advantage on an Intelligence check involving magic, history, or arcana.",
+subclasses:{
+Wizard:"School of Evocation",
+Rogue:"Arcane Trickster"
+}
 },
 
 WIS:{
 name:"The Seer",
-description:"You notice what others miss and trust instinct, patience, and judgment. You understand that knowledge is more than information.",
+description:
+"You notice what others miss and trust instinct, patience, and judgment. You understand that wisdom is more than knowledge.",
 classes:["Cleric","Druid","Monk","Ranger"],
-subclass:{
+race:["Wood Elf","Human","Half-Elf","Dwarf"],
+background:["Hermit","Acolyte"],
+trait:"Instinctive Awareness",
+traitDescription:
+"Your instincts often notice danger before your conscious mind does.",
+blessing:"Foresight",
+blessingDescription:
+"Once per long rest, after seeing a d20 result, add your Wisdom modifier to the roll.",
+subclasses:{
 Cleric:"Life Domain",
 Druid:"Circle of the Land",
 Monk:"Way of the Open Hand",
 Ranger:"Hunter"
-},
-background:"Hermit",
-trait:"Instinctive Awareness",
-traitDescription:"Your instincts often notice danger before your conscious mind does.",
-blessing:"Foresight",
-blessingDescription:"Once per long rest, after seeing a d20 result, add your Wisdom modifier to the roll."
+}
 },
 
 CHA:{
 name:"The Sovereign",
-description:"Your presence carries weight. People naturally notice, follow, remember, or believe you.",
+description:
+"Your presence carries weight. People naturally notice, follow, remember, or believe you.",
 classes:["Bard","Sorcerer","Warlock","Paladin"],
-subclass:{
+race:["Half-Elf","Tiefling","Human","Dragonborn"],
+background:["Noble","Entertainer"],
+trait:"Commanding Presence",
+traitDescription:
+"You possess a presence that is difficult for others to ignore.",
+blessing:"Voice of the Soul",
+blessingDescription:
+"Once per long rest, gain advantage on a Charisma check made to influence another creature.",
+subclasses:{
 Bard:"College of Lore",
 Sorcerer:"Draconic Bloodline",
 Warlock:"The Fiend",
 Paladin:"Oath of Devotion"
-},
-background:"Noble",
-trait:"Commanding Presence",
-traitDescription:"You possess a presence that is difficult for others to ignore.",
-blessing:"Voice of the Soul",
-blessingDescription:"Once per long rest, gain advantage on a Charisma check made to influence another creature."
+}
 }
 
 };
 
 
-/* ============================================================
-   CLASS DATA
-============================================================ */
+/* =========================================================
+2014 CLASS DATA
+========================================================= */
 
 const classData={
 
@@ -1788,8 +1451,10 @@ ac:16,
 speed:30,
 equipment:[
 "Chain mail",
-"Longsword and shield",
-"Light crossbow and 20 bolts",
+"Longsword",
+"Shield",
+"Light crossbow",
+"20 bolts",
 "Explorer's pack"
 ]
 },
@@ -1804,7 +1469,7 @@ equipment:[
 "Greataxe",
 "Two handaxes",
 "Explorer's pack",
-"Javelins"
+"Four javelins"
 ]
 },
 
@@ -1815,10 +1480,11 @@ hp:10,
 ac:16,
 speed:30,
 equipment:[
-"Longsword and shield",
+"Longsword",
+"Shield",
+"Chain mail",
 "Five javelins",
-"Priest's pack",
-"Chain mail"
+"Priest's pack"
 ]
 },
 
@@ -1830,9 +1496,11 @@ ac:14,
 speed:30,
 equipment:[
 "Rapier",
-"Shortbow and 20 arrows",
+"Shortbow",
+"20 arrows",
 "Leather armor",
-"Thieves' tools"
+"Thieves' tools",
+"Explorer's pack"
 ]
 },
 
@@ -1843,7 +1511,8 @@ hp:10,
 ac:14,
 speed:30,
 equipment:[
-"Longbow and 20 arrows",
+"Longbow",
+"20 arrows",
 "Two shortswords",
 "Leather armor",
 "Explorer's pack"
@@ -1858,9 +1527,9 @@ ac:14,
 speed:30,
 equipment:[
 "Shortsword",
-"10 darts",
+"Ten darts",
 "Explorer's pack",
-"Monk's tools"
+"Monk's pack"
 ]
 },
 
@@ -1872,23 +1541,11 @@ ac:12,
 speed:30,
 equipment:[
 "Quarterstaff",
-"Light crossbow and 20 bolts",
+"Spellbook",
 "Component pouch",
-"Scholar's pack"
-]
-},
-
-Artificer:{
-primary:"INT",
-hitDie:8,
-hp:8,
-ac:14,
-speed:30,
-equipment:[
-"Light hammer",
-"Light crossbow and 20 bolts",
-"Thieves' tools",
-"Explorer's pack"
+"Scholar's pack",
+"Light crossbow",
+"20 bolts"
 ]
 },
 
@@ -1902,7 +1559,9 @@ equipment:[
 "Mace",
 "Shield",
 "Scale mail",
-"Light crossbow and 20 bolts"
+"Light crossbow",
+"20 bolts",
+"Priest's pack"
 ]
 },
 
@@ -1916,7 +1575,8 @@ equipment:[
 "Wooden shield",
 "Scimitar",
 "Leather armor",
-"Explorer's pack"
+"Explorer's pack",
+"Druidic focus"
 ]
 },
 
@@ -1929,8 +1589,9 @@ speed:30,
 equipment:[
 "Rapier",
 "Leather armor",
-"Light crossbow and 20 bolts",
-"Entertainer's pack"
+"Lute",
+"Diplomat's pack",
+"Daggers"
 ]
 },
 
@@ -1941,7 +1602,8 @@ hp:6,
 ac:12,
 speed:30,
 equipment:[
-"Light crossbow and 20 bolts",
+"Light crossbow",
+"20 bolts",
 "Component pouch",
 "Explorer's pack",
 "Two daggers"
@@ -1955,39 +1617,21 @@ hp:8,
 ac:13,
 speed:30,
 equipment:[
-"Light crossbow and 20 bolts",
+"Light crossbow",
+"20 bolts",
 "Leather armor",
 "Arcane focus",
-"Scholar's pack"
+"Scholar's pack",
+"Two daggers"
 ]
 }
 
 };
 
 
-/* ============================================================
-   CHARACTER STATE
-============================================================ */
-
-let scores={
-STR:0,
-DEX:0,
-CON:0,
-INT:0,
-WIS:0,
-CHA:0
-};
-
-let questionIndex=0;
-
-let character=null;
-
-let selectedEquipment=[];
-
-
-/* ============================================================
-   TRIAL
-============================================================ */
+/* =========================================================
+TRIAL START
+========================================================= */
 
 function beginTrial(){
 
@@ -2001,14 +1645,14 @@ CHA:0
 };
 
 questionIndex=0;
-
+selectedEquipment=[];
 character=null;
 
-selectedEquipment=[];
+const nameInput=document.getElementById("playerName");
 
-document.getElementById(
-"playerName"
-).value="";
+if(nameInput){
+nameInput.value="";
+}
 
 showScreen("name");
 
@@ -2018,17 +1662,11 @@ showScreen("name");
 function startQuestions(){
 
 const name=
-document.getElementById(
-"playerName"
-)
-.value
-.trim();
+document.getElementById("playerName").value.trim();
 
 if(!name){
 
-alert(
-"Your soul must have a name."
-);
+alert("Your soul must have a name.");
 
 return;
 
@@ -2036,9 +1674,11 @@ return;
 
 character={
 name:name,
-race:"Human",
-level:1
+level:1,
+race:"Human"
 };
+
+questionIndex=0;
 
 showScreen("quiz");
 
@@ -2047,115 +1687,89 @@ displayQuestion();
 }
 
 
+/* =========================================================
+QUESTION DISPLAY
+========================================================= */
+
 function displayQuestion(){
 
-const current=
-questions[questionIndex];
+if(questionIndex>=questions.length){
 
-document.getElementById(
-"questionNumber"
-)
-.textContent=
+calculateSoul();
+
+return;
+
+}
+
+const current=questions[questionIndex];
+
+document.getElementById("questionNumber").textContent=
 "Question "+
 (questionIndex+1)+
 " of "+
 questions.length;
 
-document.getElementById(
-"progressBar"
-)
-.style.width=
-(
-(questionIndex/questions.length)*100
-)+"%";
+document.getElementById("progressBar").style.width=
+((questionIndex/questions.length)*100)+"%";
 
-document.getElementById(
-"question"
-)
-.textContent=current[0];
+document.getElementById("question").textContent=
+current[0];
 
-document.getElementById(
-"questionFlavor"
-)
-.textContent=current[1];
+document.getElementById("questionFlavor").textContent=
+current[1];
 
-const answers=
-document.getElementById(
-"answers"
-);
+const answers=document.getElementById("answers");
 
 answers.innerHTML="";
 
-current[2].forEach(
-option=>{
+current[2].forEach(option=>{
 
-const button=
-document.createElement(
-"button"
-);
+const button=document.createElement("button");
 
-button.className=
-"choice";
+button.type="button";
+button.className="choice";
+button.textContent=option[0];
 
-button.textContent=
-option[0];
+button.addEventListener("click",()=>{
 
-button.onclick=()=>{
-
-Object.entries(
-option[1]
-)
-.forEach(
-([stat,value])=>{
+Object.entries(option[1]).forEach(([stat,value])=>{
 scores[stat]+=value;
-}
-);
+});
 
 questionIndex++;
 
-if(
-questionIndex<
-questions.length
-){
-
 displayQuestion();
 
-}else{
+});
 
-calculateSoul();
+answers.appendChild(button);
 
-}
-
-};
-
-answers.appendChild(
-button
-);
-
-}
-);
+});
 
 }
 
+
+/* =========================================================
+SOUL CALCULATION
+========================================================= */
 
 function calculateSoul(){
 
-let highest=
-Object.keys(scores)
-.sort(
-(a,b)=>
-scores[b]-scores[a]
-)[0];
-
-const path=
-soulPaths[highest];
-
-const sorted=
+const sortedStats=
 Object.entries(scores)
-.sort(
-(a,b)=>
-b[1]-a[1]
-);
+.sort((a,b)=>{
+
+if(b[1]!==a[1]){
+return b[1]-a[1];
+}
+
+return a[0].localeCompare(b[0]);
+
+});
+
+const highest=sortedStats[0][0];
+
+const path=soulPaths[highest];
 
 const finalScores={
 STR:10,
@@ -2166,7 +1780,7 @@ WIS:10,
 CHA:10
 };
 
-const standard=[
+const standardArray=[
 16,
 14,
 13,
@@ -2175,435 +1789,397 @@ const standard=[
 8
 ];
 
-sorted.forEach(
-([stat],index)=>{
-finalScores[stat]=
-standard[index];
-}
-);
+sortedStats.forEach(([stat],index)=>{
+finalScores[stat]=standardArray[index];
+});
+
 
 const chosenClass=
 path.classes[0];
 
 const subclass=
-path.subclass[
-chosenClass
-];
+path.subclasses[chosenClass];
+
+const race=
+path.race[0];
 
 const background=
-path.background;
+path.background[0];
 
-character.race=
-"Human";
+character.dominantStat=highest;
 
-character.dominantStat=
-highest;
+character.soulPath=path.name;
+character.soulDescription=path.description;
 
-character.soulPath=
-path.name;
+character.race=race;
+character.class=chosenClass;
+character.subclass=subclass;
+character.background=background;
 
-character.soulDescription=
-path.description;
+character.soulTrait=path.trait;
+character.traitDescription=path.traitDescription;
 
-character.availableClasses=
-path.classes;
+character.blessing=path.blessing;
+character.blessingDescription=path.blessingDescription;
 
-character.class=
-chosenClass;
+character.scores=finalScores;
 
-character.subclass=
-subclass;
+character.level=1;
 
-character.background=
-background;
-
-character.soulTrait=
-path.trait;
-
-character.traitDescription=
-path.traitDescription;
-
-character.blessing=
-path.blessing;
-
-character.blessingDescription=
-path.blessingDescription;
-
-character.scores=
-finalScores;
-
-const data=
-classData[chosenClass];
+const data=classData[chosenClass];
 
 character.max_hp=
 data.hp+
 modifier(finalScores.CON);
 
-character.armor_class=
-data.ac;
+character.armor_class=data.ac;
+character.speed=data.speed;
 
-character.speed=
-data.speed;
+character.proficiency_bonus=2;
 
 character.hit_dice=
 "1d"+
 data.hitDie;
 
-character.proficiency_bonus=2;
-
-renderResult(path);
+renderResult();
 
 }
 
 
-function renderResult(path){
+/* =========================================================
+RESULT
+========================================================= */
 
-document.getElementById(
-"resultName"
-)
-.textContent=
+function renderResult(){
+
+document.getElementById("resultName").textContent=
 character.name;
 
-document.getElementById(
-"soulPath"
-)
-.textContent=
-path.name;
+document.getElementById("soulPath").textContent=
+character.soulPath;
 
-document.getElementById(
-"soulDescription"
-)
-.textContent=
-path.description;
+document.getElementById("soulDescription").textContent=
+character.soulDescription;
 
-document.getElementById(
-"resultRace"
-)
-.textContent=
+document.getElementById("resultRace").textContent=
 character.race;
 
-document.getElementById(
-"resultClass"
-)
-.textContent=
+document.getElementById("resultClass").textContent=
 character.class;
 
-document.getElementById(
-"resultSubclass"
-)
-.textContent=
+document.getElementById("resultSubclass").textContent=
 character.subclass;
 
-document.getElementById(
-"resultBackground"
-)
-.textContent=
+document.getElementById("resultBackground").textContent=
 character.background;
 
-document.getElementById(
-"resultStats"
-)
-.innerHTML=
-renderStats(
-character.scores
-);
+document.getElementById("resultStats").innerHTML=
+renderStats(character.scores);
 
-document.getElementById(
-"soulTrait"
-)
-.textContent=
-path.trait;
+document.getElementById("soulTrait").textContent=
+character.soulTrait;
 
-document.getElementById(
-"traitDescription"
-)
-.textContent=
-path.traitDescription;
+document.getElementById("traitDescription").textContent=
+character.traitDescription;
 
-document.getElementById(
-"awakeningBlessing"
-)
-.textContent=
-path.blessing;
+document.getElementById("awakeningBlessing").textContent=
+character.blessing;
 
-document.getElementById(
-"blessingDescription"
-)
-.textContent=
-path.blessingDescription;
+document.getElementById("blessingDescription").textContent=
+character.blessingDescription;
 
 showScreen("result");
 
 }
 
 
-/* ============================================================
-   CHARACTER CREATOR
-============================================================ */
+/* =========================================================
+CHARACTER CREATOR
+========================================================= */
 
 function openCharacterCreator(){
 
 if(!character){
 
-alert(
-"No character exists yet."
-);
+alert("Create a character first.");
 
 return;
 
 }
 
-document.getElementById(
-"characterName"
-)
-.textContent=
+document.getElementById("characterName").textContent=
 character.name;
 
-document.getElementById(
-"creatorRace"
-)
-.textContent=
+document.getElementById("creatorRace").textContent=
 character.race;
 
-document.getElementById(
-"creatorClass"
-)
-.textContent=
+document.getElementById("creatorClass").textContent=
 character.class;
 
-document.getElementById(
-"creatorSubclass"
-)
-.textContent=
+document.getElementById("creatorSubclass").textContent=
 character.subclass;
 
-document.getElementById(
-"creatorBackground"
-)
-.textContent=
+document.getElementById("creatorBackground").textContent=
 character.background;
 
-document.getElementById(
-"creatorLevel"
-)
-.textContent=
+document.getElementById("creatorLevel").textContent=
 character.level;
 
-document.getElementById(
-"abilityScores"
-)
-.innerHTML=
-renderStats(
-character.scores
-);
+document.getElementById("abilityScores").innerHTML=
+renderStats(character.scores);
 
-document.getElementById(
-"creatorHP"
-)
-.textContent=
+document.getElementById("creatorHP").textContent=
 character.max_hp;
 
-document.getElementById(
-"creatorAC"
-)
-.textContent=
+document.getElementById("creatorAC").textContent=
 character.armor_class;
 
-document.getElementById(
-"creatorSpeed"
-)
-.textContent=
-character.speed+
-" ft";
+document.getElementById("creatorSpeed").textContent=
+character.speed+" ft";
 
-renderEquipmentOptions();
+document.getElementById("creatorProficiency").textContent=
+"+"+character.proficiency_bonus;
 
-document.getElementById(
-"personality"
-)
-.value=
+document.getElementById("creatorHitDice").textContent=
+character.hit_dice;
+
+document.getElementById("personality").value=
 character.personality||"";
 
-document.getElementById(
-"ideal"
-)
-.value=
+document.getElementById("ideal").value=
 character.ideal||"";
 
-document.getElementById(
-"bond"
-)
-.value=
+document.getElementById("bond").value=
 character.bond||"";
 
-document.getElementById(
-"flaw"
-)
-.value=
+document.getElementById("flaw").value=
 character.flaw||"";
 
-document.getElementById(
-"backstory"
-)
-.value=
+document.getElementById("backstory").value=
 character.backstory||"";
+
+selectedEquipment=
+Array.isArray(character.equipment)
+? [...character.equipment]
+:[];
+
+renderEquipmentOptions();
 
 showScreen("creator");
 
 }
 
 
+/* =========================================================
+EQUIPMENT
+========================================================= */
+
 function renderEquipmentOptions(){
 
-const data=
-classData[
-character.class
-];
-
 const container=
-document.getElementById(
-"equipmentOptions"
-);
+document.getElementById("equipmentOptions");
+
+const data=
+classData[character.class];
 
 container.innerHTML="";
 
-data.equipment.forEach(
-(item,index)=>{
+data.equipment.forEach((item,index)=>{
 
 const wrapper=
-document.createElement(
-"label"
+document.createElement("label");
+
+wrapper.className=
+"card check-card";
+
+const checkbox=
+document.createElement("input");
+
+checkbox.type="checkbox";
+checkbox.value=item;
+
+checkbox.checked=
+selectedEquipment.includes(item);
+
+checkbox.addEventListener("change",()=>{
+
+if(checkbox.checked){
+
+if(!selectedEquipment.includes(item)){
+selectedEquipment.push(item);
+}
+
+}else{
+
+selectedEquipment=
+selectedEquipment.filter(x=>x!==item);
+
+}
+
+});
+
+wrapper.appendChild(checkbox);
+
+const text=
+document.createTextNode(" "+item);
+
+wrapper.appendChild(text);
+
+container.appendChild(wrapper);
+
+});
+
+}
+
+
+/* =========================================================
+SAVE CHARACTER
+========================================================= */
+
+async function saveCharacter(){
+
+if(!character){
+
+alert("No character exists.");
+
+return;
+
+}
+
+character.personality=
+document.getElementById("personality").value.trim();
+
+character.ideal=
+document.getElementById("ideal").value.trim();
+
+character.bond=
+document.getElementById("bond").value.trim();
+
+character.flaw=
+document.getElementById("flaw").value.trim();
+
+character.backstory=
+document.getElementById("backstory").value.trim();
+
+character.equipment=
+[...new Set(selectedEquipment)];
+
+localStorage.setItem(
+"soulTrialCharacter",
+JSON.stringify(character)
 );
 
-wrapper.className="card";
+if(currentUser){
 
-wrapper.style.cursor=
-"pointer";
+const result=
+await saveCharacterToSupabase();
 
-const checked=
-(
-selectedEquipment
-.includes(item)
-||
-(
-character.equipment||
-[]
-).includes(item)
+if(result){
+
+alert(
+"Character saved to this device and your account."
 );
 
-wrapper.innerHTML=`
-<input
-type="checkbox"
-value="${escapeHtml(item)}"
-${checked?"checked":""}
-style="width:auto;margin-right:8px">
-${escapeHtml(item)}
-`;
+}else{
 
-wrapper
-.querySelector("input")
-.addEventListener(
-"change",
-function(){
-
-if(this.checked){
-
-if(
-!selectedEquipment
-.includes(item)
-){
-
-selectedEquipment.push(
-item
+alert(
+"Character saved to this device. Supabase could not save it."
 );
 
 }
 
 }else{
 
-selectedEquipment=
-selectedEquipment.filter(
-x=>x!==item
-);
-
-}
-
-}
-);
-
-container.appendChild(
-wrapper
-);
-
-}
-);
-
-}
-
-
-function saveCharacter(){
-
-if(!character)return;
-
-character.personality=
-document.getElementById(
-"personality"
-).value.trim();
-
-character.ideal=
-document.getElementById(
-"ideal"
-).value.trim();
-
-character.bond=
-document.getElementById(
-"bond"
-).value.trim();
-
-character.flaw=
-document.getElementById(
-"flaw"
-).value.trim();
-
-character.backstory=
-document.getElementById(
-"backstory"
-).value.trim();
-
-character.equipment=
-[
-...new Set(
-selectedEquipment
-)
-];
-
-localStorage.setItem(
-"soulTrialCharacter",
-JSON.stringify(
-character
-)
-);
-
-saveCharacterToSupabase();
-
 alert(
-currentUser
-?
-"Character saved to your account."
-:
-"Character saved on this device. Sign in to sync it with your account."
+"Character saved on this device. Sign in if you want account syncing."
 );
 
 }
 
+}
 
-/* ============================================================
-   SUPABASE CHARACTER SAVE
-============================================================ */
+
+/* =========================================================
+SUPABASE REQUEST
+========================================================= */
+
+async function supabaseRequest(
+table,
+method="GET",
+body=null,
+query=""
+){
+
+const token=
+localStorage.getItem("soulTrialAccessToken");
+
+const headers={
+"apikey":SUPABASE_KEY,
+"Content-Type":"application/json",
+"Prefer":"return=representation"
+};
+
+if(token){
+headers["Authorization"]="Bearer "+token;
+}else{
+headers["Authorization"]="Bearer "+SUPABASE_KEY;
+}
+
+const options={
+method,
+headers
+};
+
+if(body!==null){
+options.body=JSON.stringify(body);
+}
+
+const response=
+await fetch(
+SUPABASE_URL+
+"/rest/v1/"+
+table+
+query,
+options
+);
+
+const text=
+await response.text();
+
+let data=null;
+
+try{
+data=text?JSON.parse(text):null;
+}catch{
+data=text;
+}
+
+if(!response.ok){
+
+throw new Error(
+typeof data==="object"
+?
+(data.message||data.hint||data.error_description||JSON.stringify(data))
+:
+String(data)
+);
+
+}
+
+return data;
+
+}
+
+
+/* =========================================================
+SUPABASE CHARACTER SAVE
+========================================================= */
 
 async function saveCharacterToSupabase(){
 
-if(!currentUser||!character)return;
+if(!currentUser||!character){
+return false;
+}
 
 try{
 
@@ -2641,24 +2217,18 @@ await supabaseRequest(
 "GET",
 null,
 "?player_id=eq."+
-encodeURIComponent(
-currentUser.id
-)+
+encodeURIComponent(currentUser.id)+
 "&campaign_id=is.null"+
 "&select=id"
 );
 
-if(
-existing&&
-existing.length
-){
+if(existing&&existing.length){
 
 await supabaseRequest(
 "characters",
 "PATCH",
 payload,
-"?id=eq."+
-existing[0].id
+"?id=eq."+encodeURIComponent(existing[0].id)
 );
 
 }else{
@@ -2671,6 +2241,8 @@ payload
 
 }
 
+return true;
+
 }catch(error){
 
 console.error(
@@ -2678,159 +2250,89 @@ console.error(
 error
 );
 
-}
+return false;
 
 }
 
 
-/* ============================================================
-   CHARACTER SHEET
-============================================================ */
+/* =========================================================
+CHARACTER SHEET
+========================================================= */
 
 function viewSheet(){
 
 if(!character){
 
-alert(
-"Create a character first."
-);
+alert("Create a character first.");
 
 return;
 
 }
 
-saveCharacter();
-
-document.getElementById(
-"sheetName"
-)
-.textContent=
+document.getElementById("sheetName").textContent=
 character.name;
 
-document.getElementById(
-"sheetIdentity"
-)
-.textContent=
-character.race+
-" • "+
-character.class+
-" • "+
-character.subclass+
-" • Level "+
-character.level+
-" • "+
-character.background;
+document.getElementById("sheetIdentity").textContent=
+[
+character.race,
+character.class,
+character.subclass,
+"Level "+character.level,
+character.background
+].join(" • ");
 
-document.getElementById(
-"sheetHP"
-)
-.textContent=
+document.getElementById("sheetHP").textContent=
 character.max_hp;
 
-document.getElementById(
-"sheetAC"
-)
-.textContent=
+document.getElementById("sheetAC").textContent=
 character.armor_class;
 
-document.getElementById(
-"sheetSpeed"
-)
-.textContent=
-character.speed+
-" ft";
+document.getElementById("sheetSpeed").textContent=
+character.speed+" ft";
 
-document.getElementById(
-"sheetLevel"
-)
-.textContent=
+document.getElementById("sheetLevel").textContent=
 character.level;
 
-document.getElementById(
-"sheetProficiency"
-)
-.textContent=
-"+"+
-character.proficiency_bonus;
+document.getElementById("sheetProficiency").textContent=
+"+"+character.proficiency_bonus;
 
-document.getElementById(
-"sheetHitDice"
-)
-.textContent=
+document.getElementById("sheetHitDice").textContent=
 character.hit_dice;
 
-document.getElementById(
-"sheetStats"
-)
-.innerHTML=
-renderStats(
-character.scores
-);
+document.getElementById("sheetStats").innerHTML=
+renderStats(character.scores);
 
-document.getElementById(
-"sheetPath"
-)
-.textContent=
+document.getElementById("sheetPath").textContent=
 character.soulPath;
 
-document.getElementById(
-"sheetPathDescription"
-)
-.textContent=
+document.getElementById("sheetPathDescription").textContent=
 character.soulDescription;
 
-document.getElementById(
-"sheetTrait"
-)
-.textContent=
+document.getElementById("sheetTrait").textContent=
 character.soulTrait;
 
-document.getElementById(
-"sheetTraitDescription"
-)
-.textContent=
+document.getElementById("sheetTraitDescription").textContent=
 character.traitDescription;
 
-document.getElementById(
-"sheetBlessing"
-)
-.textContent=
+document.getElementById("sheetBlessing").textContent=
 character.blessing;
 
-document.getElementById(
-"sheetBlessingDescription"
-)
-.textContent=
+document.getElementById("sheetBlessingDescription").textContent=
 character.blessingDescription;
 
-document.getElementById(
-"sheetPersonality"
-)
-.textContent=
+document.getElementById("sheetPersonality").textContent=
 character.personality||"—";
 
-document.getElementById(
-"sheetIdeal"
-)
-.textContent=
+document.getElementById("sheetIdeal").textContent=
 character.ideal||"—";
 
-document.getElementById(
-"sheetBond"
-)
-.textContent=
+document.getElementById("sheetBond").textContent=
 character.bond||"—";
 
-document.getElementById(
-"sheetFlaw"
-)
-.textContent=
+document.getElementById("sheetFlaw").textContent=
 character.flaw||"—";
 
-document.getElementById(
-"sheetBackstory"
-)
-.textContent=
+document.getElementById("sheetBackstory").textContent=
 character.backstory||"—";
 
 renderSheetEquipment();
@@ -2843,9 +2345,7 @@ showScreen("sheet");
 function renderSheetEquipment(){
 
 const container=
-document.getElementById(
-"sheetEquipment"
-);
+document.getElementById("sheetEquipment");
 
 const equipment=
 character.equipment||[];
@@ -2860,26 +2360,362 @@ return;
 }
 
 container.innerHTML=
-equipment.map(
-item=>
+equipment.map(item=>
 `<span class="tag">${escapeHtml(item)}</span>`
-)
-.join("");
+).join("");
 
 }
 
 
-/* ============================================================
-   CAMPAIGNS
-============================================================ */
+/* =========================================================
+AUTH
+========================================================= */
+
+function showLogin(){
+
+showScreen("login");
+
+document.getElementById("loginEmail").focus();
+
+}
+
+
+async function signup(){
+
+const email=
+document.getElementById("loginEmail").value.trim();
+
+const password=
+document.getElementById("loginPassword").value;
+
+if(!email||!password){
+
+showMessage(
+"authMessage",
+"Enter an email and password."
+);
+
+return;
+
+}
+
+if(password.length<6){
+
+showMessage(
+"authMessage",
+"Password must be at least 6 characters."
+);
+
+return;
+
+}
+
+try{
+
+const response=
+await fetch(
+SUPABASE_URL+"/auth/v1/signup",
+{
+method:"POST",
+headers:{
+"apikey":SUPABASE_KEY,
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email,
+password
+})
+}
+);
+
+const data=
+await response.json();
+
+if(!response.ok){
+
+throw new Error(
+data.msg||
+data.message||
+data.error_description||
+"Unable to create account."
+);
+
+}
+
+if(data.access_token){
+
+localStorage.setItem(
+"soulTrialAccessToken",
+data.access_token
+);
+
+currentUser=data.user;
+
+await ensureProfile();
+
+showMessage(
+"authMessage",
+"Account created and signed in.",
+true
+);
+
+setTimeout(()=>{
+if(character){
+viewSheet();
+}else{
+showScreen("home");
+}
+},700);
+
+}else{
+
+showMessage(
+"authMessage",
+"Account created. Check your email to confirm your account before signing in.",
+true
+);
+
+}
+
+}catch(error){
+
+showMessage(
+"authMessage",
+error.message
+);
+
+}
+
+}
+
+
+async function login(){
+
+const email=
+document.getElementById("loginEmail").value.trim();
+
+const password=
+document.getElementById("loginPassword").value;
+
+if(!email||!password){
+
+showMessage(
+"authMessage",
+"Enter an email and password."
+);
+
+return;
+
+}
+
+try{
+
+const response=
+await fetch(
+SUPABASE_URL+
+"/auth/v1/token?grant_type=password",
+{
+method:"POST",
+headers:{
+"apikey":SUPABASE_KEY,
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email,
+password
+})
+}
+);
+
+const data=
+await response.json();
+
+if(!response.ok){
+
+throw new Error(
+data.error_description||
+data.msg||
+data.message||
+"Login failed."
+);
+
+}
+
+localStorage.setItem(
+"soulTrialAccessToken",
+data.access_token
+);
+
+currentUser=data.user;
+
+await ensureProfile();
+
+showMessage(
+"authMessage",
+"Signed in successfully.",
+true
+);
+
+setTimeout(()=>{
+
+if(character){
+viewSheet();
+}else{
+showScreen("home");
+}
+
+},500);
+
+}catch(error){
+
+showMessage(
+"authMessage",
+error.message
+);
+
+}
+
+}
+
+
+async function resetPassword(){
+
+const email=
+document.getElementById("loginEmail").value.trim();
+
+if(!email){
+
+showMessage(
+"authMessage",
+"Enter your email address first."
+);
+
+return;
+
+}
+
+try{
+
+const response=
+await fetch(
+SUPABASE_URL+
+"/auth/v1/recover",
+{
+method:"POST",
+headers:{
+"apikey":SUPABASE_KEY,
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email
+})
+}
+);
+
+const data=
+await response.json().catch(()=>({}));
+
+if(!response.ok){
+
+throw new Error(
+data.msg||
+data.message||
+"Unable to send password reset email."
+);
+
+}
+
+showMessage(
+"authMessage",
+"Password reset email sent if the account exists.",
+true
+);
+
+}catch(error){
+
+showMessage(
+"authMessage",
+error.message
+);
+
+}
+
+}
+
+
+async function ensureProfile(){
+
+if(!currentUser){
+return;
+}
+
+try{
+
+const existing=
+await supabaseRequest(
+"profiles",
+"GET",
+null,
+"?id=eq."+
+encodeURIComponent(currentUser.id)+
+"&select=*"
+);
+
+if(!existing||!existing.length){
+
+const username=
+(currentUser.email||"player")
+.split("@")[0];
+
+await supabaseRequest(
+"profiles",
+"POST",
+{
+id:currentUser.id,
+username:username,
+display_name:username
+}
+);
+
+}
+
+}catch(error){
+
+console.warn(
+"Profile creation/check failed:",
+error
+);
+
+}
+
+}
+
+
+function logout(){
+
+currentUser=null;
+
+localStorage.removeItem(
+"soulTrialAccessToken"
+);
+
+showScreen("home");
+
+}
+
+
+/* =========================================================
+CAMPAIGNS
+========================================================= */
 
 async function openCampaigns(){
 
 if(!currentUser){
 
-showScreen("login");
+showLogin();
 
-showAuthMessage(
+showMessage(
+"authMessage",
 "Sign in before using campaign features."
 );
 
@@ -2896,81 +2732,32 @@ await loadCampaigns();
 
 function showCreateCampaign(){
 
-document.getElementById(
-"campaignCreate"
-)
-.classList.remove(
-"hidden"
-);
+document.getElementById("campaignCreate")
+.classList.remove("hidden");
 
-document.getElementById(
-"campaignJoin"
-)
-.classList.add(
-"hidden"
-);
+document.getElementById("campaignJoin")
+.classList.add("hidden");
 
 }
 
 
 function showJoinCampaign(){
 
-document.getElementById(
-"campaignJoin"
-)
-.classList.remove(
-"hidden"
-);
+document.getElementById("campaignJoin")
+.classList.remove("hidden");
 
-document.getElementById(
-"campaignCreate"
-)
-.classList.add(
-"hidden"
-);
+document.getElementById("campaignCreate")
+.classList.add("hidden");
 
 }
 
-
-function campaignMessage(
-message,
-success=false
-){
-
-const box=
-document.getElementById(
-"campaignMessage"
-);
-
-box.classList.remove(
-"hidden"
-);
-
-box.classList.toggle(
-"success",
-success
-);
-
-box.classList.toggle(
-"error",
-!success
-);
-
-box.textContent=
-message;
-
-}
-
-
-/* ============================================================
-   CREATE CAMPAIGN
-============================================================ */
 
 async function createCampaign(){
 
 if(!currentUser){
 
-campaignMessage(
+showMessage(
+"campaignMessage",
 "Please sign in first."
 );
 
@@ -2979,22 +2766,17 @@ return;
 }
 
 const name=
-document.getElementById(
-"campaignName"
-)
-.value
-.trim();
+document.getElementById("campaignName")
+.value.trim();
 
 const description=
-document.getElementById(
-"campaignDescription"
-)
-.value
-.trim();
+document.getElementById("campaignDescription")
+.value.trim();
 
 if(!name){
 
-campaignMessage(
+showMessage(
+"campaignMessage",
 "Enter a campaign name."
 );
 
@@ -3014,12 +2796,15 @@ description:description
 }
 );
 
-const campaign=
-Array.isArray(created)
-?created[0]
-:created;
+if(!created||!created.length){
 
-if(campaign&&campaign.id){
+throw new Error(
+"Campaign was not returned by Supabase."
+);
+
+}
+
+const campaign=created[0];
 
 try{
 
@@ -3036,37 +2821,27 @@ role:"dm"
 }catch(memberError){
 
 console.warn(
-"Campaign owner membership could not be created:",
-memberError.message
+"DM membership could not be created:",
+memberError
 );
 
 }
 
-}
-
-campaignMessage(
+showMessage(
+"campaignMessage",
 "Campaign created successfully.",
 true
 );
 
-document.getElementById(
-"campaignName"
-).value="";
-
-document.getElementById(
-"campaignDescription"
-).value="";
+document.getElementById("campaignName").value="";
+document.getElementById("campaignDescription").value="";
 
 await loadCampaigns();
 
 }catch(error){
 
-console.error(
-"Campaign creation error:",
-error
-);
-
-campaignMessage(
+showMessage(
+"campaignMessage",
 error.message
 );
 
@@ -3075,19 +2850,13 @@ error.message
 }
 
 
-/* ============================================================
-   LOAD CAMPAIGNS
-============================================================ */
-
 async function loadCampaigns(){
 
 const container=
-document.getElementById(
-"campaignList"
-);
+document.getElementById("campaignList");
 
 container.innerHTML=
-'<div class="loading">Loading campaigns...</div>';
+'<div class="card">Loading campaigns...</div>';
 
 try{
 
@@ -3099,20 +2868,15 @@ null,
 "?select=*&order=id.desc"
 );
 
-if(
-!campaigns||
-!campaigns.length
-){
+if(!campaigns||!campaigns.length){
 
-container.innerHTML=`
+container.innerHTML=
+`
 <div class="info">
-
 <h2>No Campaigns Yet</h2>
-
 <p>
 Create a campaign as a DM or join one using its campaign ID.
 </p>
-
 </div>
 `;
 
@@ -3122,13 +2886,10 @@ return;
 
 container.innerHTML="";
 
-campaigns.forEach(
-campaign=>{
+campaigns.forEach(campaign=>{
 
 const card=
-document.createElement(
-"div"
-);
+document.createElement("div");
 
 card.className="card";
 
@@ -3142,42 +2903,32 @@ campaign.description||
 )}
 </p>
 
-<p class="small">
-Campaign ID:
-<strong>
-${escapeHtml(campaign.id)}
-</strong>
+<p>
+<span class="badge">
+Campaign ID: ${escapeHtml(campaign.id)}
+</span>
 </p>
 
-<button>
+<button type="button">
 OPEN CAMPAIGN
 </button>
 `;
 
-card
-.querySelector("button")
-.onclick=()=>{
+card.querySelector("button")
+.addEventListener("click",()=>{
 openCampaign(campaign);
-};
+});
 
-container.appendChild(
-card
-);
+container.appendChild(card);
 
-}
-);
+});
 
 }catch(error){
 
-console.error(
-"Campaign loading error:",
-error
-);
-
-container.innerHTML=`
+container.innerHTML=
+`
 <div class="notice error">
 Unable to load campaigns:
-<br>
 ${escapeHtml(error.message)}
 </div>
 `;
@@ -3187,50 +2938,25 @@ ${escapeHtml(error.message)}
 }
 
 
-/* ============================================================
-   JOIN CAMPAIGN
-============================================================ */
-
 async function joinCampaign(){
 
 if(!currentUser){
 
-campaignMessage(
-"Please sign in first."
-);
+showLogin();
 
 return;
 
 }
 
 const code=
-document.getElementById(
-"campaignCode"
-)
-.value
-.trim();
+document.getElementById("campaignCode")
+.value.trim();
 
 if(!code){
 
-campaignMessage(
-"Enter a campaign ID."
-);
-
-return;
-
-}
-
-const campaignId=
-Number(code);
-
-if(
-!Number.isInteger(
-campaignId
-)
-){
-
-campaignMessage(
-"Enter the numeric campaign ID."
+showMessage(
+"campaignMessage",
+"Enter the campaign ID."
 );
 
 return;
@@ -3245,16 +2971,14 @@ await supabaseRequest(
 "GET",
 null,
 "?id=eq."+
-campaignId+
+encodeURIComponent(code)+
 "&select=*"
 );
 
-if(
-!campaigns||
-!campaigns.length
-){
+if(!campaigns||!campaigns.length){
 
-campaignMessage(
+showMessage(
+"campaignMessage",
 "Campaign not found."
 );
 
@@ -3262,32 +2986,7 @@ return;
 
 }
 
-const campaign=
-campaigns[0];
-
-/*
-Check whether the player is already
-a member before inserting.
-*/
-
-const existing=
-await supabaseRequest(
-"campaign_members",
-"GET",
-null,
-"?player_id=eq."+
-encodeURIComponent(
-currentUser.id
-)+
-"&campaign_id=eq."+
-campaign.id+
-"&select=id"
-);
-
-if(
-!existing||
-!existing.length
-){
+const campaign=campaigns[0];
 
 await supabaseRequest(
 "campaign_members",
@@ -3299,8 +2998,6 @@ role:"player"
 }
 );
 
-}
-
 if(character){
 
 await attachCharacterToCampaign(
@@ -3309,25 +3006,18 @@ campaign.id
 
 }
 
-campaignMessage(
-"You joined "+
-campaign.name+
-".",
+showMessage(
+"campaignMessage",
+"You joined "+campaign.name+".",
 true
 );
 
-await openCampaign(
-campaign
-);
+await openCampaign(campaign);
 
 }catch(error){
 
-console.error(
-"Join campaign error:",
-error
-);
-
-campaignMessage(
+showMessage(
+"campaignMessage",
 error.message
 );
 
@@ -3336,18 +3026,11 @@ error.message
 }
 
 
-/* ============================================================
-   ATTACH CHARACTER TO CAMPAIGN
-============================================================ */
+async function attachCharacterToCampaign(campaignId){
 
-async function attachCharacterToCampaign(
-campaignId
-){
-
-if(
-!currentUser||
-!character
-)return;
+if(!currentUser||!character){
+return;
+}
 
 try{
 
@@ -3357,17 +3040,12 @@ await supabaseRequest(
 "GET",
 null,
 "?player_id=eq."+
-encodeURIComponent(
-currentUser.id
-)+
+encodeURIComponent(currentUser.id)+
 "&campaign_id=is.null"+
 "&select=id"
 );
 
-if(
-rows&&
-rows.length
-){
+if(rows&&rows.length){
 
 await supabaseRequest(
 "characters",
@@ -3375,15 +3053,14 @@ await supabaseRequest(
 {
 campaign_id:campaignId
 },
-"?id=eq."+
-rows[0].id
+"?id=eq."+encodeURIComponent(rows[0].id)
 );
 
 }
 
 }catch(error){
 
-console.error(
+console.warn(
 "Unable to attach character:",
 error
 );
@@ -3393,46 +3070,31 @@ error
 }
 
 
-/* ============================================================
-   OPEN CAMPAIGN
-============================================================ */
+async function openCampaign(campaign){
 
-async function openCampaign(
-campaign
-){
+currentCampaign=campaign;
 
-currentCampaign=
-campaign;
-
-document.getElementById(
-"campaignTitle"
-)
+document.getElementById("campaignTitle")
 .textContent=
 campaign.name;
 
-document.getElementById(
-"campaignDescription"
-)
+document.getElementById("campaignDescription")
 .textContent=
 campaign.description||
 "No campaign description.";
 
-showScreen(
-"campaignDashboard"
-);
+showScreen("campaignDashboard");
 
 await loadCampaignMembers();
 
 }
 
 
-/* ============================================================
-   CAMPAIGN MEMBERS
-============================================================ */
-
 async function loadCampaignMembers(){
 
-if(!currentCampaign)return;
+if(!currentCampaign){
+return;
+}
 
 const container=
 document.getElementById(
@@ -3440,7 +3102,7 @@ document.getElementById(
 );
 
 container.innerHTML=
-'<div class="loading">Loading players...</div>';
+'<div class="card">Loading players...</div>';
 
 try{
 
@@ -3450,24 +3112,25 @@ await supabaseRequest(
 "GET",
 null,
 "?campaign_id=eq."+
-currentCampaign.id+
+encodeURIComponent(currentCampaign.id)+
 "&select=*"
 );
 
-if(
-!members||
-!members.length
-){
+if(!members||!members.length){
 
-container.innerHTML=`
+container.innerHTML=
+`
 <div class="info">
-
 <h2>No Players Yet</h2>
 
 <p>
-Share the Campaign ID with your players.
+Campaign ID:
+<strong>${escapeHtml(currentCampaign.id)}</strong>
 </p>
 
+<p>
+Give this ID to your players so they can join.
+</p>
 </div>
 `;
 
@@ -3476,181 +3139,55 @@ return;
 }
 
 container.innerHTML=`
-
 <div class="info">
-
 <h2>Campaign Roster</h2>
 
 <p>
-<strong>Campaign ID:</strong>
-${escapeHtml(
-currentCampaign.id
-)}
+Campaign ID:
+<strong>${escapeHtml(currentCampaign.id)}</strong>
 </p>
 
+<p>
+Members: ${members.length}
+</p>
 </div>
-
 `;
 
-for(
-const member of members
-){
-
-let characterInfo=null;
-
-try{
-
-const chars=
-await supabaseRequest(
-"characters",
-"GET",
-null,
-"?player_id=eq."+
-encodeURIComponent(
-member.player_id
-)+
-"&campaign_id=eq."+
-currentCampaign.id+
-"&select=*"
-);
-
-if(
-chars&&
-chars.length
-){
-
-characterInfo=
-chars[0];
-
-}
-
-}catch(error){
-
-console.warn(
-"Character lookup failed:",
-error.message
-);
-
-}
+members.forEach(member=>{
 
 const card=
-document.createElement(
-"div"
-);
+document.createElement("div");
 
 card.className="card";
 
-if(characterInfo){
-
 card.innerHTML=`
-
-<h3>
-${escapeHtml(
-characterInfo.name
-)}
-</h3>
+<h3>Campaign Member</h3>
 
 <p>
-<strong>
-${escapeHtml(
-characterInfo.race
-)}
-</strong>
-•
-${escapeHtml(
-characterInfo.class
-)}
-•
-${escapeHtml(
-characterInfo.subclass
-)}
-</p>
-
-<p>
-Level ${escapeHtml(
-characterInfo.level
-)}
-•
-HP ${escapeHtml(
-characterInfo.max_hp
-)}
-•
-AC ${escapeHtml(
-characterInfo.armor_class
-)}
-</p>
-
-<p>
-Background:
-${escapeHtml(
-characterInfo.background
-)}
-</p>
-
-<p>
-Soul:
-${escapeHtml(
-characterInfo.soul_path||
-"Unknown"
-)}
-</p>
-
-<span class="badge">
-${escapeHtml(
-member.role||
-"player"
-)}
+<strong>Player ID:</strong>
+<span class="small">
+${escapeHtml(member.player_id)}
 </span>
+</p>
 
+<p>
+<strong>Role:</strong>
+${escapeHtml(member.role||"player")}
+</p>
 `;
 
-}else{
+container.appendChild(card);
 
-card.innerHTML=`
-
-<h3>
-Campaign Member
-</h3>
-
-<p>
-This player has joined the campaign
-but has not attached a character yet.
-</p>
-
-<span class="badge">
-${escapeHtml(
-member.role||
-"player"
-)}
-</span>
-
-`;
-
-}
-
-container.appendChild(
-card
-);
-
-}
+});
 
 }catch(error){
 
-console.error(
-"Member loading error:",
-error
-);
-
-container.innerHTML=`
-
+container.innerHTML=
+`
 <div class="notice error">
-
-${escapeHtml(
-error.message
-)}
-
+Unable to load players:
+${escapeHtml(error.message)}
 </div>
-
 `;
 
 }
@@ -3658,13 +3195,11 @@ error.message
 }
 
 
-/* ============================================================
-   CAMPAIGN INFO
-============================================================ */
-
 function showCampaignInfo(){
 
-if(!currentCampaign)return;
+if(!currentCampaign){
+return;
+}
 
 const container=
 document.getElementById(
@@ -3672,13 +3207,10 @@ document.getElementById(
 );
 
 container.innerHTML=`
-
 <div class="info">
 
 <h2>
-${escapeHtml(
-currentCampaign.name
-)}
+${escapeHtml(currentCampaign.name)}
 </h2>
 
 <p>
@@ -3689,121 +3221,36 @@ currentCampaign.description||
 </p>
 
 <div class="notice">
-
 <strong>Campaign ID:</strong>
-
-${escapeHtml(
-currentCampaign.id
-)}
-
+${escapeHtml(currentCampaign.id)}
 <br><br>
-
 Give this ID to your players so they can join.
-
 </div>
 
 </div>
-
 `;
 
 }
 
 
-/* ============================================================
-   UTILITIES
-============================================================ */
+/* =========================================================
+LOCAL CHARACTER LOAD
+========================================================= */
 
-function modifier(score){
+function loadLocalCharacter(){
 
-return Math.floor(
-(score-10)/2
-);
-
-}
-
-
-function renderStats(scores){
-
-return Object.entries(
-scores
-)
-.map(
-([stat,value])=>{
-
-const mod=
-modifier(value);
-
-return `
-<div class="stat">
-
-<strong>
-${escapeHtml(value)}
-</strong>
-
-${escapeHtml(stat)}
-
-<br>
-
-<span class="small">
-${mod>=0?"+":""}${mod}
-</span>
-
-</div>
-`;
-
-}
-)
-.join("");
-
-}
-
-
-function escapeHtml(value){
-
-return String(
-value??""
-)
-.replace(
-/&/g,
-"&amp;"
-)
-.replace(
-/</g,
-"&lt;"
-)
-.replace(
-/>/g,
-"&gt;"
-)
-.replace(
-/"/g,
-"&quot;"
-)
-.replace(
-/'/g,
-"&#039;"
-);
-
-}
-
-
-/* ============================================================
-   LOAD LOCAL CHARACTER
-============================================================ */
-
-const savedCharacter=
+const saved=
 localStorage.getItem(
 "soulTrialCharacter"
 );
 
-if(savedCharacter){
+if(!saved){
+return;
+}
 
 try{
 
-character=
-JSON.parse(
-savedCharacter
-);
+character=JSON.parse(saved);
 
 }catch(error){
 
@@ -3818,9 +3265,283 @@ character=null;
 }
 
 
-/* ============================================================
-   START SESSION RESTORATION
-============================================================ */
+/* =========================================================
+SESSION RESTORE
+========================================================= */
+
+async function restoreSession(){
+
+const token=
+localStorage.getItem(
+"soulTrialAccessToken"
+);
+
+if(!token){
+return;
+}
+
+try{
+
+const response=
+await fetch(
+SUPABASE_URL+
+"/auth/v1/user",
+{
+method:"GET",
+headers:{
+"apikey":SUPABASE_KEY,
+"Authorization":"Bearer "+token
+}
+}
+);
+
+if(response.ok){
+
+currentUser=
+await response.json();
+
+await ensureProfile();
+
+}
+
+}catch(error){
+
+console.warn(
+"Session restore failed:",
+error
+);
+
+}
+
+}
+
+
+/* =========================================================
+BUTTON EVENTS
+========================================================= */
+
+/*
+IMPORTANT:
+All buttons use addEventListener instead of inline onclick
+handlers. This prevents the button system from breaking if
+part of the HTML is changed.
+*/
+
+document.getElementById(
+"beginTrialButton"
+).addEventListener(
+"click",
+beginTrial
+);
+
+
+document.getElementById(
+"playerLoginButton"
+).addEventListener(
+"click",
+showLogin
+);
+
+
+document.getElementById(
+"continueNameButton"
+).addEventListener(
+"click",
+startQuestions
+);
+
+
+document.getElementById(
+"nameBackButton"
+).addEventListener(
+"click",
+()=>{
+showScreen("home");
+}
+);
+
+
+document.getElementById(
+"continueCharacterButton"
+).addEventListener(
+"click",
+openCharacterCreator
+);
+
+
+document.getElementById(
+"resultHomeButton"
+).addEventListener(
+"click",
+()=>{
+showScreen("home");
+}
+);
+
+
+document.getElementById(
+"saveCharacterButton"
+).addEventListener(
+"click",
+saveCharacter
+);
+
+
+document.getElementById(
+"viewSheetButton"
+).addEventListener(
+"click",
+viewSheet
+);
+
+
+document.getElementById(
+"creatorHomeButton"
+).addEventListener(
+"click",
+()=>{
+showScreen("home");
+}
+);
+
+
+document.getElementById(
+"sheetEditButton"
+).addEventListener(
+"click",
+openCharacterCreator
+);
+
+
+document.getElementById(
+"sheetCampaignButton"
+).addEventListener(
+"click",
+openCampaigns
+);
+
+
+document.getElementById(
+"sheetLogoutButton"
+).addEventListener(
+"click",
+logout
+);
+
+
+document.getElementById(
+"sheetHomeButton"
+).addEventListener(
+"click",
+()=>{
+showScreen("home");
+}
+);
+
+
+document.getElementById(
+"loginBackButton"
+).addEventListener(
+"click",
+()=>{
+showScreen("home");
+}
+);
+
+
+document.getElementById(
+"signInButton"
+).addEventListener(
+"click",
+login
+);
+
+
+document.getElementById(
+"createAccountButton"
+).addEventListener(
+"click",
+signup
+);
+
+
+document.getElementById(
+"forgotPasswordButton"
+).addEventListener(
+"click",
+resetPassword
+);
+
+
+document.getElementById(
+"createCampaignButton"
+).addEventListener(
+"click",
+showCreateCampaign
+);
+
+
+document.getElementById(
+"joinCampaignButton"
+).addEventListener(
+"click",
+showJoinCampaign
+);
+
+
+document.getElementById(
+"campaignCharacterButton"
+).addEventListener(
+"click",
+viewSheet
+);
+
+
+document.getElementById(
+"confirmCreateCampaignButton"
+).addEventListener(
+"click",
+createCampaign
+);
+
+
+document.getElementById(
+"confirmJoinCampaignButton"
+).addEventListener(
+"click",
+joinCampaign
+);
+
+
+document.getElementById(
+"campaignPlayersButton"
+).addEventListener(
+"click",
+loadCampaignMembers
+);
+
+
+document.getElementById(
+"campaignInfoButton"
+).addEventListener(
+"click",
+showCampaignInfo
+);
+
+
+document.getElementById(
+"campaignBackButton"
+).addEventListener(
+"click",
+openCampaigns
+);
+
+
+/* =========================================================
+INITIALIZE
+========================================================= */
+
+loadLocalCharacter();
 
 restoreSession();
 
