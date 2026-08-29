@@ -1,15 +1,5 @@
 "use strict";
 
-/* =========================================================
-THE SOUL'S TRIAL
-GAME DATA
-========================================================= */
-
-
-/* =========================================================
-QUESTIONS
-========================================================= */
-
 const questions = [
 
 [
@@ -307,14 +297,10 @@ const questions = [
 ["Refuse to sacrifice another soul.",{WIS:2}],
 ["Convince someone to help you.",{CHA:2}]
 ]
+
 ]
 
 ];
-
-
-/* =========================================================
-SOUL PATHS
-========================================================= */
 
 const soulPaths = {
 
@@ -416,11 +402,6 @@ blessingDescription:"Once per long rest, gain advantage on a Charisma check made
 }
 
 };
-
-
-/* =========================================================
-2014-STYLE CLASS DATA
-========================================================= */
 
 const classData = {
 
@@ -608,121 +589,26 @@ equipment:[
 
 };
 
+function determineRace(scores){
 
-/* =========================================================
-RACE DATA
-========================================================= */
+const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
 
-const raceData = {
+const primary=sorted[0][0];
+const secondary=sorted[1][0];
 
-Human:{
-speed:30,
-abilityBonus:{
-STR:1,
-DEX:1,
-CON:1,
-INT:1,
-WIS:1,
-CHA:1
+if(primary==="STR"&&secondary==="CON")return"Half-Orc";
+if(primary==="STR"&&secondary==="CHA")return"Dragonborn";
+if(primary==="DEX"&&secondary==="CHA")return"Half-Elf";
+if(primary==="DEX"&&secondary==="INT")return"Elf";
+if(primary==="DEX"&&secondary==="CON")return"Halfling";
+if(primary==="CON"&&secondary==="WIS")return"Dwarf";
+if(primary==="CON"&&secondary==="STR")return"Half-Orc";
+if(primary==="INT"&&secondary==="DEX")return"Gnome";
+if(primary==="INT"&&secondary==="CHA")return"Tiefling";
+if(primary==="WIS"&&secondary==="CON")return"Dwarf";
+if(primary==="WIS"&&secondary==="CHA")return"Half-Elf";
+if(primary==="CHA"&&secondary==="INT")return"Tiefling";
+if(primary==="CHA"&&secondary==="STR")return"Dragonborn";
+
+return"Human";
 }
-},
-
-HalfOrc:{
-speed:30,
-abilityBonus:{
-STR:2,
-CON:1
-}
-},
-
-Dragonborn:{
-speed:30,
-abilityBonus:{
-STR:2,
-CHA:1
-}
-},
-
-HalfElf:{
-speed:30,
-abilityBonus:{
-CHA:2
-}
-},
-
-Elf:{
-speed:30,
-abilityBonus:{
-DEX:2
-}
-},
-
-Halfling:{
-speed:25,
-abilityBonus:{
-DEX:2
-}
-},
-
-Dwarf:{
-speed:25,
-abilityBonus:{
-CON:2
-}
-},
-
-Gnome:{
-speed:25,
-abilityBonus:{
-INT:2
-}
-},
-
-Tiefling:{
-speed:30,
-abilityBonus:{
-INT:1,
-CHA:2
-}
-}
-
-};
-
-
-/* =========================================================
-BACKGROUND DATA
-========================================================= */
-
-const backgroundData = {
-
-Soldier:{
-skills:["Athletics","Intimidation"],
-feature:"Military Rank"
-},
-
-Criminal:{
-skills:["Deception","Stealth"],
-feature:"Criminal Contact"
-},
-
-Outlander:{
-skills:["Athletics","Survival"],
-feature:"Wanderer"
-},
-
-Sage:{
-skills:["Arcana","History"],
-feature:"Researcher"
-},
-
-Hermit:{
-skills:["Medicine","Religion"],
-feature:"Discovery"
-},
-
-Noble:{
-skills:["History","Persuasion"],
-feature:"Position of Privilege"
-}
-
-};
