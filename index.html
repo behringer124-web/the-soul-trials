@@ -3,566 +3,218 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0b0c12">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>The Soul's Trial</title>
 
 <style>
 
-*{
-box-sizing:border-box;
+* {
+    box-sizing: border-box;
 }
 
-html{
-scroll-behavior:smooth;
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    background: #0b0b10;
+    color: #eee;
 }
 
-body{
-
-margin:0;
-min-height:100vh;
-
-background:
-radial-gradient(
-circle at top,
-#29233b 0%,
-#0b0c12 52%,
-#050609 100%
-);
-
-color:#eee;
-
-font-family:
-system-ui,
--apple-system,
-BlinkMacSystemFont,
-"Segoe UI",
-sans-serif;
-
+main {
+    width: 100%;
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
 }
 
-.container{
-
-width:100%;
-max-width:1050px;
-
-margin:auto;
-
-padding:14px;
-
+section {
+    min-height: 100vh;
+    padding: 30px 10px;
 }
 
-.panel{
-
-background:rgba(18,21,31,.98);
-
-border:1px solid #625a48;
-
-border-radius:18px;
-
-padding:25px;
-
-box-shadow:
-0 15px 55px rgba(0,0,0,.55);
-
-}
-
-section{
-
-animation:fade .2s ease;
-
-}
-
-@keyframes fade{
-
-from{
-opacity:0;
-transform:translateY(5px);
-}
-
-to{
-opacity:1;
-transform:translateY(0);
-}
-
-}
-
-.hidden{
-
-display:none!important;
-
+.hidden {
+    display: none !important;
 }
 
 h1,
 h2,
-h3{
-
-font-family:Georgia,serif;
-
-color:#dfc47a;
-
+h3 {
+    text-align: center;
 }
 
-h1{
-
-text-align:center;
-
-font-size:
-clamp(2.3rem,8vw,4.4rem);
-
-margin:15px 0;
-
+h1 {
+    font-size: 42px;
+    margin-top: 60px;
 }
 
-h2{
-
-margin-top:28px;
-
+h2 {
+    font-size: 30px;
 }
 
-p{
-
-line-height:1.6;
-
-color:#c7c7c7;
-
+p {
+    line-height: 1.6;
 }
 
-.center{
-
-text-align:center;
-
+.center {
+    text-align: center;
 }
 
-.muted{
-
-color:#999;
-
+.card,
+.info,
+.notice {
+    background: #15151d;
+    border: 1px solid #33333f;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 15px 0;
 }
 
-button,
-input,
-select,
-textarea{
-
-width:100%;
-
-padding:13px;
-
-margin:6px 0;
-
-border-radius:10px;
-
-font:inherit;
-
+.notice {
+    text-align: center;
 }
 
-button{
-
-background:#70582a;
-
-border:1px solid #dfc47a;
-
-color:#fff;
-
-font-weight:700;
-
-cursor:pointer;
-
-transition:.15s;
-
+.success {
+    border-color: #4caf50;
 }
 
-button:hover{
-
-background:#8c7038;
-
-transform:translateY(-1px);
-
+.error {
+    border-color: #d9534f;
 }
 
-button:disabled{
-
-opacity:.55;
-
-cursor:not-allowed;
-
-transform:none;
-
+button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin: 12px 0;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background: #20202a;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-button.secondary{
-
-background:#202633;
-
-border-color:#555;
-
+button:hover {
+    background: #30303d;
 }
 
-button.danger{
-
-background:#542c2c;
-
-border-color:#9b5555;
-
-}
-
-.choice{
-
-background:#202737;
-
-border-color:#514d43;
-
-text-align:left;
-
-padding:16px;
-
-}
-
-.choice:hover{
-
-border-color:#dfc47a;
-
-background:#282f41;
-
+.choice {
+    text-align: left;
+    margin: 12px 0;
 }
 
 input,
-select,
-textarea{
-
-background:#0d121b;
-
-color:#fff;
-
-border:1px solid #484848;
-
+textarea {
+    width: 100%;
+    padding: 13px;
+    margin: 8px 0 15px;
+    border-radius: 7px;
+    border: 1px solid #444;
+    background: #101017;
+    color: white;
+    font-size: 16px;
 }
 
-textarea{
-
-min-height:110px;
-
-resize:vertical;
-
+textarea {
+    min-height: 120px;
+    resize: vertical;
 }
 
-.progress{
-
-height:9px;
-
-background:#292e38;
-
-border-radius:20px;
-
-margin:15px 0 25px;
-
-overflow:hidden;
-
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
 }
 
-.progress-bar{
-
-height:100%;
-
-width:0%;
-
-background:#dfc47a;
-
-transition:width .25s;
-
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
 }
 
-.info{
-
-background:#101520;
-
-border:1px solid #454238;
-
-border-radius:12px;
-
-padding:16px;
-
-margin:14px 0;
-
+.stat {
+    text-align: center;
+    background: #20202a;
+    border: 1px solid #3b3b48;
+    border-radius: 8px;
+    padding: 12px;
 }
 
-.grid{
-
-display:grid;
-
-grid-template-columns:repeat(2,1fr);
-
-gap:12px;
-
+.small {
+    font-size: 14px;
 }
 
-.stats{
-
-display:grid;
-
-grid-template-columns:repeat(3,1fr);
-
-gap:9px;
-
+.tag {
+    display: inline-block;
+    background: #292934;
+    border: 1px solid #444;
+    border-radius: 20px;
+    padding: 7px 12px;
+    margin: 4px;
 }
 
-.stat{
-
-background:#0c1119;
-
-border:1px solid #403d35;
-
-border-radius:10px;
-
-padding:13px;
-
-text-align:center;
-
+.progress {
+    width: 100%;
+    height: 12px;
+    background: #22222b;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 15px 0 25px;
 }
 
-.stat strong{
-
-display:block;
-
-color:#dfc47a;
-
-font-size:1.5rem;
-
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #aaa;
 }
 
-.tag{
-
-display:inline-block;
-
-padding:7px 11px;
-
-margin:3px;
-
-border-radius:20px;
-
-border:1px solid #625a48;
-
-color:#dfc47a;
-
-background:#151923;
-
+.choice-area {
+    margin-top: 25px;
 }
 
-.card{
-
-background:#171c28;
-
-border:1px solid #3f4350;
-
-border-radius:12px;
-
-padding:14px;
-
-margin:8px 0;
-
+.identity {
+    text-align: center;
+    font-size: 18px;
 }
 
-.card h3{
-
-margin-top:0;
-
+.big-title {
+    text-align: center;
+    font-size: 34px;
+    margin-bottom: 10px;
 }
 
-.section-title{
-
-border-bottom:1px solid #3d3a34;
-
-padding-bottom:8px;
-
+.role-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 700px;
+    margin: 40px auto;
 }
 
-.small{
-
-font-size:.88rem;
-
+.role-grid button {
+    min-height: 180px;
+    font-size: 22px;
 }
 
-.notice{
-
-border-left:4px solid #dfc47a;
-
-padding:10px 14px;
-
-background:#151923;
-
-margin:12px 0;
-
-}
-
-.success{
-
-border-left-color:#617d60;
-
-}
-
-.error{
-
-border-left-color:#8b4b4b;
-
-}
-
-.nav{
-
-display:flex;
-
-gap:8px;
-
-flex-wrap:wrap;
-
-margin-bottom:18px;
-
-}
-
-.nav button{
-
-width:auto;
-
-flex:1;
-
-min-width:120px;
-
-}
-
-.badge{
-
-display:inline-block;
-
-font-size:.8rem;
-
-padding:4px 8px;
-
-border-radius:10px;
-
-background:#292e38;
-
-color:#ddd;
-
-}
-
-.divider{
-
-height:1px;
-
-background:#38372f;
-
-margin:22px 0;
-
-}
-
-.choice.selected{
-
-border-color:#dfc47a;
-
-background:#343346;
-
-}
-
-.big-number{
-
-font-size:2.2rem;
-
-font-weight:800;
-
-color:#dfc47a;
-
-text-align:center;
-
-}
-
-.role-grid{
-
-display:grid;
-
-grid-template-columns:repeat(2,1fr);
-
-gap:15px;
-
-margin-top:20px;
-
-}
-
-.role-card{
-
-background:#171c28;
-
-border:1px solid #48443a;
-
-border-radius:15px;
-
-padding:20px;
-
-text-align:center;
-
-}
-
-.role-card h2{
-
-margin-top:5px;
-
-}
-
-.role-card p{
-
-font-size:.95rem;
-
-}
-
-.role-card button{
-
-margin-top:12px;
-
-}
-
-@media(max-width:650px){
-
-.container{
-
-padding:7px;
-
-}
-
-.panel{
-
-padding:17px 13px;
-
-}
-
-.grid{
-
-grid-template-columns:1fr;
-
-}
-
-.stats{
-
-grid-template-columns:repeat(2,1fr);
-
-}
-
-.nav{
-
-flex-direction:column;
-
-}
-
-.nav button{
-
-width:100%;
-
-}
-
-.role-grid{
-
-grid-template-columns:1fr;
-
-}
+@media (max-width: 700px) {
+
+    .role-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    h1 {
+        font-size: 34px;
+    }
 
 }
 
@@ -572,9 +224,7 @@ grid-template-columns:1fr;
 
 <body>
 
-<div class="container">
-
-<div class="panel">
+<main>
 
 
 <!-- =====================================================
@@ -583,124 +233,80 @@ HOME
 
 <section id="home">
 
-<h1>The Soul's Trial</h1>
+    <div class="center">
 
-<p class="center">
+        <h1>The Soul's Trial</h1>
 
-<i>
-"Before a soul can be given a new life,
-it must first reveal what it truly is."
-</i>
+        <p>
+            Discover the soul that lies within your character.
+        </p>
 
-</p>
+        <p>
+            Choose how you enter the realm.
+        </p>
 
-<div class="info">
-
-<p class="center">
-
-Your mortal life has ended.
-
-But death was not the end.
-
-</p>
-
-<p class="center">
-
-Something beyond your world has taken notice of you.
-
-Before you awaken in another world,
-your soul must first be judged.
-
-</p>
-
-<p class="center">
-
-Your choices will determine who you were,
-what you become,
-and the path your new life will take.
-
-</p>
-
-</div>
-
-<h2 class="center">
-What brings you to the Trial?
-</h2>
-
-<div class="role-grid">
+    </div>
 
 
-<!-- PLAYER -->
+    <div class="role-grid">
 
-<div class="role-card">
+        <div class="card">
 
-<h2>PLAYER</h2>
+            <h2>PLAYER</h2>
 
-<p>
+            <p class="center">
+                Take the Soul's Trial and discover your
+                race, class, subclass, background and soul path.
+            </p>
 
-Take the Soul's Trial and discover
-the character your soul was meant to become.
+            <button
+                type="button"
+                id="playerButton"
+            >
+                BEGIN AS PLAYER
+            </button>
 
-</p>
-
-<p class="muted small">
-
-No traditional account required.
-
-</p>
-
-<button
-type="button"
-id="playerButton">
-
-BEGIN AS PLAYER
-
-</button>
-
-</div>
+        </div>
 
 
-<!-- DM -->
+        <div class="card">
 
-<div class="role-card">
+            <h2>DM</h2>
 
-<h2>DM</h2>
+            <p class="center">
+                Create and manage a campaign,
+                or access an existing campaign.
+            </p>
 
-<p>
+            <button
+                type="button"
+                id="dmButton"
+            >
+                BEGIN AS DM
+            </button>
 
-Create a campaign, receive your campaign ID,
-and bring your players into your world.
+        </div>
 
-</p>
+    </div>
 
-<p class="muted small">
 
-No traditional account required.
+    <div class="card">
 
-</p>
+        <h3>Existing Character</h3>
 
-<button
-type="button"
-id="dmButton">
+        <p class="center">
+            If you already have a character saved on this device,
+            you can continue to your character sheet.
+        </p>
 
-BEGIN AS DM
+        <button
+            type="button"
+            id="beginButton"
+        >
+            BEGIN THE TRIAL
+        </button>
 
-</button>
-
-</div>
-
-</div>
-
-<div class="divider"></div>
-
-<button
-type="button"
-class="secondary"
-id="campaignHomeButton">
-
-CAMPAIGNS
-
-</button>
+    </div>
 
 </section>
 
@@ -709,41 +315,43 @@ CAMPAIGNS
 PLAYER NAME
 ===================================================== -->
 
-<section
-id="name"
-class="hidden">
+<section id="name" class="hidden">
 
-<h1>Before the Trial</h1>
+    <h2>Name Your Character</h2>
 
-<p class="center">
+    <div class="card">
 
-A name is the first thing a soul carries
-into the unknown.
+        <p class="center">
+            Before your soul can be judged,
+            it must first have a name.
+        </p>
 
-</p>
+        <label for="playerName">
+            Character Name
+        </label>
 
-<input
-id="playerName"
-maxlength="40"
-placeholder="Enter your character's name"
-autocomplete="off">
+        <input
+            type="text"
+            id="playerName"
+            placeholder="Enter character name"
+            autocomplete="off"
+        >
 
-<button
-type="button"
-id="continueName">
+        <button
+            type="button"
+            id="continueName"
+        >
+            ENTER THE TRIAL
+        </button>
 
-CONTINUE
+        <button
+            type="button"
+            id="backFromName"
+        >
+            BACK
+        </button>
 
-</button>
-
-<button
-type="button"
-class="secondary"
-id="backFromName">
-
-BACK
-
-</button>
+    </div>
 
 </section>
 
@@ -752,32 +360,44 @@ BACK
 QUIZ
 ===================================================== -->
 
-<section
-id="quiz"
-class="hidden">
+<section id="quiz" class="hidden">
 
-<p
-id="questionNumber"
-class="muted">
-</p>
+    <h2>The Soul's Trial</h2>
 
-<div class="progress">
+    <div class="card">
 
-<div
-id="progressBar"
-class="progress-bar">
-</div>
+        <div
+            id="questionNumber"
+            class="center"
+        >
+            Question
+        </div>
 
-</div>
+        <div class="progress">
 
-<h2 id="question"></h2>
+            <div
+                id="progressBar"
+                class="progress-bar"
+            ></div>
 
-<p
-id="questionFlavor"
-class="muted">
-</p>
+        </div>
 
-<div id="answers"></div>
+        <h3 id="question">
+            The trial awaits...
+        </h3>
+
+        <p
+            id="questionFlavor"
+            class="center"
+        ></p>
+
+    </div>
+
+
+    <div
+        id="answers"
+        class="choice-area"
+    ></div>
 
 </section>
 
@@ -786,91 +406,90 @@ class="muted">
 RESULT
 ===================================================== -->
 
-<section
-id="result"
-class="hidden">
+<section id="result" class="hidden">
 
-<h1 id="resultName"></h1>
+    <h2>Your Soul Has Been Revealed</h2>
 
-<p class="center">
+    <div class="card">
 
-<i>
-Your mortal life has been measured.
-Your soul has spoken.
-</i>
+        <h1
+            id="resultName"
+            class="big-title"
+        ></h1>
 
-</p>
+        <h2 id="soulPath"></h2>
 
-<div class="info">
+        <p
+            id="soulDescription"
+            class="center"
+        ></p>
 
-<h2 id="soulPath"></h2>
+    </div>
 
-<p id="soulDescription"></p>
 
-<p>
+    <div class="card">
 
-<strong>Race:</strong>
+        <h3>Character</h3>
 
-<span id="resultRace"></span>
+        <p>
+            <strong>Race:</strong>
+            <span id="resultRace"></span>
+        </p>
 
-</p>
+        <p>
+            <strong>Class:</strong>
+            <span id="resultClass"></span>
+        </p>
 
-<p>
+        <p>
+            <strong>Subclass:</strong>
+            <span id="resultSubclass"></span>
+        </p>
 
-<strong>Class:</strong>
+        <p>
+            <strong>Background:</strong>
+            <span id="resultBackground"></span>
+        </p>
 
-<span id="resultClass"></span>
+    </div>
 
-</p>
 
-<p>
+    <div class="card">
 
-<strong>Subclass:</strong>
+        <h3>Ability Scores</h3>
 
-<span id="resultSubclass"></span>
+        <div
+            id="resultStats"
+            class="stat-grid"
+        ></div>
 
-</p>
+    </div>
 
-<p>
 
-<strong>Background:</strong>
+    <div class="card">
 
-<span id="resultBackground"></span>
+        <h3 id="soulTrait"></h3>
 
-</p>
+        <p id="traitDescription"></p>
 
-</div>
+    </div>
 
-<div class="info">
 
-<h2>Ability Scores</h2>
+    <div class="card">
 
-<div
-id="resultStats"
-class="stats">
-</div>
+        <h3 id="awakeningBlessing"></h3>
 
-</div>
+        <p id="blessingDescription"></p>
 
-<div class="info">
+    </div>
 
-<h3 id="soulTrait"></h3>
 
-<p id="traitDescription"></p>
-
-<h3 id="awakeningBlessing"></h3>
-
-<p id="blessingDescription"></p>
-
-</div>
-
-<button
-type="button"
-id="continueToCreator">
-
-CONTINUE TO CHARACTER CREATION
-
-</button>
+    <button
+        type="button"
+        id="continueToCreator"
+    >
+        CONTINUE TO CHARACTER CREATOR
+    </button>
 
 </section>
 
@@ -879,140 +498,164 @@ CONTINUE TO CHARACTER CREATION
 CHARACTER CREATOR
 ===================================================== -->
 
-<section
-id="creator"
-class="hidden">
+<section id="creator" class="hidden">
 
-<h1 id="characterName"></h1>
+    <h2>Character Creator</h2>
 
-<div class="notice">
+    <div class="card">
 
-Your Soul's Trial has determined your core identity.
+        <h1
+            id="characterName"
+            class="big-title"
+        ></h1>
 
-Your character can now be connected to a campaign
-without requiring a traditional account.
+        <p>
+            <strong>Race:</strong>
+            <span id="creatorRace"></span>
+        </p>
 
-</div>
+        <p>
+            <strong>Class:</strong>
+            <span id="creatorClass"></span>
+        </p>
 
-<div class="info">
+        <p>
+            <strong>Subclass:</strong>
+            <span id="creatorSubclass"></span>
+        </p>
 
-<h2>Identity</h2>
+        <p>
+            <strong>Background:</strong>
+            <span id="creatorBackground"></span>
+        </p>
 
-<p>
-<strong>Race:</strong>
-<span id="creatorRace"></span>
-</p>
+        <p>
+            <strong>Level:</strong>
+            <span id="creatorLevel"></span>
+        </p>
 
-<p>
-<strong>Class:</strong>
-<span id="creatorClass"></span>
-</p>
+    </div>
 
-<p>
-<strong>Subclass:</strong>
-<span id="creatorSubclass"></span>
-</p>
 
-<p>
-<strong>Background:</strong>
-<span id="creatorBackground"></span>
-</p>
+    <div class="card">
 
-<p>
-<strong>Level:</strong>
-<span id="creatorLevel"></span>
-</p>
+        <h3>Ability Scores</h3>
 
-</div>
+        <div
+            id="abilityScores"
+            class="stat-grid"
+        ></div>
 
-<h2>Ability Scores</h2>
+    </div>
 
-<div
-id="abilityScores"
-class="stats">
-</div>
 
-<h2>Combat Statistics</h2>
+    <div class="card">
 
-<div class="stats">
+        <h3>Combat</h3>
 
-<div class="stat">
+        <p>
+            <strong>Hit Points:</strong>
+            <span id="creatorHP"></span>
+        </p>
 
-<strong id="creatorHP"></strong>
+        <p>
+            <strong>Armor Class:</strong>
+            <span id="creatorAC"></span>
+        </p>
 
-Hit Points
+        <p>
+            <strong>Speed:</strong>
+            <span id="creatorSpeed"></span>
+        </p>
 
-</div>
+    </div>
 
-<div class="stat">
 
-<strong id="creatorAC"></strong>
+    <div class="card">
 
-Armor Class
+        <h3>Equipment</h3>
 
-</div>
+        <div id="equipmentOptions"></div>
 
-<div class="stat">
+    </div>
 
-<strong id="creatorSpeed"></strong>
 
-Speed
+    <div class="card">
 
-</div>
+        <h3>Personality</h3>
 
-</div>
+        <label for="personality">
+            Personality Traits
+        </label>
 
-<h2>Equipment</h2>
+        <textarea
+            id="personality"
+            placeholder="Describe your character's personality..."
+        ></textarea>
 
-<div class="info">
 
-<div id="equipmentOptions"></div>
+        <label for="ideal">
+            Ideal
+        </label>
 
-</div>
+        <textarea
+            id="ideal"
+            placeholder="What does your character believe in?"
+        ></textarea>
 
-<h2>Character Details</h2>
 
-<textarea
-id="personality"
-placeholder="Personality">
-</textarea>
+        <label for="bond">
+            Bond
+        </label>
 
-<textarea
-id="ideal"
-placeholder="Ideal">
-</textarea>
+        <textarea
+            id="bond"
+            placeholder="What ties your character to the world?"
+        ></textarea>
 
-<textarea
-id="bond"
-placeholder="Bond">
-</textarea>
 
-<textarea
-id="flaw"
-placeholder="Flaw">
-</textarea>
+        <label for="flaw">
+            Flaw
+        </label>
 
-<textarea
-id="backstory"
-placeholder="Backstory">
-</textarea>
+        <textarea
+            id="flaw"
+            placeholder="What weakness does your character possess?"
+        ></textarea>
 
-<button
-type="button"
-id="saveCharacterButton">
 
-SAVE CHARACTER
+        <label for="backstory">
+            Backstory
+        </label>
 
-</button>
+        <textarea
+            id="backstory"
+            placeholder="Tell your character's story..."
+        ></textarea>
 
-<button
-type="button"
-class="secondary"
-id="viewSheetButton">
+    </div>
 
-VIEW CHARACTER SHEET
 
-</button>
+    <div
+        id="syncStatus"
+        class="notice"
+    ></div>
+
+
+    <button
+        type="button"
+        id="saveCharacterButton"
+    >
+        SAVE CHARACTER
+    </button>
+
+
+    <button
+        type="button"
+        id="viewSheetButton"
+    >
+        VIEW CHARACTER SHEET
+    </button>
 
 </section>
 
@@ -1021,176 +664,188 @@ VIEW CHARACTER SHEET
 CHARACTER SHEET
 ===================================================== -->
 
-<section
-id="sheet"
-class="hidden">
+<section id="sheet" class="hidden">
 
-<h1 id="sheetName"></h1>
+    <h2>Character Sheet</h2>
 
-<p
-class="center"
-id="sheetIdentity">
-</p>
+    <div class="card center">
 
-<div class="nav">
+        <h1 id="sheetName"></h1>
 
-<button
-type="button"
-id="editCharacterButton">
+        <p
+            id="sheetIdentity"
+            class="identity"
+        ></p>
 
-EDIT
+    </div>
 
-</button>
 
-<button
-type="button"
-id="campaignsButton">
+    <div class="card">
 
-CAMPAIGNS
+        <div class="stat-grid">
 
-</button>
+            <div class="stat">
 
-<button
-type="button"
-class="secondary"
-id="sheetHomeButton">
+                <strong id="sheetHP"></strong>
 
-HOME
+                <br>
 
-</button>
+                HP
 
-</div>
+            </div>
 
-<div
-class="notice"
-id="syncStatus">
+            <div class="stat">
 
-Character is stored locally.
+                <strong id="sheetAC"></strong>
 
-</div>
+                <br>
 
-<div class="info">
+                AC
 
-<h2>Core Statistics</h2>
+            </div>
 
-<div class="stats">
+            <div class="stat">
 
-<div class="stat">
+                <strong id="sheetSpeed"></strong>
 
-<strong id="sheetHP"></strong>
+                <br>
 
-HP
+                Speed
 
-</div>
+            </div>
 
-<div class="stat">
+            <div class="stat">
 
-<strong id="sheetAC"></strong>
+                <strong id="sheetLevel"></strong>
 
-AC
+                <br>
 
-</div>
+                Level
 
-<div class="stat">
+            </div>
 
-<strong id="sheetSpeed"></strong>
+            <div class="stat">
 
-Speed
+                <strong id="sheetProficiency"></strong>
 
-</div>
+                <br>
 
-<div class="stat">
+                Proficiency
 
-<strong id="sheetLevel"></strong>
+            </div>
 
-Level
+            <div class="stat">
 
-</div>
+                <strong id="sheetHitDice"></strong>
 
-<div class="stat">
+                <br>
 
-<strong id="sheetProficiency"></strong>
+                Hit Dice
 
-Proficiency
+            </div>
 
-</div>
+        </div>
 
-<div class="stat">
+    </div>
 
-<strong id="sheetHitDice"></strong>
 
-Hit Dice
+    <div class="card">
 
-</div>
+        <h3>Ability Scores</h3>
 
-</div>
+        <div
+            id="sheetStats"
+            class="stat-grid"
+        ></div>
 
-</div>
+    </div>
 
-<h2>Ability Scores</h2>
 
-<div
-id="sheetStats"
-class="stats">
-</div>
+    <div class="card">
 
-<h2>Soul</h2>
+        <h3>Soul Path</h3>
 
-<div class="info">
+        <h2 id="sheetPath"></h2>
 
-<h2 id="sheetPath"></h2>
+        <p id="sheetPathDescription"></p>
 
-<p id="sheetPathDescription"></p>
+    </div>
 
-<h3 id="sheetTrait"></h3>
 
-<p id="sheetTraitDescription"></p>
+    <div class="card">
 
-<h3 id="sheetBlessing"></h3>
+        <h3 id="sheetTrait"></h3>
 
-<p id="sheetBlessingDescription"></p>
+        <p id="sheetTraitDescription"></p>
 
-</div>
+    </div>
 
-<h2>Equipment</h2>
 
-<div id="sheetEquipment"></div>
+    <div class="card">
 
-<h2>Character</h2>
+        <h3 id="sheetBlessing"></h3>
 
-<div class="info">
+        <p id="sheetBlessingDescription"></p>
 
-<p>
-<strong>Personality</strong>
-</p>
+    </div>
 
-<p id="sheetPersonality"></p>
 
-<p>
-<strong>Ideal</strong>
-</p>
+    <div class="card">
 
-<p id="sheetIdeal"></p>
+        <h3>Equipment</h3>
 
-<p>
-<strong>Bond</strong>
-</p>
+        <div id="sheetEquipment"></div>
 
-<p id="sheetBond"></p>
+    </div>
 
-<p>
-<strong>Flaw</strong>
-</p>
 
-<p id="sheetFlaw"></p>
+    <div class="card">
 
-<p>
-<strong>Backstory</strong>
-</p>
+        <h3>Personality</h3>
 
-<p id="sheetBackstory"></p>
+        <p id="sheetPersonality"></p>
 
-</div>
+        <h3>Ideal</h3>
+
+        <p id="sheetIdeal"></p>
+
+        <h3>Bond</h3>
+
+        <p id="sheetBond"></p>
+
+        <h3>Flaw</h3>
+
+        <p id="sheetFlaw"></p>
+
+        <h3>Backstory</h3>
+
+        <p id="sheetBackstory"></p>
+
+    </div>
+
+
+    <button
+        type="button"
+        id="editCharacterButton"
+    >
+        EDIT CHARACTER
+    </button>
+
+
+    <button
+        type="button"
+        id="campaignsButton"
+    >
+        CAMPAIGNS
+    </button>
+
+
+    <button
+        type="button"
+        id="sheetHomeButton"
+    >
+        HOME
+    </button>
 
 </section>
 
@@ -1199,157 +854,150 @@ class="stats">
 CAMPAIGNS
 ===================================================== -->
 
-<section
-id="campaigns"
-class="hidden">
+<section id="campaigns" class="hidden">
 
-<h1>Campaigns</h1>
+    <h2>Campaign Realm</h2>
 
-<div
-id="campaignAccountNotice"
-class="notice">
-
-Connecting you to the realm...
-
-</div>
-
-<div class="nav">
-
-<button
-type="button"
-id="createCampaignButton">
-
-CREATE CAMPAIGN
-
-</button>
-
-<button
-type="button"
-id="joinCampaignButton">
-
-JOIN CAMPAIGN
-
-</button>
-
-<button
-type="button"
-class="secondary"
-id="campaignCharacterButton">
-
-CHARACTER
-
-</button>
-
-<button
-type="button"
-class="secondary"
-id="campaignHomeButton2">
-
-HOME
-
-</button>
-
-</div>
-
-<div id="campaignList"></div>
+    <div
+        id="campaignAccountNotice"
+        class="notice"
+    >
+        Connecting...
+    </div>
 
 
-<!-- CREATE -->
+    <div class="card">
 
-<div
-id="campaignCreate"
-class="hidden">
+        <h3>DM</h3>
 
-<div class="info">
+        <p class="center">
+            Create a campaign and become its Dungeon Master.
+        </p>
 
-<h2>Create Campaign</h2>
+        <button
+            type="button"
+            id="createCampaignButton"
+        >
+            CREATE CAMPAIGN
+        </button>
 
-<p class="muted">
-
-You are creating this campaign as the Dungeon Master.
-
-</p>
-
-<input
-id="campaignName"
-maxlength="80"
-placeholder="Campaign name"
-autocomplete="off">
-
-<textarea
-id="campaignDescription"
-placeholder="Campaign description">
-</textarea>
-
-<button
-type="button"
-id="confirmCreateCampaign">
-
-CREATE CAMPAIGN
-
-</button>
-
-<button
-type="button"
-class="secondary"
-id="cancelCreateCampaign">
-
-CANCEL
-
-</button>
-
-</div>
-
-</div>
+    </div>
 
 
-<!-- JOIN -->
+    <div class="card">
 
-<div
-id="campaignJoin"
-class="hidden">
+        <h3>PLAYER</h3>
 
-<div class="info">
+        <p class="center">
+            Join an existing campaign using the Campaign ID
+            or Join Code provided by your DM.
+        </p>
 
-<h2>Join Campaign</h2>
+        <button
+            type="button"
+            id="joinCampaignButton"
+        >
+            JOIN CAMPAIGN
+        </button>
 
-<p>
+    </div>
 
-Enter the campaign ID or join code provided by your DM.
 
-</p>
+    <!-- CREATE -->
 
-<input
-id="campaignCode"
-maxlength="80"
-placeholder="Campaign ID or Join Code"
-autocomplete="off">
+    <div
+        id="campaignCreate"
+        class="card hidden"
+    >
 
-<button
-type="button"
-id="confirmJoinCampaign">
+        <h3>Create Campaign</h3>
 
-JOIN CAMPAIGN
+        <label for="campaignName">
+            Campaign Name
+        </label>
 
-</button>
+        <input
+            type="text"
+            id="campaignName"
+            placeholder="Enter campaign name"
+            autocomplete="off"
+        >
 
-<button
-type="button"
-class="secondary"
-id="cancelJoinCampaign">
 
-CANCEL
+        <label for="campaignDescription">
+            Description
+        </label>
 
-</button>
+        <textarea
+            id="campaignDescription"
+            placeholder="Describe your campaign..."
+        ></textarea>
 
-</div>
 
-</div>
+        <button
+            type="button"
+            id="confirmCreateCampaign"
+        >
+            CREATE CAMPAIGN
+        </button>
 
-<div
-id="campaignMessage"
-class="notice hidden">
-</div>
+    </div>
+
+
+    <!-- JOIN -->
+
+    <div
+        id="campaignJoin"
+        class="card hidden"
+    >
+
+        <h3>Join Campaign</h3>
+
+        <label for="campaignCode">
+            Campaign ID or Join Code
+        </label>
+
+        <input
+            type="text"
+            id="campaignCode"
+            placeholder="Enter Campaign ID or Join Code"
+            autocomplete="off"
+        >
+
+
+        <button
+            type="button"
+            id="confirmJoinCampaign"
+        >
+            JOIN CAMPAIGN
+        </button>
+
+    </div>
+
+
+    <div
+        id="campaignMessage"
+        class="notice hidden"
+    ></div>
+
+
+    <div id="campaignList"></div>
+
+
+    <button
+        type="button"
+        id="campaignCharacterButton"
+    >
+        MY CHARACTER
+    </button>
+
+
+    <button
+        type="button"
+        id="campaignHomeButton2"
+    >
+        HOME
+    </button>
 
 </section>
 
@@ -1359,81 +1007,66 @@ CAMPAIGN DASHBOARD
 ===================================================== -->
 
 <section
-id="campaignDashboard"
-class="hidden">
+    id="campaignDashboard"
+    class="hidden"
+>
 
-<h1 id="campaignTitle"></h1>
+    <h2 id="campaignTitle">
+        Campaign
+    </h2>
 
-<p
-id="campaignDescription"
-class="center">
-</p>
+    <div
+        id="campaignDescription"
+        class="notice"
+    ></div>
 
-<div
-id="dmCampaignControls"
-class="hidden">
 
-<div class="notice">
+    <div
+        id="campaignDashboardContent"
+    ></div>
 
-<strong>Dungeon Master Controls</strong>
 
-<br>
+    <button
+        type="button"
+        id="playersButton"
+    >
+        PLAYERS
+    </button>
 
-You created this campaign.
 
-Share the Campaign ID or Join Code with your players.
+    <button
+        type="button"
+        id="campaignInfoButton"
+    >
+        CAMPAIGN INFO
+    </button>
 
-</div>
 
-</div>
-
-<div class="nav">
-
-<button
-type="button"
-id="playersButton">
-
-PLAYERS
-
-</button>
-
-<button
-type="button"
-id="campaignInfoButton">
-
-INFO
-
-</button>
-
-<button
-type="button"
-class="secondary"
-id="backCampaignsButton">
-
-BACK
-
-</button>
-
-</div>
-
-<div id="campaignDashboardContent"></div>
+    <button
+        type="button"
+        id="campaignHomeButton"
+    >
+        CAMPAIGNS
+    </button>
 
 </section>
 
 
-</div>
-
-</div>
+</main>
 
 
 <!-- =====================================================
 SCRIPTS
 ===================================================== -->
 
-<script src="data.js"></script>
-
+<!-- Supabase/session script MUST load first -->
 <script src="supabase.js"></script>
 
+<!-- Your data.js containing questions, soulPaths,
+     classData and determineRace -->
+<script src="data.js"></script>
+
+<!-- Main application -->
 <script src="app.js"></script>
 
 
