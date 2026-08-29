@@ -1,1884 +1,2042 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Soul's Trial</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-*{box-sizing:border-box}
+  <title>The Soul Trial</title>
 
-body{
-margin:0;
-min-height:100vh;
-background:radial-gradient(circle at top,#252033 0%,#090a10 55%);
-color:#eee;
-font-family:system-ui,sans-serif
-}
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-.container{
-width:100%;
-max-width:1100px;
-margin:auto;
-padding:15px
-}
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top, #241c38 0%, #0c0a12 45%, #050509 100%);
+      color: #eee;
+      min-height: 100vh;
+    }
 
-.panel{
-background:rgba(20,24,36,.97);
-border:1px solid #625a48;
-border-radius:18px;
-padding:25px;
-box-shadow:0 15px 50px rgba(0,0,0,.45)
-}
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
 
-h1,h2,h3{
-font-family:Georgia,serif;
-color:#dfc47a
-}
+    button {
+      cursor: pointer;
+    }
 
-h1{
-text-align:center;
-font-size:clamp(2.3rem,8vw,4.5rem)
-}
+    .app {
+      width: 100%;
+      min-height: 100vh;
+    }
 
-h2{margin-top:25px}
+    header {
+      text-align: center;
+      padding: 35px 20px 25px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.25);
+    }
 
-p{
-line-height:1.6;
-color:#c4c4c4
-}
+    header h1 {
+      font-size: clamp(2.2rem, 8vw, 4.5rem);
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: #d8b4ff;
+      text-shadow:
+        0 0 10px rgba(170,90,255,.7),
+        0 0 30px rgba(120,40,220,.4);
+    }
 
-.center{text-align:center}
-.muted{color:#999}
+    header p {
+      margin-top: 10px;
+      color: #aaa;
+      font-size: 1rem;
+    }
 
-button,input,select,textarea{
-width:100%;
-padding:13px;
-margin:6px 0;
-border-radius:10px;
-font:inherit
-}
+    .progress-container {
+      max-width: 1000px;
+      margin: 25px auto 0;
+      padding: 0 15px;
+    }
 
-button{
-background:#70582a;
-border:1px solid #dfc47a;
-color:white;
-font-weight:bold;
-cursor:pointer
-}
+    .progress-bar {
+      height: 8px;
+      background: #22202b;
+      border-radius: 20px;
+      overflow: hidden;
+    }
 
-button:hover{background:#8b7038}
+    .progress-fill {
+      height: 100%;
+      width: 12.5%;
+      background: linear-gradient(90deg, #7c3aed, #c084fc);
+      transition: width .3s ease;
+    }
 
-.choice{
-background:#202737;
-border-color:#514d43;
-text-align:left
-}
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      color: #666;
+      font-size: .72rem;
+      gap: 4px;
+    }
 
-.choice:hover{border-color:#dfc47a}
+    .step.active {
+      color: #d8b4ff;
+    }
 
-input,select,textarea{
-background:#0e131d;
-color:white;
-border:1px solid #4a4a4a
-}
+    main {
+      width: min(1100px, 94%);
+      margin: 30px auto 80px;
+    }
 
-textarea{
-min-height:100px;
-resize:vertical
-}
+    .screen {
+      display: none;
+      animation: fadeIn .25s ease;
+    }
 
-.hidden{display:none}
+    .screen.active {
+      display: block;
+    }
 
-.progress{
-height:8px;
-background:#292e38;
-border-radius:10px;
-margin:15px 0 25px
-}
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
 
-.progress-bar{
-height:100%;
-width:0%;
-background:#dfc47a;
-border-radius:10px
-}
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-.grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:12px
-}
+    .card {
+      background: rgba(18,16,26,.92);
+      border: 1px solid rgba(190,130,255,.16);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 15px 40px rgba(0,0,0,.25);
+    }
 
-.grid3{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:10px
-}
+    .card h2 {
+      color: #d8b4ff;
+      margin-bottom: 8px;
+    }
 
-.grid6{
-display:grid;
-grid-template-columns:repeat(6,1fr);
-gap:8px
-}
+    .card h3 {
+      color: #c084fc;
+      margin-bottom: 10px;
+    }
 
-.card{
-background:#101520;
-border:1px solid #454238;
-border-radius:12px;
-padding:15px;
-margin:10px 0
-}
+    .intro {
+      text-align: center;
+      padding: 50px 25px;
+    }
 
-.stat{
-background:#0d121c;
-border:1px solid #403d35;
-border-radius:10px;
-padding:10px;
-text-align:center
-}
+    .intro h2 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+    }
 
-.stat strong{
-display:block;
-color:#dfc47a;
-font-size:1.5rem
-}
+    .intro p {
+      max-width: 700px;
+      margin: 0 auto 25px;
+      color: #aaa;
+      line-height: 1.7;
+    }
 
-.ability{
-background:#111722;
-border:1px solid #625a48;
-border-radius:12px;
-padding:12px;
-text-align:center
-}
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
 
-.ability h3{
-margin:3px 0;
-font-size:1rem
-}
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
 
-.score{
-font-size:2rem;
-font-weight:bold;
-color:#dfc47a
-}
+    .choice {
+      background: #14121d;
+      border: 1px solid #30283d;
+      border-radius: 12px;
+      padding: 18px;
+      transition: .2s ease;
+      position: relative;
+    }
 
-.mod{
-font-size:1.1rem
-}
+    .choice:hover {
+      border-color: #8b5cf6;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(124,58,237,.15);
+    }
 
-.tag{
-display:inline-block;
-padding:7px 10px;
-margin:3px;
-border-radius:20px;
-border:1px solid #625a48;
-color:#dfc47a
-}
+    .choice.selected {
+      border-color: #c084fc;
+      background: #211832;
+      box-shadow: 0 0 20px rgba(168,85,247,.18);
+    }
 
-.sheetHeader{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:8px;
-margin-bottom:15px
-}
+    .choice h3 {
+      color: #eee;
+      margin-bottom: 7px;
+    }
 
-.sheetBox{
-background:#0d121c;
-border:1px solid #454238;
-padding:12px;
-border-radius:10px
-}
+    .choice p {
+      color: #999;
+      line-height: 1.5;
+      font-size: .9rem;
+    }
 
-.sheetBox small{
-display:block;
-color:#999;
-margin-bottom:4px
-}
+    .choice .tag {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      background: #2b2040;
+      color: #c084fc;
+      font-size: .75rem;
+    }
 
-.sectionTitle{
-border-bottom:1px solid #625a48;
-padding-bottom:6px
-}
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #bbb;
+      font-size: .9rem;
+    }
 
-.skillRow{
-display:flex;
-justify-content:space-between;
-padding:6px 3px;
-border-bottom:1px solid #252b36
-}
+    input,
+    select,
+    textarea {
+      width: 100%;
+      background: #0d0b12;
+      color: #eee;
+      border: 1px solid #332d3d;
+      border-radius: 8px;
+      padding: 12px;
+      outline: none;
+    }
 
-.proficient{
-color:#dfc47a;
-font-weight:bold
-}
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #9f67e8;
+      box-shadow: 0 0 0 2px rgba(159,103,232,.12);
+    }
 
-textarea.large{
-min-height:160px
-}
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
 
-.secret{
-border:1px solid #8b7038;
-background:#16130d
-}
+    .field {
+      margin-bottom: 16px;
+    }
 
-@media(max-width:700px){
-.container{padding:7px}
-.panel{padding:15px}
-.grid,.grid3,.sheetHeader{grid-template-columns:1fr 1fr}
-.grid6{grid-template-columns:repeat(2,1fr)}
-}
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 25px;
+    }
 
-@media(max-width:450px){
-.grid,.grid3,.sheetHeader{grid-template-columns:1fr}
-}
-</style>
+    .btn {
+      border: none;
+      border-radius: 9px;
+      padding: 13px 20px;
+      font-weight: bold;
+      transition: .2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.12);
+    }
+
+    .btn-secondary {
+      background: #211d29;
+      color: #ccc;
+      border: 1px solid #3a3345;
+    }
+
+    .btn-secondary:hover {
+      background: #2c2635;
+    }
+
+    .btn-danger {
+      background: #451b24;
+      color: #ffb4c0;
+      border: 1px solid #71313e;
+    }
+
+    .ability-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .ability {
+      text-align: center;
+      background: #111018;
+      border: 1px solid #302b39;
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .ability-name {
+      font-weight: bold;
+      color: #c084fc;
+      letter-spacing: 1px;
+    }
+
+    .ability input {
+      text-align: center;
+      font-size: 1.4rem;
+      margin-top: 10px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .summary-item {
+      background: #111018;
+      padding: 15px;
+      border-radius: 9px;
+      border: 1px solid #292431;
+    }
+
+    .summary-item span {
+      display: block;
+      color: #777;
+      font-size: .75rem;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .summary-item strong {
+      color: #eee;
+      font-size: 1rem;
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-top: 10px;
+    }
+
+    .feature-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      color: #aaa;
+    }
+
+    .feature-list li:last-child {
+      border-bottom: none;
+    }
+
+    .feature-list li::before {
+      content: "◆";
+      color: #9f67e8;
+      margin-right: 8px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .warning {
+      background: #2c2114;
+      border: 1px solid #64461d;
+      color: #e7c68d;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .success {
+      background: #14251b;
+      border: 1px solid #285d3c;
+      color: #9ce2b4;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .death-card {
+      text-align: center;
+      padding: 60px 25px;
+    }
+
+    .death-card h2 {
+      font-size: 3rem;
+      color: #c084fc;
+      letter-spacing: 4px;
+    }
+
+    .death-card p {
+      max-width: 700px;
+      margin: 20px auto;
+      color: #999;
+      line-height: 1.7;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #555;
+      font-size: .8rem;
+      border-top: 1px solid rgba(255,255,255,.05);
+    }
+
+    @media (max-width: 700px) {
+      .ability-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .steps {
+        font-size: .6rem;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .navigation {
+        flex-direction: column-reverse;
+      }
+
+      .navigation .btn {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
-<div class="panel">
+<div class="app">
 
-<!-- HOME -->
+  <header>
+    <h1>The Soul Trial</h1>
+    <p>A complete Dungeons & Dragons 5th Edition character creation trial</p>
 
-<section id="home">
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
 
-<h1>The Soul's Trial</h1>
+      <div class="steps">
+        <span class="step active" data-step="0">Begin</span>
+        <span class="step" data-step="1">Class</span>
+        <span class="step" data-step="2">Origin</span>
+        <span class="step" data-step="3">Abilities</span>
+        <span class="step" data-step="4">Skills</span>
+        <span class="step" data-step="5">Equipment</span>
+        <span class="step" data-step="6">Details</span>
+        <span class="step" data-step="7">Sheet</span>
+      </div>
+    </div>
+  </header>
 
-<p class="center">
-<i>
-"Before a soul can be given a new life,
-it must first reveal what it truly is."
-</i>
-</p>
+  <main>
 
-<p class="center">
-Your life on Earth has ended.
-<br><br>
-But death was not the end.
-<br><br>
-Something beyond your world has taken notice of you.
-Before you can awaken in another world,
-your soul must first be judged.
-</p>
+    <!-- INTRO -->
 
-<button onclick="beginTrial()">BEGIN THE TRIAL</button>
+    <section class="screen active" id="screen-0">
 
-</section>
+      <div class="card intro">
 
+        <h2>Enter the Soul Trial</h2>
 
-<!-- NAME -->
+        <p>
+          Every adventurer begins with a choice.
+          Who are you?
+          What path will you walk?
+          And what will remain when the trial is over?
+        </p>
 
-<section id="name" class="hidden">
+        <p>
+          The Soul Trial will guide you through the creation of a complete
+          D&D 5e character, including class, subclass, race, background,
+          ability scores, skills, equipment, spells, and character details.
+        </p>
 
-<h1>Before the Trial</h1>
+        <button class="btn btn-primary" onclick="nextStep()">
+          Begin the Trial
+        </button>
 
-<p class="center">
-A name is the first thing a soul carries into the unknown.
-</p>
+      </div>
 
-<input id="playerName" maxlength="40" placeholder="Enter your name">
+    </section>
 
-<button onclick="startQuestions()">CONTINUE</button>
 
-</section>
+    <!-- CLASS -->
 
+    <section class="screen" id="screen-1">
 
-<!-- QUIZ -->
+      <div class="card">
 
-<section id="quiz" class="hidden">
+        <h2>Choose Your Class</h2>
 
-<p id="questionNumber" class="muted"></p>
+        <p>
+          Your class determines the fundamental abilities and role of your
+          character. Choose carefully. Your path will shape the rest of the
+          trial.
+        </p>
 
-<div class="progress">
-<div id="progressBar" class="progress-bar"></div>
-</div>
+        <div class="choice-grid" id="classChoices"></div>
 
-<h2 id="question"></h2>
+      </div>
 
-<div id="answers"></div>
+      <div class="card hidden" id="subclassCard">
 
-</section>
+        <h2>Choose Your Subclass</h2>
 
+        <p>
+          Choose the specialization that defines how your class develops.
+          Subclasses become especially important when creating characters
+          at higher levels.
+        </p>
 
-<!-- RESULT -->
+        <div class="choice-grid" id="subclassChoices"></div>
 
-<section id="result" class="hidden">
+      </div>
 
-<h1 id="resultName"></h1>
+      <div class="navigation">
 
-<p class="center">
-<i>
-Your mortal life has been measured.
-Your soul has spoken.
-</i>
-</p>
+        <button class="btn btn-secondary" onclick="previousStep()">
+          Back
+        </button>
 
-<div class="card">
+        <button class="btn btn-primary" onclick="nextStep()">
+          Continue
+        </button>
 
-<h2 id="soulPath"></h2>
+      </div>
 
-<p id="soulDescription"></p>
+    </section>
 
-<p>
-<strong>Race:</strong> Human
-</p>
 
-<p><strong>Recommended Classes:</strong></p>
+    <!-- ORIGIN -->
 
-<div id="recommendedClasses"></div>
+    <section class="screen" id="screen-2">
 
-</div>
+      <div class="card">
 
-<div class="card">
+        <h2>Choose Your Race</h2>
 
-<h3 id="soulTrait"></h3>
+        <p>
+          Your race grants physical and cultural traits that shape your
+          character.
+        </p>
 
-<p id="traitDescription"></p>
+        <div class="choice-grid" id="raceChoices"></div>
 
-<h3 id="awakeningBlessing"></h3>
+      </div>
 
-<p id="blessingDescription"></p>
+      <div class="card">
 
-</div>
+        <h2>Choose Your Background</h2>
 
-<button onclick="openCharacterCreator()">
-CREATE MY D&D CHARACTER
-</button>
+        <p>
+          Your background represents your life before adventuring and grants
+          proficiencies, equipment, and roleplaying foundations.
+        </p>
 
-</section>
+        <div class="choice-grid" id="backgroundChoices"></div>
 
+      </div>
 
-<!-- CREATOR -->
+      <div class="navigation">
 
-<section id="creator" class="hidden">
+        <button class="btn btn-secondary" onclick="previousStep()">
+          Back
+        </button>
 
-<h1 id="characterName"></h1>
+        <button class="btn btn-primary" onclick="nextStep()">
+          Continue
+        </button>
 
-<div class="card">
+      </div>
 
-<p>
-<strong>Race:</strong> Human
-</p>
+    </section>
 
-<p>
-<strong>Soul Path:</strong>
-<span id="creatorSoulPath"></span>
-</p>
 
-</div>
+    <!-- ABILITIES -->
 
-<h2>Basic Information</h2>
+    <section class="screen" id="screen-3">
 
-<div class="grid">
+      <div class="card">
 
-<div>
-<label>Class</label>
-<select id="classSelect"></select>
-</div>
+        <h2>Determine Ability Scores</h2>
 
-<div>
-<label>Subclass</label>
-<input id="subclass" placeholder="Subclass">
-</div>
+        <p>
+          Enter your six ability scores. The system will automatically
+          calculate modifiers.
+        </p>
 
-<div>
-<label>Background</label>
-<input id="background" placeholder="Background">
-</div>
+        <div class="ability-grid">
 
-<div>
-<label>Level</label>
-<input id="level" type="number" min="1" max="20" value="1">
-</div>
+          <div class="ability">
+            <div class="ability-name">STRENGTH</div>
+            <input type="number" id="str" min="1" max="30" value="10"
+              oninput="updateAbilities()">
+            <div id="strMod">+0</div>
+          </div>
 
-<div>
-<label>Alignment</label>
-<select id="alignment">
-<option>Lawful Good</option>
-<option>Neutral Good</option>
-<option>Chaotic Good</option>
-<option>Lawful Neutral</option>
-<option>True Neutral</option>
-<option>Chaotic Neutral</option>
-<option>Lawful Evil</option>
-<option>Neutral Evil</option>
-<option>Chaotic Evil</option>
-</select>
-</div>
+          <div class="ability">
+            <div class="ability-name">DEXTERITY</div>
+            <input type="number" id="dex" min="1" max="30" value="10"
+              oninput="updateAbilities()">
+            <div id="dexMod">+0</div>
+          </div>
 
-<div>
-<label>Experience Points</label>
-<input id="xp" type="number" value="0">
-</div>
+          <div class="ability">
+            <div class="ability-name">CONSTITUTION</div>
+            <input type="number" id="con" min="1" max="30" value="10"
+              oninput="updateAbilities()">
+            <div id="conMod">+0</div>
+          </div>
 
-</div>
+          <div class="ability">
+            <div class="ability-name">INTELLIGENCE</div>
+            <input type="number" id="int" min="1" max="30" value="10"
+              oninput="updateAbilities()">
+            <div id="intMod">+0</div>
+          </div>
 
+          <div class="ability">
+            <div class="ability-name">WISDOM</div>
+            <input type="number" id="wis" min="1" max="30" value="10"
+              oninput="updateAbilities()">
+            <div id="wisMod">+0</div>
+          </div>
 
-<h2>Ability Scores</h2>
+          <div class="ability">
+            <div class="ability-name">CHARISMA</div>
+            <input type="number" id="cha" min="1" max="30" value="10"
+              oninput="updateAbilities()">
+            <div id="chaMod">+0</div>
+          </div>
 
-<div id="abilityScores" class="grid6"></div>
+        </div>
 
+        <div class="warning">
+          For now, enter the scores determined by your group's chosen
+          ability-score method. Additional score-generation tools can be
+          added to the builder.
+        </div>
 
-<h2>Combat</h2>
+      </div>
 
-<div class="grid3">
+      <div class="card">
 
-<div class="sheetBox">
-<small>Armor Class</small>
-<input id="armorClass" type="number" value="10">
-</div>
+        <h2>Alignment</h2>
 
-<div class="sheetBox">
-<small>Initiative</small>
-<input id="initiative" value="+0">
-</div>
+        <select id="alignment">
+          <option value="">Choose Alignment</option>
+          <option>Lawful Good</option>
+          <option>Neutral Good</option>
+          <option>Chaotic Good</option>
+          <option>Lawful Neutral</option>
+          <option>True Neutral</option>
+          <option>Chaotic Neutral</option>
+          <option>Lawful Evil</option>
+          <option>Neutral Evil</option>
+          <option>Chaotic Evil</option>
+        </select>
 
-<div class="sheetBox">
-<small>Speed</small>
-<input id="speed" value="30 ft">
-</div>
+      </div>
 
-<div class="sheetBox">
-<small>Max HP</small>
-<input id="maxHP" type="number" value="10">
-</div>
+      <div class="navigation">
 
-<div class="sheetBox">
-<small>Current HP</small>
-<input id="currentHP" type="number" value="10">
-</div>
+        <button class="btn btn-secondary" onclick="previousStep()">
+          Back
+        </button>
 
-<div class="sheetBox">
-<small>Temp HP</small>
-<input id="tempHP" type="number" value="0">
-</div>
+        <button class="btn btn-primary" onclick="nextStep()">
+          Continue
+        </button>
 
-<div class="sheetBox">
-<small>Hit Dice</small>
-<input id="hitDice" value="1d8">
-</div>
+      </div>
 
-</div>
+    </section>
 
 
-<h2>Attacks & Spellcasting</h2>
+    <!-- SKILLS -->
 
-<textarea id="attacks" placeholder="Weapon attacks, spell attacks, damage, etc."></textarea>
+    <section class="screen" id="screen-4">
 
+      <div class="card">
 
-<h2>Equipment</h2>
+        <h2>Choose Your Skills</h2>
 
-<textarea id="equipment" placeholder="Weapons, armor, gear, adventuring equipment..."></textarea>
+        <p>
+          Choose the skills granted by your class and background.
+          Available choices will eventually be restricted automatically
+          according to your character's actual rules.
+        </p>
 
+        <div class="grid" id="skillChoices"></div>
 
-<h2>Currency</h2>
+        <div class="warning">
+          Your final character sheet will automatically calculate skill
+          modifiers using the appropriate ability and proficiency bonus.
+        </div>
 
-<div class="grid6">
+      </div>
 
-<input id="cp" placeholder="CP">
-<input id="sp" placeholder="SP">
-<input id="ep" placeholder="EP">
-<input id="gp" placeholder="GP">
-<input id="pp" placeholder="PP">
+      <div class="navigation">
 
-</div>
+        <button class="btn btn-secondary" onclick="previousStep()">
+          Back
+        </button>
 
+        <button class="btn btn-primary" onclick="nextStep()">
+          Continue
+        </button>
 
-<h2>Personality</h2>
+      </div>
 
-<textarea id="personality" placeholder="Personality Traits"></textarea>
+    </section>
 
-<textarea id="ideal" placeholder="Ideals"></textarea>
 
-<textarea id="bond" placeholder="Bonds"></textarea>
+    <!-- EQUIPMENT -->
 
-<textarea id="flaw" placeholder="Flaws"></textarea>
+    <section class="screen" id="screen-5">
 
+      <div class="card">
 
-<h2>Backstory</h2>
+        <h2>Starting Equipment</h2>
 
-<textarea id="backstory" class="large" placeholder="Character backstory"></textarea>
+        <p>
+          Choose your starting equipment. Equipment options will eventually
+          change automatically based on your class and background.
+        </p>
 
+        <div class="grid">
 
-<h2>Appearance</h2>
+          <div class="field">
+            <label>Primary Weapon</label>
 
-<textarea id="appearance" placeholder="Age, height, weight, eyes, skin, hair, appearance..."></textarea>
+            <select id="weapon">
+              <option value="">Choose Weapon</option>
+              <option>Longsword</option>
+              <option>Shortsword</option>
+              <option>Rapier</option>
+              <option>Battleaxe</option>
+              <option>Greataxe</option>
+              <option>Greatsword</option>
+              <option>Warhammer</option>
+              <option>Quarterstaff</option>
+              <option>Longbow</option>
+              <option>Shortbow</option>
+              <option>Light Crossbow</option>
+              <option>Hand Crossbow</option>
+              <option>Dagger</option>
+            </select>
+          </div>
 
+          <div class="field">
+            <label>Armor</label>
 
-<h2>Proficiencies & Languages</h2>
+            <select id="armor">
+              <option value="">Choose Armor</option>
+              <option>None</option>
+              <option>Leather Armor</option>
+              <option>Studded Leather</option>
+              <option>Hide Armor</option>
+              <option>Chain Shirt</option>
+              <option>Scale Mail</option>
+              <option>Breastplate</option>
+              <option>Half Plate</option>
+              <option>Chain Mail</option>
+              <option>Plate Armor</option>
+            </select>
+          </div>
 
-<textarea id="proficiencies" placeholder="Armor, weapons, tools, languages..."></textarea>
+          <div class="field">
+            <label>Shield</label>
 
+            <select id="shield">
+              <option value="No">No Shield</option>
+              <option value="Yes">Shield</option>
+            </select>
+          </div>
 
-<h2>Features & Traits</h2>
+        </div>
 
-<textarea id="features" class="large" placeholder="Class features, racial traits, feats, etc."></textarea>
+      </div>
 
+      <div class="card">
 
-<!-- SOUL INFORMATION -->
+        <h2>Additional Equipment</h2>
 
-<h2>Soul of the Character</h2>
+        <textarea id="equipment"
+          placeholder="Add additional equipment here..."></textarea>
 
-<div class="card">
+      </div>
 
-<h3 id="creatorPath"></h3>
+      <div class="navigation">
 
-<p id="creatorPathDescription"></p>
+        <button class="btn btn-secondary" onclick="previousStep()">
+          Back
+        </button>
 
-<h3 id="creatorTrait"></h3>
+        <button class="btn btn-primary" onclick="nextStep()">
+          Continue
+        </button>
 
-<p id="creatorTraitDescription"></p>
+      </div>
 
-<h3 id="creatorBlessing"></h3>
+    </section>
 
-<p id="creatorBlessingDescription"></p>
 
-</div>
+    <!-- DETAILS -->
 
+    <section class="screen" id="screen-6">
 
-<!-- SECRET ABILITY -->
+      <div class="card">
 
-<div class="card secret">
+        <h2>Your Identity</h2>
 
-<h2>Awakening Ability</h2>
+        <div class="grid">
 
-<p>
-Your soul has awakened something within you.
-This ability is unique to your class.
-</p>
+          <div class="field">
+            <label>Character Name</label>
+            <input id="characterName" placeholder="Enter character name">
+          </div>
 
-<div id="awakeningAbility"></div>
+          <div class="field">
+            <label>Player Name</label>
+            <input id="playerName" placeholder="Enter player name">
+          </div>
 
-</div>
+          <div class="field">
+            <label>Level</label>
 
+            <select id="level">
+              <option value="1">Level 1</option>
+              <option value="2">Level 2</option>
+              <option value="3">Level 3</option>
+              <option value="4">Level 4</option>
+              <option value="5">Level 5</option>
+              <option value="6">Level 6</option>
+              <option value="7">Level 7</option>
+              <option value="8">Level 8</option>
+              <option value="9">Level 9</option>
+              <option value="10">Level 10</option>
+              <option value="11">Level 11</option>
+              <option value="12">Level 12</option>
+              <option value="13">Level 13</option>
+              <option value="14">Level 14</option>
+              <option value="15">Level 15</option>
+              <option value="16">Level 16</option>
+              <option value="17">Level 17</option>
+              <option value="18">Level 18</option>
+              <option value="19">Level 19</option>
+              <option value="20">Level 20</option>
+            </select>
+          </div>
 
-<h2>Spells</h2>
+          <div class="field">
+            <label>Age</label>
+            <input id="age" type="number" min="1">
+          </div>
 
-<textarea id="spells" class="large" placeholder="Cantrips, known spells, prepared spells, spell slots, notes..."></textarea>
+        </div>
 
+      </div>
 
-<button onclick="saveCharacter()">
-SAVE CHARACTER
-</button>
+      <div class="card">
 
-<button onclick="viewSheet()">
-VIEW FULL CHARACTER SHEET
-</button>
+        <h2>Character Story</h2>
 
-</section>
+        <div class="field">
+          <label>Personality Traits</label>
+          <textarea id="personality"></textarea>
+        </div>
 
+        <div class="field">
+          <label>Ideals</label>
+          <textarea id="ideals"></textarea>
+        </div>
 
-<!-- FULL SHEET -->
+        <div class="field">
+          <label>Bonds</label>
+          <textarea id="bonds"></textarea>
+        </div>
 
-<section id="sheet" class="hidden">
+        <div class="field">
+          <label>Flaws</label>
+          <textarea id="flaws"></textarea>
+        </div>
 
-<h1 id="sheetName"></h1>
+        <div class="field">
+          <label>Backstory</label>
+          <textarea id="backstory"
+            placeholder="Tell the story of your character..."></textarea>
+        </div>
 
-<div class="sheetHeader">
+      </div>
 
-<div class="sheetBox">
-<small>CLASS & LEVEL</small>
-<span id="sheetClass"></span>
-</div>
+      <div class="navigation">
 
-<div class="sheetBox">
-<small>BACKGROUND</small>
-<span id="sheetBackground"></span>
-</div>
+        <button class="btn btn-secondary" onclick="previousStep()">
+          Back
+        </button>
 
-<div class="sheetBox">
-<small>RACE</small>
-<span id="sheetRace"></span>
-</div>
+        <button class="btn btn-primary" onclick="buildCharacter()">
+          Complete The Trial
+        </button>
 
-<div class="sheetBox">
-<small>ALIGNMENT</small>
-<span id="sheetAlignment"></span>
-</div>
+      </div>
 
-</div>
+    </section>
 
 
-<div class="sheetHeader">
+    <!-- CHARACTER SHEET -->
 
-<div class="sheetBox">
-<small>EXPERIENCE</small>
-<span id="sheetXP"></span>
-</div>
+    <section class="screen" id="screen-7">
 
-<div class="sheetBox">
-<small>PROFICIENCY BONUS</small>
-<span id="sheetProf"></span>
-</div>
+      <div class="card death-card">
 
-<div class="sheetBox">
-<small>INITIATIVE</small>
-<span id="sheetInitiative"></span>
-</div>
+        <h2>THE TRIAL IS COMPLETE</h2>
 
-<div class="sheetBox">
-<small>SPEED</small>
-<span id="sheetSpeed"></span>
-</div>
+        <p>
+          Your soul has chosen its path.
+          Your character has been forged.
+        </p>
 
-</div>
+      </div>
 
+      <div class="card">
 
-<h2 class="sectionTitle">Ability Scores</h2>
+        <h2>Character Summary</h2>
 
-<div id="sheetStats" class="grid6"></div>
+        <div class="summary">
 
+          <div class="summary-item">
+            <span>Name</span>
+            <strong id="summaryName">—</strong>
+          </div>
 
-<h2 class="sectionTitle">Saving Throws</h2>
+          <div class="summary-item">
+            <span>Class</span>
+            <strong id="summaryClass">—</strong>
+          </div>
 
-<div id="savingThrows" class="grid3"></div>
+          <div class="summary-item">
+            <span>Subclass</span>
+            <strong id="summarySubclass">—</strong>
+          </div>
 
+          <div class="summary-item">
+            <span>Race</span>
+            <strong id="summaryRace">—</strong>
+          </div>
 
-<h2 class="sectionTitle">Skills</h2>
+          <div class="summary-item">
+            <span>Background</span>
+            <strong id="summaryBackground">—</strong>
+          </div>
 
-<div id="skills"></div>
+          <div class="summary-item">
+            <span>Level</span>
+            <strong id="summaryLevel">—</strong>
+          </div>
 
+          <div class="summary-item">
+            <span>Alignment</span>
+            <strong id="summaryAlignment">—</strong>
+          </div>
 
-<h2 class="sectionTitle">Combat</h2>
+        </div>
 
-<div class="grid3">
+      </div>
 
-<div class="sheetBox">
-<small>ARMOR CLASS</small>
-<strong id="sheetAC"></strong>
-</div>
+      <div class="card">
 
-<div class="sheetBox">
-<small>INITIATIVE</small>
-<strong id="sheetInit2"></strong>
-</div>
+        <h2>Ability Scores</h2>
 
-<div class="sheetBox">
-<small>SPEED</small>
-<strong id="sheetSpeed2"></strong>
-</div>
+        <div class="summary">
 
-<div class="sheetBox">
-<small>MAX HP</small>
-<strong id="sheetMaxHP"></strong>
-</div>
+          <div class="summary-item">
+            <span>Strength</span>
+            <strong id="sheetStr">10</strong>
+          </div>
 
-<div class="sheetBox">
-<small>CURRENT HP</small>
-<strong id="sheetCurrentHP"></strong>
-</div>
+          <div class="summary-item">
+            <span>Dexterity</span>
+            <strong id="sheetDex">10</strong>
+          </div>
 
-<div class="sheetBox">
-<small>TEMP HP</small>
-<strong id="sheetTempHP"></strong>
-</div>
+          <div class="summary-item">
+            <span>Constitution</span>
+            <strong id="sheetCon">10</strong>
+          </div>
 
-<div class="sheetBox">
-<small>HIT DICE</small>
-<strong id="sheetHitDice"></strong>
-</div>
+          <div class="summary-item">
+            <span>Intelligence</span>
+            <strong id="sheetInt">10</strong>
+          </div>
 
-<div class="sheetBox">
-<small>DEATH SAVES</small>
-<strong>Successes: ○ ○ ○</strong>
-<br>
-<strong>Failures: ○ ○ ○</strong>
-</div>
+          <div class="summary-item">
+            <span>Wisdom</span>
+            <strong id="sheetWis">10</strong>
+          </div>
 
-</div>
+          <div class="summary-item">
+            <span>Charisma</span>
+            <strong id="sheetCha">10</strong>
+          </div>
 
+        </div>
 
-<h2 class="sectionTitle">Attacks & Spellcasting</h2>
+      </div>
 
-<div class="card">
-<p id="sheetAttacks"></p>
-</div>
+      <div class="card">
 
+        <h2>Chosen Skills</h2>
 
-<h2 class="sectionTitle">Equipment</h2>
+        <ul class="feature-list" id="summarySkills"></ul>
 
-<div class="card">
-<p id="sheetEquipment"></p>
-</div>
+      </div>
 
+      <div class="card">
 
-<h2 class="sectionTitle">Currency</h2>
+        <h2>Equipment</h2>
 
-<div class="grid3">
+        <div class="summary">
 
-<div class="stat"><strong id="sheetCP"></strong>CP</div>
-<div class="stat"><strong id="sheetSP"></strong>SP</div>
-<div class="stat"><strong id="sheetEP"></strong>EP</div>
-<div class="stat"><strong id="sheetGP"></strong>GP</div>
-<div class="stat"><strong id="sheetPP"></strong>PP</div>
+          <div class="summary-item">
+            <span>Weapon</span>
+            <strong id="summaryWeapon">—</strong>
+          </div>
 
-</div>
+          <div class="summary-item">
+            <span>Armor</span>
+            <strong id="summaryArmor">—</strong>
+          </div>
 
+          <div class="summary-item">
+            <span>Shield</span>
+            <strong id="summaryShield">—</strong>
+          </div>
 
-<h2 class="sectionTitle">Features & Traits</h2>
+        </div>
 
-<div class="card">
+        <div class="success" id="summaryEquipment">
+          No additional equipment recorded.
+        </div>
 
-<p id="sheetFeatures"></p>
+      </div>
 
-</div>
+      <div class="card">
 
+        <h2>Backstory</h2>
 
-<h2 class="sectionTitle">Soul Path</h2>
+        <p id="summaryBackstory">
+          No backstory entered.
+        </p>
 
-<div class="card">
+      </div>
 
-<h2 id="sheetPath"></h2>
+      <div class="navigation">
 
-<p id="sheetPathDescription"></p>
+        <button class="btn btn-secondary" onclick="previousStep()">
+          Back
+        </button>
 
-<h3 id="sheetTrait"></h3>
+        <button class="btn btn-danger" onclick="resetCharacter()">
+          Start New Character
+        </button>
 
-<p id="sheetTraitDescription"></p>
+      </div>
 
-<h3 id="sheetBlessing"></h3>
+    </section>
 
-<p id="sheetBlessingDescription"></p>
+  </main>
 
-</div>
+  <footer>
+    The Soul Trial • D&D 5e Character Builder
+  </footer>
 
-
-<h2 class="sectionTitle">Awakening Ability</h2>
-
-<div class="card secret">
-
-<h2 id="sheetAwakeningName"></h2>
-
-<p id="sheetAwakeningDescription"></p>
-
-</div>
-
-
-<h2 class="sectionTitle">Personality</h2>
-
-<div class="card">
-
-<p><strong>Personality Traits</strong></p>
-<p id="sheetPersonality"></p>
-
-<p><strong>Ideals</strong></p>
-<p id="sheetIdeal"></p>
-
-<p><strong>Bonds</strong></p>
-<p id="sheetBond"></p>
-
-<p><strong>Flaws</strong></p>
-<p id="sheetFlaw"></p>
-
-</div>
-
-
-<h2 class="sectionTitle">Backstory</h2>
-
-<div class="card">
-<p id="sheetBackstory"></p>
-</div>
-
-
-<h2 class="sectionTitle">Appearance</h2>
-
-<div class="card">
-<p id="sheetAppearance"></p>
-</div>
-
-
-<h2 class="sectionTitle">Proficiencies & Languages</h2>
-
-<div class="card">
-<p id="sheetProficiencies"></p>
-</div>
-
-
-<h2 class="sectionTitle">Spells</h2>
-
-<div class="card">
-<p id="sheetSpells"></p>
-</div>
-
-
-<button onclick="openCharacterCreator()">
-EDIT CHARACTER
-</button>
-
-<button onclick="window.print()">
-PRINT / SAVE PDF
-</button>
-
-</section>
-
-</div>
 </div>
 
 
 <script>
 
-/* =========================================
-   SOUL TRIAL QUESTIONS
-========================================= */
-
-const questions=[
-
-["You need to move something extremely heavy.",[
-["Lift it yourself.",{STR:2}],
-["Find a clever way around the problem.",{INT:2}],
-["Ask someone for help.",{CHA:2}],
-["Study the situation first.",{WIS:2}]
-]],
-
-["You notice something valuable has been left unattended.",[
-["Take it.",{DEX:1,CHA:1}],
-["Leave it alone.",{WIS:2}],
-["Investigate who it belongs to.",{INT:2}],
-["Secure it somewhere safe.",{CON:1,WIS:1}]
-]],
-
-["Someone challenges you to a competition.",[
-["Accept immediately.",{STR:2}],
-["Study their strengths first.",{INT:2}],
-["Focus on speed and technique.",{DEX:2}],
-["Try to make it fun for everyone.",{CHA:2}]
-]],
-
-["Your friend is making a terrible decision.",[
-["Stop them.",{STR:1,CON:1}],
-["Explain the consequences.",{INT:2}],
-["Try to persuade them.",{CHA:2}],
-["Let them make their own choice.",{WIS:2}]
-]],
-
-["You suddenly find yourself lost.",[
-["Keep moving until you find your way.",{CON:2}],
-["Look for landmarks.",{WIS:2}],
-["Figure out the map.",{INT:2}],
-["Ask someone for directions.",{CHA:2}]
-]],
-
-["You see someone being threatened.",[
-["Step between them.",{STR:2}],
-["Look for an opening.",{DEX:2}],
-["Figure out what's really happening.",{WIS:2}],
-["Try talking the aggressor down.",{CHA:2}]
-]],
-
-["You have failed at something important.",[
-["Try again immediately.",{CON:2}],
-["Figure out exactly what went wrong.",{INT:2}],
-["Ask someone experienced for advice.",{CHA:1,WIS:1}],
-["Take time to think about it.",{WIS:2}]
-]],
-
-["You discover a strange locked door.",[
-["Break it open.",{STR:2}],
-["Search for a hidden mechanism.",{DEX:1,INT:1}],
-["Look for clues.",{WIS:2}],
-["Try to find someone who can open it.",{CHA:2}]
-]],
-
-["You are given a difficult physical challenge.",[
-["Push yourself through it.",{CON:2}],
-["Find the fastest technique.",{DEX:2}],
-["Study how it works first.",{INT:2}],
-["Ask someone to teach you.",{CHA:1,WIS:1}]
-]],
-
-["Someone insults you publicly.",[
-["Ignore them.",{WIS:2}],
-["Stand your ground.",{CON:1,CHA:1}],
-["Respond with something clever.",{INT:1,CHA:1}],
-["Challenge them.",{STR:2}]
-]],
-
-["You have to learn something completely new.",[
-["Practice until you master it.",{CON:2}],
-["Read everything you can.",{INT:2}],
-["Watch someone else do it.",{WIS:2}],
-["Find a teacher.",{CHA:2}]
-]],
-
-["Your group has no leader.",[
-["Take command.",{CHA:2}],
-["Create a strategy.",{INT:2}],
-["Wait and observe.",{WIS:2}],
-["Volunteer to handle the dangerous part.",{STR:1,CON:1}]
-]],
-
-["You suddenly hear something moving in the darkness.",[
-["Prepare to fight.",{STR:1,CON:1}],
-["Move silently toward it.",{DEX:2}],
-["Listen carefully.",{WIS:2}],
-["Figure out what could be making the sound.",{INT:2}]
-]],
-
-["Someone needs help but helping them could put you at risk.",[
-["Help anyway.",{CON:1,WIS:1}],
-["Find a safer solution.",{INT:2}],
-["Convince others to help.",{CHA:2}],
-["Assess the danger first.",{WIS:2}]
-]],
-
-["You are suddenly placed in a leadership position.",[
-["Lead from the front.",{STR:1,CHA:1}],
-["Create a plan.",{INT:2}],
-["Make sure everyone is heard.",{WIS:1,CHA:1}],
-["Keep everyone moving.",{CHA:2}]
-]],
-
-["You find yourself in a fight.",[
-["Fight head-on.",{STR:2}],
-["Look for an opening.",{DEX:2}],
-["Protect everyone.",{CON:1,WIS:1}],
-["Look for a way to end the fight without killing.",{WIS:2}]
-]],
-
-["You discover that someone has been lying to you.",[
-["Confront them.",{STR:1,CHA:1}],
-["Figure out why they lied.",{INT:1,WIS:1}],
-["Pretend you believe them.",{DEX:1,CHA:1}],
-["Give them another chance.",{WIS:2}]
-]],
-
-["You are offered incredible power.",[
-["Accept it.",{STR:1,CHA:1}],
-["Study it first.",{INT:2}],
-["Ask what it will cost.",{WIS:2}],
-["Refuse if the price is too high.",{CON:1,WIS:1}]
-]],
-
-["You awaken in another world.",[
-["Find out how strong you are.",{STR:1,CON:1}],
-["Learn everything about this world.",{INT:2}],
-["Find people you can trust.",{CHA:2}],
-["Observe before acting.",{WIS:2}]
-]]
-
-];
-
-
-/* =========================================
-   SOUL PATHS
-========================================= */
-
-const soulPaths={
-
-STR:{
-name:"The Vanguard",
-description:"Your soul responds to adversity with strength, courage, and decisive action.",
-classes:["Fighter","Barbarian","Paladin"],
-trait:"Unyielding",
-traitDescription:"You refuse to back down when others would surrender.",
-blessing:"Titan's Resolve",
-blessingDescription:"Once per long rest, when reduced to 0 HP, you may remain at 1 HP instead."
-},
-
-DEX:{
-name:"The Shadow",
-description:"Your soul favors speed, precision, awareness, and adaptability.",
-classes:["Rogue","Ranger","Monk"],
-trait:"Quickstep",
-traitDescription:"You instinctively recognize openings and react quickly.",
-blessing:"Veilstep",
-blessingDescription:"Once per short rest, you may move 10 feet as a reaction when targeted by an attack."
-},
-
-CON:{
-name:"The Unbroken",
-description:"Your defining strength is endurance. You keep moving when others fall.",
-classes:["Barbarian","Fighter"],
-trait:"Iron Will",
-traitDescription:"Pain and exhaustion rarely convince you to surrender.",
-blessing:"Last Stand",
-blessingDescription:"Once per long rest, gain temporary hit points when you fall below half your maximum HP."
-},
-
-INT:{
-name:"The Arcanist",
-description:"Your mind is your greatest weapon. Knowledge and understanding come naturally.",
-classes:["Wizard","Artificer"],
-trait:"Analytical Mind",
-traitDescription:"You instinctively break complicated problems into patterns.",
-blessing:"Arcane Insight",
-blessingDescription:"Once per long rest, gain advantage on an Intelligence check involving magic, history, or arcana."
-},
-
-WIS:{
-name:"The Seer",
-description:"You notice what others miss and trust instinct, patience, and judgment.",
-classes:["Cleric","Druid","Monk","Ranger"],
-trait:"Instinctive Awareness",
-traitDescription:"Your instincts often notice danger before your conscious mind does.",
-blessing:"Foresight",
-blessingDescription:"Once per long rest, after seeing a d20 result, add your Wisdom modifier to the roll."
-},
-
-CHA:{
-name:"The Sovereign",
-description:"Your presence carries weight. People naturally notice, follow, or remember you.",
-classes:["Bard","Sorcerer","Warlock","Paladin"],
-trait:"Commanding Presence",
-traitDescription:"You possess a presence that is difficult for others to ignore.",
-blessing:"Voice of the Soul",
-blessingDescription:"Once per long rest, gain advantage on a Charisma check made to influence another creature."
-}
-
-};
-
-
-/* =========================================
-   SECRET CLASS ABILITIES
-========================================= */
-
-const classAbilities={
-
-Fighter:{
-name:"Soulforged Resolve",
-description:"Once per long rest, when you hit with a weapon attack, you may deal an additional 1d8 damage."
-},
-
-Barbarian:{
-name:"Primal Awakening",
-description:"Once per long rest while raging, when you take damage, you may reduce that damage by 1d10 + your Constitution modifier."
-},
-
-Paladin:{
-name:"Soulbound Smite",
-description:"Once per long rest when you hit with a melee weapon attack, deal an additional 2d8 radiant damage."
-},
-
-Rogue:{
-name:"Phantom Step",
-description:"Once per short rest, after making a successful attack, you may become invisible until the start of your next turn."
-},
-
-Ranger:{
-name:"Hunter's Instinct",
-description:"Once per long rest, mark one creature you can see. For 1 minute, you have advantage on your first attack against that creature each turn."
-},
-
-Monk:{
-name:"Awakened Flow",
-description:"Once per short rest, immediately after being hit by an attack, you may move up to half your speed without provoking opportunity attacks."
-},
-
-Wizard:{
-name:"Soul Arcana",
-description:"Once per long rest, when you cast a spell of 1st level or higher, you may recover one expended spell slot of 1st level."
-},
-
-Artificer:{
-name:"Soul Infusion",
-description:"Once per long rest, empower one weapon or piece of equipment. For 1 hour, attacks made with it deal an additional 1d6 force damage."
-},
-
-Cleric:{
-name:"Divine Awakening",
-description:"Once per long rest, when a creature within 30 feet would drop to 0 HP, you may use your reaction to leave it at 1 HP."
-},
-
-Druid:{
-name:"Primal Soul",
-description:"Once per long rest, when you take damage, you may use your reaction to gain resistance to that damage type until the end of your next turn."
-},
-
-Bard:{
-name:"Soulful Inspiration",
-description:"Once per long rest, when an ally within 60 feet fails a d20 roll, you may allow them to reroll it."
-},
-
-Sorcerer:{
-name:"Awakened Blood",
-description:"Once per long rest, when you cast a spell, you may cast it as though using a spell slot one level higher without expending the higher slot."
-},
-
-Warlock:{
-name:"Pact of the Soul",
-description:"Once per long rest, when you hit a creature with an attack, deal an additional 2d6 necrotic damage and regain HP equal to the damage dealt."
-}
-
-};
-
-
-/* =========================================
-   VARIABLES
-========================================= */
-
-let scores={
-STR:0,
-DEX:0,
-CON:0,
-INT:0,
-WIS:0,
-CHA:0
-};
+  /*
+   * ============================================
+   * THE SOUL TRIAL
+   * CORE CHARACTER CREATION DATA
+   * ============================================
+   */
+
+  const character = {
+
+    class: "",
+    subclass: "",
+
+    race: "",
+    background: "",
+
+    skills: [],
+
+    alignment: "",
+
+    abilities: {
+      str: 10,
+      dex: 10,
+      con: 10,
+      int: 10,
+      wis: 10,
+      cha: 10
+    },
+
+    equipment: {
+      weapon: "",
+      armor: "",
+      shield: "",
+      additional: ""
+    },
+
+    details: {
+      name: "",
+      player: "",
+      level: 1,
+      age: "",
+      personality: "",
+      ideals: "",
+      bonds: "",
+      flaws: "",
+      backstory: ""
+    }
+
+  };
+
+
+  /*
+   * ============================================
+   * CLASS DATA
+   * ============================================
+   */
+
+  const classes = {
+
+    Barbarian: {
+      description: "A fierce warrior who draws upon primal fury.",
+      role: "Frontline",
+      subclasses: [
+        "Path of the Berserker",
+        "Path of the Totem Warrior"
+      ]
+    },
+
+    Bard: {
+      description: "A versatile spellcaster who uses magic, music, and inspiration.",
+      role: "Support",
+      subclasses: [
+        "College of Lore",
+        "College of Valor"
+      ]
+    },
+
+    Cleric: {
+      description: "A divine spellcaster empowered by a deity or divine force.",
+      role: "Support / Divine",
+      subclasses: [
+        "Life Domain",
+        "Light Domain",
+        "War Domain"
+      ]
+    },
+
+    Druid: {
+      description: "A nature-focused spellcaster capable of transforming into beasts.",
+      role: "Spellcaster",
+      subclasses: [
+        "Circle of the Land",
+        "Circle of the Moon"
+      ]
+    },
+
+    Fighter: {
+      description: "A master of weapons, armor, and martial combat.",
+      role: "Martial",
+      subclasses: [
+        "Champion",
+        "Battle Master",
+        "Eldritch Knight"
+      ]
+    },
+
+    Monk: {
+      description: "A disciplined martial artist who harnesses inner power.",
+      role: "Martial",
+      subclasses: [
+        "Way of the Open Hand",
+        "Way of Shadow",
+        "Way of the Four Elements"
+      ]
+    },
+
+    Paladin: {
+      description: "A holy warrior bound by an oath.",
+      role: "Frontline / Divine",
+      subclasses: [
+        "Oath of Devotion",
+        "Oath of the Ancients",
+        "Oath of Vengeance"
+      ]
+    },
+
+    Ranger: {
+      description: "A wilderness warrior skilled in tracking, survival, and ranged combat.",
+      role: "Martial / Wilderness",
+      subclasses: [
+        "Hunter",
+        "Beast Master"
+      ]
+    },
+
+    Rogue: {
+      description: "A cunning specialist who excels at stealth and precision.",
+      role: "Skill / Martial",
+      subclasses: [
+        "Thief",
+        "Assassin",
+        "Arcane Trickster"
+      ]
+    },
+
+    Sorcerer: {
+      description: "A spellcaster whose magic comes from an innate source of power.",
+      role: "Spellcaster",
+      subclasses: [
+        "Draconic Bloodline",
+        "Wild Magic"
+      ]
+    },
+
+    Warlock: {
+      description: "A spellcaster who gains power through a pact with a mysterious patron.",
+      role: "Spellcaster",
+      subclasses: [
+        "The Archfey",
+        "The Fiend",
+        "The Great Old One"
+      ]
+    },
+
+    Wizard: {
+      description: "A scholarly spellcaster who masters magic through study.",
+      role: "Spellcaster",
+      subclasses: [
+        "School of Abjuration",
+        "School of Conjuration",
+        "School of Divination",
+        "School of Enchantment",
+        "School of Evocation",
+        "School of Illusion",
+        "School of Necromancy",
+        "School of Transmutation"
+      ]
+    }
+
+  };
+
+
+  /*
+   * ============================================
+   * RACE DATA
+   * ============================================
+   */
+
+  const races = {
+
+    Human: {
+      description: "Adaptable and ambitious people found throughout the world.",
+      traits: ["Versatile", "Adaptable"]
+    },
+
+    Dwarf: {
+      description: "Hardy people renowned for resilience and craftsmanship.",
+      traits: ["Darkvision", "Dwarven Resilience"]
+    },
+
+    Elf: {
+      description: "Graceful people with ancient traditions and a connection to magic.",
+      traits: ["Darkvision", "Keen Senses", "Fey Ancestry"]
+    },
+
+    Halfling: {
+      description: "Small, fortunate adventurers with remarkable courage.",
+      traits: ["Lucky", "Brave"]
+    },
+
+    Dragonborn: {
+      description: "Proud humanoids descended from mighty dragons.",
+      traits: ["Draconic Ancestry", "Breath Weapon", "Damage Resistance"]
+    },
+
+    Gnome: {
+      description: "Small, clever people known for curiosity and invention.",
+      traits: ["Darkvision", "Gnome Cunning"]
+    },
+
+    Half-Elf: {
+      description: "People carrying the heritage of both humans and elves.",
+      traits: ["Darkvision", "Fey Ancestry", "Skill Versatility"]
+    },
+
+    Half-Orc: {
+      description: "Powerful warriors carrying both human and orc heritage.",
+      traits: ["Darkvision", "Relentless Endurance", "Savage Attacks"]
+    },
+
+    Tiefling: {
+      description: "People marked by infernal heritage and supernatural power.",
+      traits: ["Darkvision", "Hellish Resistance", "Infernal Legacy"]
+    }
+
+  };
+
+
+  /*
+   * ============================================
+   * BACKGROUND DATA
+   * ============================================
+   */
+
+  const backgrounds = {
+
+    Acolyte: {
+      description: "You spent your life serving a temple or religious institution.",
+      skills: ["Insight", "Religion"]
+    },
+
+    Charlatan: {
+      description: "You survived through deception, disguise, and manipulation.",
+      skills: ["Deception", "Sleight of Hand"]
+    },
+
+    Criminal: {
+      description: "You lived a life outside the law.",
+      skills: ["Deception", "Stealth"]
+    },
+
+    Entertainer: {
+      description: "You survived by performing for others.",
+      skills: ["Acrobatics", "Performance"]
+    },
+
+    FolkHero: {
+      description: "You came from humble beginnings and earned the respect of your community.",
+      skills: ["Animal Handling", "Survival"]
+    },
+
+    GuildArtisan: {
+      description: "You were a skilled member of a guild.",
+      skills: ["Insight", "Persuasion"]
+    },
+
+    Hermit: {
+      description: "You lived apart from society in solitude.",
+      skills: ["Medicine", "Religion"]
+    },
+
+    Noble: {
+      description: "You were raised among wealth, status, and influence.",
+      skills: ["History", "Persuasion"]
+    },
+
+    Outlander: {
+      description: "You grew up far from civilization.",
+      skills: ["Athletics", "Survival"]
+    },
+
+    Sage: {
+      description: "You spent your life studying knowledge and forgotten lore.",
+      skills: ["Arcana", "History"]
+    },
+
+    Sailor: {
+      description: "You spent years working aboard a vessel.",
+      skills: ["Athletics", "Perception"]
+    },
+
+    Soldier: {
+      description: "You served in a military organization.",
+      skills: ["Athletics", "Intimidation"]
+    },
+
+    Urchin: {
+      description: "You survived on the streets through cleverness and resourcefulness.",
+      skills: ["Sleight of Hand", "Stealth"]
+    }
+
+  };
+
+
+  /*
+   * ============================================
+   * SKILLS
+   * ============================================
+   */
+
+  const skills = [
+
+    "Acrobatics",
+    "Animal Handling",
+    "Arcana",
+    "Athletics",
+    "Deception",
+    "History",
+    "Insight",
+    "Intimidation",
+    "Investigation",
+    "Medicine",
+    "Nature",
+    "Perception",
+    "Performance",
+    "Persuasion",
+    "Religion",
+    "Sleight of Hand",
+    "Stealth",
+    "Survival"
+
+  ];
+
+
+  /*
+   * ============================================
+   * SCREEN MANAGEMENT
+   * ============================================
+   */
+
+  let currentStep = 0;
+
+  const totalSteps = 8;
+
+
+  function showStep(step) {
+
+    if (step < 0) {
+      step = 0;
+    }
+
+    if (step >= totalSteps) {
+      step = totalSteps - 1;
+    }
+
+    currentStep = step;
+
+    document.querySelectorAll(".screen").forEach(screen => {
+      screen.classList.remove("active");
+    });
+
+    const target = document.getElementById(`screen-${currentStep}`);
 
-let questionIndex=0;
-let character=null;
+    if (target) {
+      target.classList.add("active");
+    }
 
+    document.querySelectorAll(".step").forEach((stepElement, index) => {
 
-/* =========================================
-   PROFICIENCY
-========================================= */
+      stepElement.classList.toggle(
+        "active",
+        index <= currentStep
+      );
 
-function proficiencyBonus(level){
+    });
 
-if(level>=17)return 6;
-if(level>=13)return 5;
-if(level>=9)return 4;
-if(level>=5)return 3;
-return 2;
+    const progress = ((currentStep + 1) / totalSteps) * 100;
 
-}
+    document.getElementById("progressFill").style.width =
+      `${progress}%`;
 
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
 
-/* =========================================
-   MODIFIER
-========================================= */
+  }
 
-function modifier(score){
 
-return Math.floor((score-10)/2);
+  function nextStep() {
 
-}
+    saveCurrentScreen();
 
-function signed(value){
+    if (currentStep < totalSteps - 1) {
+      showStep(currentStep + 1);
+    }
 
-return value>=0?"+"+value:String(value);
+  }
 
-}
 
+  function previousStep() {
 
-/* =========================================
-   SCREEN
-========================================= */
+    saveCurrentScreen();
 
-function showScreen(id){
+    if (currentStep > 0) {
+      showStep(currentStep - 1);
+    }
 
-document.querySelectorAll("section").forEach(s=>{
-s.classList.add("hidden")
-});
+  }
 
-document.getElementById(id).classList.remove("hidden");
 
-window.scrollTo(0,0);
+  /*
+   * ============================================
+   * CLASS CREATION
+   * ============================================
+   */
 
-}
+  function renderClasses() {
 
+    const container =
+      document.getElementById("classChoices");
 
-/* =========================================
-   START
-========================================= */
+    container.innerHTML = "";
 
-function beginTrial(){
+    Object.entries(classes).forEach(([name, data]) => {
 
-scores={
-STR:0,
-DEX:0,
-CON:0,
-INT:0,
-WIS:0,
-CHA:0
-};
+      const div = document.createElement("div");
 
-questionIndex=0;
+      div.className = "choice";
 
-showScreen("name");
+      if (character.class === name) {
+        div.classList.add("selected");
+      }
 
-}
+      div.innerHTML = `
+        <h3>${name}</h3>
+        <p>${data.description}</p>
+        <span class="tag">${data.role}</span>
+      `;
 
+      div.onclick = () => {
 
-/* =========================================
-   QUESTIONS
-========================================= */
+        character.class = name;
+        character.subclass = "";
 
-function startQuestions(){
+        renderClasses();
+        renderSubclasses();
 
-const name=document
-.getElementById("playerName")
-.value.trim();
+      };
 
-if(!name){
+      container.appendChild(div);
 
-alert("Your soul must have a name.");
+    });
 
-return;
+  }
 
-}
 
-character={name:name};
+  function renderSubclasses() {
 
-showScreen("quiz");
+    const card =
+      document.getElementById("subclassCard");
 
-displayQuestion();
+    const container =
+      document.getElementById("subclassChoices");
 
-}
+    container.innerHTML = "";
 
+    if (!character.class) {
 
-function displayQuestion(){
+      card.classList.add("hidden");
 
-const current=questions[questionIndex];
+      return;
 
-document.getElementById("questionNumber").textContent=
-"Question "+(questionIndex+1)+" of "+questions.length;
+    }
 
-document.getElementById("progressBar").style.width=
-((questionIndex/questions.length)*100)+"%";
+    card.classList.remove("hidden");
 
-document.getElementById("question").textContent=
-current[0];
+    classes[character.class].subclasses.forEach(subclass => {
 
-const answers=document.getElementById("answers");
+      const div = document.createElement("div");
 
-answers.innerHTML="";
+      div.className = "choice";
 
-current[1].forEach(option=>{
+      if (character.subclass === subclass) {
+        div.classList.add("selected");
+      }
 
-const button=document.createElement("button");
+      div.innerHTML = `
+        <h3>${subclass}</h3>
+        <p>
+          Specialize your ${character.class.toLowerCase()}
+          through this path.
+        </p>
+      `;
 
-button.className="choice";
+      div.onclick = () => {
 
-button.textContent=option[0];
+        character.subclass = subclass;
 
-button.onclick=function(){
+        renderSubclasses();
 
-Object.entries(option[1]).forEach(([stat,value])=>{
-scores[stat]+=value;
-});
+      };
 
-questionIndex++;
+      container.appendChild(div);
 
-if(questionIndex<questions.length){
+    });
 
-displayQuestion();
+  }
 
-}else{
 
-calculateSoul();
+  /*
+   * ============================================
+   * RACE CREATION
+   * ============================================
+   */
 
-}
+  function renderRaces() {
 
-};
+    const container =
+      document.getElementById("raceChoices");
 
-answers.appendChild(button);
+    container.innerHTML = "";
 
-});
+    Object.entries(races).forEach(([name, data]) => {
 
-}
+      const div = document.createElement("div");
 
+      div.className = "choice";
 
-/* =========================================
-   CALCULATE SOUL
-========================================= */
+      if (character.race === name) {
+        div.classList.add("selected");
+      }
 
-function calculateSoul(){
+      div.innerHTML = `
+        <h3>${name}</h3>
+        <p>${data.description}</p>
+        <span class="tag">
+          ${data.traits.join(" • ")}
+        </span>
+      `;
 
-let highest=Object.keys(scores).sort(
-(a,b)=>scores[b]-scores[a]
-)[0];
+      div.onclick = () => {
 
-const path=soulPaths[highest];
+        character.race = name;
 
-const lowest=Math.min(...Object.values(scores));
+        renderRaces();
 
-const highestScore=Math.max(...Object.values(scores));
+      };
 
-let finalScores={};
+      container.appendChild(div);
 
-Object.keys(scores).forEach(stat=>{
+    });
 
-if(highestScore===lowest){
+  }
 
-finalScores[stat]=12;
 
-}else{
+  /*
+   * ============================================
+   * BACKGROUND CREATION
+   * ============================================
+   */
 
-finalScores[stat]=
-8+
-Math.round(
-((scores[stat]-lowest)/
-(highestScore-lowest))*10
-);
+  function renderBackgrounds() {
 
-}
+    const container =
+      document.getElementById("backgroundChoices");
 
-});
+    container.innerHTML = "";
 
-character.race="Human";
-character.dominantStat=highest;
-character.soulPath=path.name;
-character.soulDescription=path.description;
-character.classes=path.classes;
-character.soulTrait=path.trait;
-character.traitDescription=path.traitDescription;
-character.blessing=path.blessing;
-character.blessingDescription=path.blessingDescription;
-character.scores=finalScores;
+    Object.entries(backgrounds).forEach(([name, data]) => {
 
-document.getElementById("resultName").textContent=character.name;
+      const div = document.createElement("div");
 
-document.getElementById("soulPath").textContent=path.name;
+      div.className = "choice";
 
-document.getElementById("soulDescription").textContent=
-path.description;
+      if (character.background === name) {
+        div.classList.add("selected");
+      }
 
-document.getElementById("recommendedClasses").innerHTML=
-path.classes.map(c=>`<span class="tag">${c}</span>`).join("");
+      div.innerHTML = `
+        <h3>${formatName(name)}</h3>
+        <p>${data.description}</p>
+        <span class="tag">
+          ${data.skills.join(" • ")}
+        </span>
+      `;
 
-document.getElementById("soulTrait").textContent=path.trait;
+      div.onclick = () => {
 
-document.getElementById("traitDescription").textContent=
-path.traitDescription;
+        character.background = name;
 
-document.getElementById("awakeningBlessing").textContent=
-path.blessing;
+        renderBackgrounds();
 
-document.getElementById("blessingDescription").textContent=
-path.blessingDescription;
+        renderSkills();
 
-showScreen("result");
+      };
 
-}
+      container.appendChild(div);
 
+    });
 
-/* =========================================
-   CREATOR
-========================================= */
+  }
 
-function openCharacterCreator(){
 
-document.getElementById("characterName").textContent=
-character.name;
+  /*
+   * ============================================
+   * SKILL CREATION
+   * ============================================
+   */
 
-document.getElementById("creatorSoulPath").textContent=
-character.soulPath;
+  function renderSkills() {
 
-document.getElementById("creatorPath").textContent=
-character.soulPath;
+    const container =
+      document.getElementById("skillChoices");
 
-document.getElementById("creatorPathDescription").textContent=
-character.soulDescription;
+    container.innerHTML = "";
 
-document.getElementById("creatorTrait").textContent=
-character.soulTrait;
+    const backgroundSkills =
+      character.background
+        ? backgrounds[character.background].skills
+        : [];
 
-document.getElementById("creatorTraitDescription").textContent=
-character.traitDescription;
+    skills.forEach(skill => {
 
-document.getElementById("creatorBlessing").textContent=
-character.blessing;
+      const div = document.createElement("div");
 
-document.getElementById("creatorBlessingDescription").textContent=
-character.blessingDescription;
+      div.className = "choice";
 
-const select=document.getElementById("classSelect");
+      const required =
+        backgroundSkills.includes(skill);
 
-select.innerHTML="";
+      const selected =
+        character.skills.includes(skill);
 
-character.classes.forEach(c=>{
+      if (selected || required) {
+        div.classList.add("selected");
+      }
 
-const option=document.createElement("option");
+      div.innerHTML = `
+        <h3>${skill}</h3>
+        <p>
+          ${required
+            ? "Granted by your background."
+            : "Choose this skill for your character."}
+        </p>
+      `;
 
-option.value=c;
-option.textContent=c;
+      if (!required) {
 
-select.appendChild(option);
+        div.onclick = () => {
 
-});
+          if (character.skills.includes(skill)) {
 
-if(character.class){
+            character.skills =
+              character.skills.filter(s => s !== skill);
 
-select.value=character.class;
+          } else {
 
-}
+            character.skills.push(skill);
 
-updateAwakening();
+          }
 
-select.onchange=updateAwakening;
+          renderSkills();
 
+        };
 
-/* restore saved information */
+      }
 
-const fields=[
-"subclass",
-"background",
-"level",
-"xp",
-"armorClass",
-"initiative",
-"speed",
-"maxHP",
-"currentHP",
-"tempHP",
-"hitDice",
-"attacks",
-"equipment",
-"cp",
-"sp",
-"ep",
-"gp",
-"pp",
-"personality",
-"ideal",
-"bond",
-"flaw",
-"backstory",
-"appearance",
-"proficiencies",
-"features",
-"spells"
-];
+      container.appendChild(div);
 
-fields.forEach(id=>{
+    });
 
-if(character[id]!==undefined){
+  }
 
-document.getElementById(id).value=character[id];
 
-}
+  /*
+   * ============================================
+   * ABILITY SCORE CALCULATIONS
+   * ============================================
+   */
 
-});
+  function modifier(score) {
 
-if(character.alignment){
+    return Math.floor((Number(score) - 10) / 2);
 
-document.getElementById("alignment").value=
-character.alignment;
+  }
 
-}
 
-document.getElementById("abilityScores").innerHTML=
-Object.entries(character.scores).map(([stat,value])=>`
+  function formatModifier(value) {
 
-<div class="ability">
+    return value >= 0
+      ? `+${value}`
+      : `${value}`;
 
-<h3>${stat}</h3>
+  }
 
-<div class="score">${value}</div>
 
-<div class="mod">${signed(modifier(value))}</div>
+  function updateAbilities() {
 
-</div>
+    const abilityNames = [
+      "str",
+      "dex",
+      "con",
+      "int",
+      "wis",
+      "cha"
+    ];
 
-`).join("");
+    abilityNames.forEach(ability => {
 
-showScreen("creator");
+      const input =
+        document.getElementById(ability);
 
-}
+      const score =
+        Number(input.value) || 0;
 
+      character.abilities[ability] = score;
 
-function updateAwakening(){
+      document.getElementById(`${ability}Mod`)
+        .textContent =
+        formatModifier(modifier(score));
 
-const selected=document.getElementById("classSelect").value;
+    });
 
-const ability=classAbilities[selected];
+  }
 
-if(!ability){
 
-document.getElementById("awakeningAbility").innerHTML=
-"<p>No awakening ability available.</p>";
+  /*
+   * ============================================
+   * SAVE CURRENT SCREEN
+   * ============================================
+   */
 
-return;
+  function saveCurrentScreen() {
 
-}
+    character.alignment =
+      document.getElementById("alignment")?.value || "";
 
-document.getElementById("awakeningAbility").innerHTML=`
+    character.equipment.weapon =
+      document.getElementById("weapon")?.value || "";
 
-<h3>${ability.name}</h3>
+    character.equipment.armor =
+      document.getElementById("armor")?.value || "";
 
-<p>${ability.description}</p>
+    character.equipment.shield =
+      document.getElementById("shield")?.value || "";
 
-`;
+    character.equipment.additional =
+      document.getElementById("equipment")?.value || "";
 
-}
+    character.details.name =
+      document.getElementById("characterName")?.value || "";
 
+    character.details.player =
+      document.getElementById("playerName")?.value || "";
 
-/* =========================================
-   SAVE
-========================================= */
+    character.details.level =
+      Number(document.getElementById("level")?.value || 1);
 
-function saveCharacter(){
+    character.details.age =
+      document.getElementById("age")?.value || "";
 
-character.class=
-document.getElementById("classSelect").value;
+    character.details.personality =
+      document.getElementById("personality")?.value || "";
 
-character.subclass=
-document.getElementById("subclass").value;
+    character.details.ideals =
+      document.getElementById("ideals")?.value || "";
 
-character.background=
-document.getElementById("background").value;
+    character.details.bonds =
+      document.getElementById("bonds")?.value || "";
 
-character.level=
-Number(document.getElementById("level").value);
+    character.details.flaws =
+      document.getElementById("flaws")?.value || "";
 
-character.xp=
-Number(document.getElementById("xp").value);
+    character.details.backstory =
+      document.getElementById("backstory")?.value || "";
 
-character.alignment=
-document.getElementById("alignment").value;
+    updateAbilities();
 
-character.ac=
-Number(document.getElementById("armorClass").value);
+  }
 
-character.initiative=
-document.getElementById("initiative").value;
 
-character.speed=
-document.getElementById("speed").value;
+  /*
+   * ============================================
+   * BUILD FINAL CHARACTER
+   * ============================================
+   */
 
-character.hp=
-Number(document.getElementById("maxHP").value);
+  function buildCharacter() {
 
-character.currentHP=
-Number(document.getElementById("currentHP").value);
+    saveCurrentScreen();
 
-character.tempHP=
-Number(document.getElementById("tempHP").value);
+    document.getElementById("summaryName").textContent =
+      character.details.name || "Unnamed Character";
 
-character.hitDice=
-document.getElementById("hitDice").value;
+    document.getElementById("summaryClass").textContent =
+      character.class || "No Class";
 
-character.attacks=
-document.getElementById("attacks").value;
+    document.getElementById("summarySubclass").textContent =
+      character.subclass || "No Subclass";
 
-character.equipment=
-document.getElementById("equipment").value;
+    document.getElementById("summaryRace").textContent =
+      character.race || "No Race";
 
-character.cp=
-document.getElementById("cp").value;
+    document.getElementById("summaryBackground").textContent =
+      character.background
+        ? formatName(character.background)
+        : "No Background";
 
-character.sp=
-document.getElementById("sp").value;
+    document.getElementById("summaryLevel").textContent =
+      character.details.level;
 
-character.ep=
-document.getElementById("ep").value;
+    document.getElementById("summaryAlignment").textContent =
+      character.alignment || "Unaligned";
 
-character.gp=
-document.getElementById("gp").value;
+    document.getElementById("sheetStr").textContent =
+      `${character.abilities.str} (${formatModifier(modifier(character.abilities.str))})`;
 
-character.pp=
-document.getElementById("pp").value;
+    document.getElementById("sheetDex").textContent =
+      `${character.abilities.dex} (${formatModifier(modifier(character.abilities.dex))})`;
 
-character.personality=
-document.getElementById("personality").value;
+    document.getElementById("sheetCon").textContent =
+      `${character.abilities.con} (${formatModifier(modifier(character.abilities.con))})`;
 
-character.ideal=
-document.getElementById("ideal").value;
+    document.getElementById("sheetInt").textContent =
+      `${character.abilities.int} (${formatModifier(modifier(character.abilities.int))})`;
 
-character.bond=
-document.getElementById("bond").value;
+    document.getElementById("sheetWis").textContent =
+      `${character.abilities.wis} (${formatModifier(modifier(character.abilities.wis))})`;
 
-character.flaw=
-document.getElementById("flaw").value;
+    document.getElementById("sheetCha").textContent =
+      `${character.abilities.cha} (${formatModifier(modifier(character.abilities.cha))})`;
 
-character.backstory=
-document.getElementById("backstory").value;
+    document.getElementById("summaryWeapon").textContent =
+      character.equipment.weapon || "None";
 
-character.appearance=
-document.getElementById("appearance").value;
+    document.getElementById("summaryArmor").textContent =
+      character.equipment.armor || "None";
 
-character.proficiencies=
-document.getElementById("proficiencies").value;
+    document.getElementById("summaryShield").textContent =
+      character.equipment.shield || "No";
 
-character.features=
-document.getElementById("features").value;
+    document.getElementById("summaryEquipment").textContent =
+      character.equipment.additional ||
+      "No additional equipment recorded.";
 
-character.spells=
-document.getElementById("spells").value;
+    document.getElementById("summaryBackstory").textContent =
+      character.details.backstory ||
+      "No backstory entered.";
 
-character.awakening=
-classAbilities[character.class];
+    const skillList =
+      document.getElementById("summarySkills");
 
-localStorage.setItem(
-"soulTrialCharacter",
-JSON.stringify(character)
-);
+    skillList.innerHTML = "";
 
-alert("Character saved on this device.");
+    const allSkills = [
+      ...(character.background
+        ? backgrounds[character.background].skills
+        : []),
+      ...character.skills
+    ];
 
-}
+    const uniqueSkills =
+      [...new Set(allSkills)];
 
+    if (uniqueSkills.length === 0) {
 
-/* =========================================
-   SHEET
-========================================= */
+      const li = document.createElement("li");
 
-const skillList={
+      li.textContent = "No skills selected.";
 
-Acrobatics:"DEX",
-"Animal Handling":"WIS",
-Arcana:"INT",
-Athletics:"STR",
-Deception:"CHA",
-History:"INT",
-Insight:"WIS",
-Intimidation:"CHA",
-Investigation:"INT",
-Medicine:"WIS",
-Nature:"INT",
-Perception:"WIS",
-Performance:"CHA",
-Persuasion:"CHA",
-Religion:"INT",
-"Sleight of Hand":"DEX",
-Stealth:"DEX",
-Survival:"WIS"
+      skillList.appendChild(li);
 
-};
+    } else {
 
+      uniqueSkills.forEach(skill => {
 
-function viewSheet(){
+        const li = document.createElement("li");
 
-saveCharacter();
+        li.textContent = skill;
 
-const c=character;
+        skillList.appendChild(li);
 
-const prof=proficiencyBonus(c.level);
+      });
 
-document.getElementById("sheetName").textContent=c.name;
+    }
 
-document.getElementById("sheetClass").textContent=
-(c.class||"Class")+" "+c.level;
+    showStep(7);
 
-document.getElementById("sheetBackground").textContent=
-c.background||"—";
+  }
 
-document.getElementById("sheetRace").textContent=
-c.race;
 
-document.getElementById("sheetAlignment").textContent=
-c.alignment;
+  /*
+   * ============================================
+   * RESET
+   * ============================================
+   */
 
-document.getElementById("sheetXP").textContent=
-c.xp;
+  function resetCharacter() {
 
-document.getElementById("sheetProf").textContent=
-signed(prof);
+    if (!confirm(
+      "Are you sure you want to begin a new character?"
+    )) {
+      return;
+    }
 
-document.getElementById("sheetInitiative").textContent=
-c.initiative||signed(modifier(c.scores.DEX));
+    location.reload();
 
-document.getElementById("sheetSpeed").textContent=
-c.speed;
+  }
 
 
-/* ABILITIES */
+  /*
+   * ============================================
+   * FORMAT NAMES
+   * ============================================
+   */
 
-document.getElementById("sheetStats").innerHTML=
-Object.entries(c.scores).map(([stat,value])=>`
+  function formatName(value) {
 
-<div class="ability">
+    return value
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, char => char.toUpperCase())
+      .trim();
 
-<h3>${stat}</h3>
+  }
 
-<div class="score">${value}</div>
 
-<div class="mod">${signed(modifier(value))}</div>
+  /*
+   * ============================================
+   * INITIALIZE
+   * ============================================
+   */
 
-</div>
-
-`).join("");
-
-
-/* SAVES */
-
-document.getElementById("savingThrows").innerHTML=
-Object.entries(c.scores).map(([stat,value])=>`
-
-<div class="skillRow">
-
-<span>${stat} Saving Throw</span>
-
-<strong>${signed(modifier(value))}</strong>
-
-</div>
-
-`).join("");
-
-
-/* SKILLS */
-
-document.getElementById("skills").innerHTML=
-Object.entries(skillList).map(([skill,stat])=>{
-
-const value=modifier(c.scores[stat]);
-
-return`
-
-<div class="skillRow">
-
-<span>${skill} (${stat})</span>
-
-<strong>${signed(value)}</strong>
-
-</div>
-
-`;
-
-}).join("");
-
-
-/* COMBAT */
-
-document.getElementById("sheetAC").textContent=c.ac;
-
-document.getElementById("sheetInit2").textContent=
-c.initiative;
-
-document.getElementById("sheetSpeed2").textContent=
-c.speed;
-
-document.getElementById("sheetMaxHP").textContent=
-c.hp;
-
-document.getElementById("sheetCurrentHP").textContent=
-c.currentHP;
-
-document.getElementById("sheetTempHP").textContent=
-c.tempHP;
-
-document.getElementById("sheetHitDice").textContent=
-c.hitDice;
-
-
-/* ATTACKS */
-
-document.getElementById("sheetAttacks").textContent=
-c.attacks||"—";
-
-
-/* EQUIPMENT */
-
-document.getElementById("sheetEquipment").textContent=
-c.equipment||"—";
-
-
-/* MONEY */
-
-document.getElementById("sheetCP").textContent=
-c.cp||"0";
-
-document.getElementById("sheetSP").textContent=
-c.sp||"0";
-
-document.getElementById("sheetEP").textContent=
-c.ep||"0";
-
-document.getElementById("sheetGP").textContent=
-c.gp||"0";
-
-document.getElementById("sheetPP").textContent=
-c.pp||"0";
-
-
-/* FEATURES */
-
-document.getElementById("sheetFeatures").textContent=
-c.features||"—";
-
-
-/* SOUL */
-
-document.getElementById("sheetPath").textContent=
-c.soulPath;
-
-document.getElementById("sheetPathDescription").textContent=
-c.soulDescription;
-
-document.getElementById("sheetTrait").textContent=
-c.soulTrait;
-
-document.getElementById("sheetTraitDescription").textContent=
-c.traitDescription;
-
-document.getElementById("sheetBlessing").textContent=
-c.blessing;
-
-document.getElementById("sheetBlessingDescription").textContent=
-c.blessingDescription;
-
-
-/* SECRET ABILITY */
-
-if(c.awakening){
-
-document.getElementById("sheetAwakeningName").textContent=
-c.awakening.name;
-
-document.getElementById("sheetAwakeningDescription").textContent=
-c.awakening.description;
-
-}
-
-
-/* PERSONALITY */
-
-document.getElementById("sheetPersonality").textContent=
-c.personality||"—";
-
-document.getElementById("sheetIdeal").textContent=
-c.ideal||"—";
-
-document.getElementById("sheetBond").textContent=
-c.bond||"—";
-
-document.getElementById("sheetFlaw").textContent=
-c.flaw||"—";
-
-
-/* BACKSTORY */
-
-document.getElementById("sheetBackstory").textContent=
-c.backstory||"—";
-
-
-/* APPEARANCE */
-
-document.getElementById("sheetAppearance").textContent=
-c.appearance||"—";
-
-
-/* PROFICIENCIES */
-
-document.getElementById("sheetProficiencies").textContent=
-c.proficiencies||"—";
-
-
-/* SPELLS */
-
-document.getElementById("sheetSpells").textContent=
-c.spells||"—";
-
-showScreen("sheet");
-
-}
-
-
-/* =========================================
-   LOAD CHARACTER
-========================================= */
-
-const savedCharacter=
-localStorage.getItem("soulTrialCharacter");
-
-if(savedCharacter){
-
-try{
-
-character=JSON.parse(savedCharacter);
-
-}catch(error){
-
-character=null;
-
-}
-
-}
+  renderClasses();
+  renderSubclasses();
+  renderRaces();
+  renderBackgrounds();
+  renderSkills();
+  updateAbilities();
+  showStep(0);
 
 </script>
 
 </body>
-</html>
+   </html>
