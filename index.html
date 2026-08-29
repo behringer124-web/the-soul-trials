@@ -1,1317 +1,596 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="description"
-    content="The Soul Trial — A complete D&D 5th Edition 2014 character creation and management tool."
-  >
-
-  <title>The Soul Trial</title>
-
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Soul's Trial</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- =====================================================
-       APPLICATION
-       ===================================================== -->
+<div class="container">
+<div class="panel">
 
-  <div id="app">
+<!-- HOME -->
+<section id="home">
 
-    <!-- ===================================================
-         HEADER
-         =================================================== -->
+<h1>The Soul's Trial</h1>
 
-    <header class="site-header">
+<p class="center">
+<i>
+"Before a soul can be given a new life,
+it must first reveal what it truly is."
+</i>
+</p>
 
-      <div class="header-content">
+<p class="center">
+Your life on Earth has ended.<br><br>
+But death was not the end.<br><br>
+Something beyond your world has taken notice of you.
+Before you can awaken in another world,
+your soul must first be judged.
+</p>
 
-        <div class="brand">
+<button onclick="beginTrial()">BEGIN THE TRIAL</button>
 
-          <div class="brand-symbol">
-            ⚔
-          </div>
+</section>
 
-          <div>
-            <h1>The Soul Trial</h1>
 
-            <p>
-              D&D 5th Edition Character Builder
-            </p>
-          </div>
+<!-- NAME -->
+<section id="name" class="hidden">
 
-        </div>
+<h1>Before the Trial</h1>
 
-        <div class="header-actions">
+<p class="center">
+A name is the first thing a soul carries into the unknown.
+</p>
 
-          <button
-            id="saveCharacterBtn"
-            class="btn btn-secondary"
-            type="button"
-          >
-            Save Character
-          </button>
+<input
+id="playerName"
+maxlength="40"
+placeholder="Enter your name"
+>
 
-          <button
-            id="loadCharacterBtn"
-            class="btn btn-secondary"
-            type="button"
-          >
-            Load Character
-          </button>
+<button onclick="startQuestions()">CONTINUE</button>
 
-          <button
-            id="resetCharacterBtn"
-            class="btn btn-danger"
-            type="button"
-          >
-            New Character
-          </button>
+</section>
 
-        </div>
 
-      </div>
+<!-- QUIZ -->
+<section id="quiz" class="hidden">
 
-    </header>
+<p id="questionNumber" class="muted"></p>
 
+<div class="progress">
+<div id="progressBar" class="progress-bar"></div>
+</div>
 
-    <!-- ===================================================
-         PROGRESS
-         =================================================== -->
+<h2 id="question"></h2>
 
-    <section
-      id="progressSection"
-      class="progress-section"
-    >
+<div id="answers"></div>
 
-      <div class="progress-wrapper">
+</section>
 
-        <div class="progress-step active">
-          <span>1</span>
-          <label>Identity</label>
-        </div>
 
-        <div class="progress-line"></div>
+<!-- RESULT -->
+<section id="result" class="hidden">
 
-        <div class="progress-step">
-          <span>2</span>
-          <label>Race</label>
-        </div>
+<h1 id="resultName"></h1>
 
-        <div class="progress-line"></div>
+<p class="center">
+<i>
+Your mortal life has been measured.<br>
+Your soul has spoken.
+</i>
+</p>
 
-        <div class="progress-step">
-          <span>3</span>
-          <label>Class</label>
-        </div>
+<div class="info">
 
-        <div class="progress-line"></div>
+<h2 id="soulPath"></h2>
 
-        <div class="progress-step">
-          <span>4</span>
-          <label>Background</label>
-        </div>
+<p id="soulDescription"></p>
 
-        <div class="progress-line"></div>
+<p>
+<strong>Race:</strong> Human
+</p>
 
-        <div class="progress-step">
-          <span>5</span>
-          <label>Abilities</label>
-        </div>
+<p>
+<strong>Recommended Classes:</strong>
+</p>
 
-        <div class="progress-line"></div>
+<div id="recommendedClasses"></div>
 
-        <div class="progress-step">
-          <span>6</span>
-          <label>Skills</label>
-        </div>
+</div>
 
-        <div class="progress-line"></div>
 
-        <div class="progress-step">
-          <span>7</span>
-          <label>Equipment</label>
-        </div>
+<div class="info">
 
-        <div class="progress-line"></div>
+<h3 id="soulTrait"></h3>
 
-        <div class="progress-step">
-          <span>8</span>
-          <label>Spells</label>
-        </div>
+<p id="traitDescription"></p>
 
-        <div class="progress-line"></div>
+<h3 id="awakeningBlessing"></h3>
 
-        <div class="progress-step">
-          <span>9</span>
-          <label>Review</label>
-        </div>
+<p id="blessingDescription"></p>
 
-      </div>
+</div>
 
-    </section>
+<button onclick="openCreator()">
+CREATE MY CHARACTER
+</button>
 
+</section>
 
-    <!-- ===================================================
-         MAIN CONTENT
-         =================================================== -->
 
-    <main class="main-container">
+<!-- CHARACTER CREATOR -->
+<section id="creator" class="hidden">
 
-      <!-- ================================================
-           CHARACTER IDENTITY
-           ================================================ -->
+<h1 id="creatorName"></h1>
 
-      <section
-        id="identitySection"
-        class="builder-section active"
-      >
+<div class="info">
 
-        <div class="section-header">
+<strong>Race:</strong> Human
 
-          <div>
-            <span class="eyebrow">
-              The Beginning
-            </span>
+<p class="small">
+Your Soul Trial has determined your soul.
+You may now shape your new life.
+</p>
 
-            <h2>
-              Who Are You?
-            </h2>
+</div>
 
-            <p>
-              Every soul begins with a name and a story.
-            </p>
-          </div>
 
-        </div>
+<h2>Class</h2>
 
+<select id="classSelect" onchange="updateClass()"></select>
 
-        <div class="form-grid">
+<div id="classInfo" class="info"></div>
 
-          <div class="form-group">
 
-            <label for="characterName">
-              Character Name
-            </label>
+<h2>Subclass</h2>
 
-            <input
-              id="characterName"
-              type="text"
-              placeholder="Enter character name"
-              autocomplete="off"
-            >
+<select id="subclassSelect"></select>
 
-          </div>
 
+<h2>Background</h2>
 
-          <div class="form-group">
+<select id="backgroundSelect"></select>
 
-            <label for="playerName">
-              Player Name
-            </label>
 
-            <input
-              id="playerName"
-              type="text"
-              placeholder="Enter player name"
-              autocomplete="off"
-            >
+<h2>Level</h2>
 
-          </div>
+<input
+id="level"
+type="number"
+min="1"
+max="20"
+value="1"
+onchange="refreshCreator()"
+>
 
 
-          <div class="form-group">
+<h2>Ability Scores</h2>
 
-            <label for="characterLevel">
-              Level
-            </label>
+<p class="small">
+These are yours to assign. The Soul Trial determines your soul,
+but you decide how your character develops.
+</p>
 
-            <select id="characterLevel">
+<div id="abilityScores" class="grid3"></div>
 
-              <option value="1">
-                Level 1
-              </option>
 
-              <option value="2">
-                Level 2
-              </option>
+<h2>Combat</h2>
 
-              <option value="3">
-                Level 3
-              </option>
+<div class="grid">
 
-              <option value="4">
-                Level 4
-              </option>
+<div>
+<label>Armor Class</label>
+<input id="armorClass" type="number" value="10">
+</div>
 
-              <option value="5">
-                Level 5
-              </option>
+<div>
+<label>Current HP</label>
+<input id="currentHP" type="number" value="1">
+</div>
 
-              <option value="6">
-                Level 6
-              </option>
+<div>
+<label>Temporary HP</label>
+<input id="tempHP" type="number" value="0">
+</div>
 
-              <option value="7">
-                Level 7
-              </option>
+<div>
+<label>Speed</label>
+<input id="speed" value="30 ft">
+</div>
 
-              <option value="8">
-                Level 8
-              </option>
+</div>
 
-              <option value="9">
-                Level 9
-              </option>
 
-              <option value="10">
-                Level 10
-              </option>
+<h2>Attacks</h2>
 
-              <option value="11">
-                Level 11
-              </option>
+<textarea
+id="attacks"
+placeholder="Example:
+Longsword — +4 to hit — 1d8+2 slashing
+Longbow — +4 to hit — 1d8+2 piercing"
+></textarea>
 
-              <option value="12">
-                Level 12
-              </option>
 
-              <option value="13">
-                Level 13
-              </option>
+<h2>Equipment</h2>
 
-              <option value="14">
-                Level 14
-              </option>
+<textarea
+id="equipment"
+placeholder="Weapons, armor, adventuring gear, treasure..."
+></textarea>
 
-              <option value="15">
-                Level 15
-              </option>
 
-              <option value="16">
-                Level 16
-              </option>
+<h2>Character Details</h2>
 
-              <option value="17">
-                Level 17
-              </option>
+<textarea
+id="personality"
+placeholder="Personality"
+></textarea>
 
-              <option value="18">
-                Level 18
-              </option>
+<textarea
+id="ideal"
+placeholder="Ideal"
+></textarea>
 
-              <option value="19">
-                Level 19
-              </option>
+<textarea
+id="bond"
+placeholder="Bond"
+></textarea>
 
-              <option value="20">
-                Level 20
-              </option>
+<textarea
+id="flaw"
+placeholder="Flaw"
+></textarea>
 
-            </select>
+<textarea
+id="backstory"
+placeholder="Backstory"
+></textarea>
 
-          </div>
 
+<button onclick="createCharacter()">
+CREATE CHARACTER
+</button>
 
-          <div class="form-group">
+<button onclick="saveCharacter(true)">
+SAVE CHARACTER
+</button>
 
-            <label for="alignment">
-              Alignment
-            </label>
+</section>
 
-            <select id="alignment">
 
-              <option value="">
-                Select Alignment
-              </option>
+<!-- CHARACTER SHEET -->
+<section id="sheet" class="hidden">
 
-              <option value="Lawful Good">
-                Lawful Good
-              </option>
+<div class="center">
 
-              <option value="Neutral Good">
-                Neutral Good
-              </option>
+<div class="sectionTitle">
+THE SOUL'S TRIAL
+</div>
 
-              <option value="Chaotic Good">
-                Chaotic Good
-              </option>
+<h1 id="sheetName"></h1>
 
-              <option value="Lawful Neutral">
-                Lawful Neutral
-              </option>
+<p id="sheetIdentity"></p>
 
-              <option value="True Neutral">
-                True Neutral
-              </option>
+</div>
 
-              <option value="Chaotic Neutral">
-                Chaotic Neutral
-              </option>
 
-              <option value="Lawful Evil">
-                Lawful Evil
-              </option>
+<div class="grid6">
 
-              <option value="Neutral Evil">
-                Neutral Evil
-              </option>
+<div class="stat">
+<strong id="sheetLevel"></strong>
+LEVEL
+</div>
 
-              <option value="Chaotic Evil">
-                Chaotic Evil
-              </option>
+<div class="stat">
+<strong id="sheetProf"></strong>
+PROF
+</div>
 
-            </select>
+<div class="stat">
+<strong id="sheetHP"></strong>
+HP
+</div>
 
-          </div>
+<div class="stat">
+<strong id="sheetAC"></strong>
+AC
+</div>
 
-        </div>
+<div class="stat">
+<strong id="sheetInitiative"></strong>
+INIT
+</div>
 
-      </section>
+<div class="stat">
+<strong id="sheetSpeed"></strong>
+SPEED
+</div>
 
+</div>
 
-      <!-- ================================================
-           RACE
-           ================================================ -->
 
-      <section
-        id="raceSection"
-        class="builder-section"
-      >
+<div class="section">
 
-        <div class="section-header">
+<div class="sectionTitle">
+ABILITY SCORES
+</div>
 
-          <div>
-            <span class="eyebrow">
-              Blood & Heritage
-            </span>
+<div id="sheetStats" class="grid3"></div>
 
-            <h2>
-              Choose Your Race
-            </h2>
+</div>
 
-            <p>
-              Your heritage shapes your body, abilities,
-              languages, and place in the world.
-            </p>
-          </div>
 
-        </div>
+<div class="section">
 
+<div class="sectionTitle">
+SAVING THROWS
+</div>
 
-        <div
-          id="raceChoices"
-          class="choice-grid"
-        >
+<div id="sheetSaves" class="info"></div>
 
-          <!-- Populated by JavaScript -->
+</div>
 
-        </div>
 
+<div class="section">
 
-        <div
-          id="subraceArea"
-          class="subchoice-area"
-        >
+<div class="sectionTitle">
+SKILLS
+</div>
 
-          <div class="section-header compact">
+<div id="sheetSkills" class="info"></div>
 
-            <div>
+</div>
 
-              <span class="eyebrow">
-                Heritage
-              </span>
 
-              <h3>
-                Choose Your Subrace
-              </h3>
+<div class="section">
 
-            </div>
+<div class="sectionTitle">
+COMBAT
+</div>
 
-          </div>
+<div class="info">
 
+<p>
+<strong>Hit Dice:</strong>
+<span id="sheetHitDice"></span>
+</p>
 
-          <div
-            id="subraceChoices"
-            class="choice-grid"
-          >
+<p>
+<strong>Death Saves:</strong>
+</p>
 
-            <!-- Populated by JavaScript -->
+<div class="grid3">
 
-          </div>
+<div>Successes: ☐ ☐ ☐</div>
 
-        </div>
+<div>Failures: ☐ ☐ ☐</div>
 
-      </section>
+<div>
+Temp HP:
+<span id="sheetTempHP"></span>
+</div>
 
+</div>
 
-      <!-- ================================================
-           CLASS
-           ================================================ -->
+<h3>Attacks</h3>
 
-      <section
-        id="classSection"
-        class="builder-section"
-      >
+<p id="sheetAttacks"></p>
 
-        <div class="section-header">
+</div>
 
-          <div>
+</div>
 
-            <span class="eyebrow">
-              Calling
-            </span>
 
-            <h2>
-              Choose Your Class
-            </h2>
+<div class="section">
 
-            <p>
-              Your class defines how you fight, survive,
-              and shape the world around you.
-            </p>
+<div class="sectionTitle">
+PASSIVE AWARENESS
+</div>
 
-          </div>
+<div class="grid3">
 
-        </div>
+<div class="stat">
+<strong id="passivePerception"></strong>
+PASSIVE PERCEPTION
+</div>
 
+<div class="stat">
+<strong id="passiveInvestigation"></strong>
+PASSIVE INVESTIGATION
+</div>
 
-        <div
-          id="classChoices"
-          class="choice-grid"
-        >
+<div class="stat">
+<strong id="passiveInsight"></strong>
+PASSIVE INSIGHT
+</div>
 
-          <!-- Populated by JavaScript -->
+</div>
 
-        </div>
+</div>
 
 
-        <div
-          id="subclassArea"
-          class="subchoice-area"
-        >
+<div class="section">
 
-          <div class="section-header compact">
+<div class="sectionTitle">
+SOUL
+</div>
 
-            <div>
+<div class="info">
 
-              <span class="eyebrow">
-                Specialization
-              </span>
+<h2 id="sheetPath"></h2>
 
-              <h3>
-                Choose Your Subclass
-              </h3>
+<p id="sheetPathDescription"></p>
 
-              <p>
-                Available according to your class and level.
-              </p>
+<h3 id="sheetTrait"></h3>
 
-            </div>
+<p id="sheetTraitDescription"></p>
 
-          </div>
+<h3 id="sheetBlessing"></h3>
 
+<p id="sheetBlessingDescription"></p>
 
-          <div
-            id="subclassChoices"
-            class="choice-grid"
-          >
+</div>
 
-            <!-- Populated by JavaScript -->
 
-          </div>
+<div class="awakening">
 
-        </div>
+<div class="small center">
+UNIQUE CLASS AWAKENING
+</div>
 
-      </section>
+<div
+id="sheetAwakeningName"
+class="awakeningName">
+</div>
 
+<p id="sheetAwakening"></p>
 
-      <!-- ================================================
-           BACKGROUND
-           ================================================ -->
+</div>
 
-      <section
-        id="backgroundSection"
-        class="builder-section"
-      >
+</div>
 
-        <div class="section-header">
 
-          <div>
+<div class="section">
 
-            <span class="eyebrow">
-              Your Past
-            </span>
+<div class="sectionTitle">
+CLASS
+</div>
 
-            <h2>
-              Choose Your Background
-            </h2>
+<div class="info">
 
-            <p>
-              Your life before adventuring left you with
-              skills, proficiencies, equipment, and a story.
-            </p>
+<p>
+<strong>Class:</strong>
+<span id="sheetClass"></span>
+</p>
 
-          </div>
+<p>
+<strong>Subclass:</strong>
+<span id="sheetSubclass"></span>
+</p>
 
-        </div>
+<p>
+<strong>Background:</strong>
+<span id="sheetBackground"></span>
+</p>
 
+</div>
 
-        <div
-          id="backgroundChoices"
-          class="choice-grid"
-        >
+</div>
 
-          <!-- Populated by JavaScript -->
 
-        </div>
+<div class="section">
 
+<div class="sectionTitle">
+CLASS FEATURES
+</div>
 
-        <div
-          id="backgroundDetails"
-          class="details-panel"
-        >
+<div id="sheetFeatures" class="info"></div>
 
-          <!-- Populated by JavaScript -->
+</div>
 
-        </div>
 
-      </section>
+<div class="section">
 
+<div class="sectionTitle">
+SPELLCASTING
+</div>
 
-      <!-- ================================================
-           ABILITIES
-           ================================================ -->
+<div class="info">
 
-      <section
-        id="abilitiesSection"
-        class="builder-section"
-      >
+<p>
+<strong>Spellcasting Ability:</strong>
+<span id="spellAbility"></span>
+</p>
 
-        <div class="section-header">
+<p>
+<strong>Spell Save DC:</strong>
+<span id="spellDC"></span>
+</p>
 
-          <div>
+<p>
+<strong>Spell Attack:</strong>
+<span id="spellAttack"></span>
+</p>
 
-            <span class="eyebrow">
-              The Soul Within
-            </span>
+<h3>Spell Slots</h3>
 
-            <h2>
-              Ability Scores
-            </h2>
+<div id="spellSlots"></div>
 
-            <p>
-              Determine the raw capabilities of your character.
-            </p>
+<h3>Known / Prepared Spells</h3>
 
-          </div>
+<p id="spells"></p>
 
-        </div>
+</div>
 
+</div>
 
-        <div class="ability-method-selector">
 
-          <label>
-            Ability Score Method
-          </label>
+<div class="section">
 
-          <select id="abilityMethod">
+<div class="sectionTitle">
+EQUIPMENT
+</div>
 
-            <option value="standard">
-              Standard Array
-            </option>
+<div class="info">
+<p id="sheetEquipment"></p>
+</div>
 
-            <option value="pointbuy">
-              Point Buy
-            </option>
+</div>
 
-            <option value="manual">
-              Manual Roll / Enter
-            </option>
 
-          </select>
+<div class="section">
 
-        </div>
+<div class="sectionTitle">
+CHARACTER
+</div>
 
+<div class="info">
 
-        <div
-          id="abilityScores"
-          class="ability-grid"
-        >
+<p><strong>Personality</strong></p>
+<p id="sheetPersonality"></p>
 
-          <!-- Populated by JavaScript -->
+<p><strong>Ideal</strong></p>
+<p id="sheetIdeal"></p>
 
-        </div>
+<p><strong>Bond</strong></p>
+<p id="sheetBond"></p>
 
+<p><strong>Flaw</strong></p>
+<p id="sheetFlaw"></p>
 
-        <div
-          id="pointBuyArea"
-          class="details-panel"
-        >
+<p><strong>Backstory</strong></p>
+<p id="sheetBackstory"></p>
 
-          <!-- Populated by JavaScript -->
+</div>
 
-        </div>
+</div>
 
-      </section>
 
+<button onclick="window.print()">
+PRINT / SAVE AS PDF
+</button>
 
-      <!-- ================================================
-           SKILLS
-           ================================================ -->
+<button onclick="openCreator()">
+EDIT CHARACTER
+</button>
 
-      <section
-        id="skillsSection"
-        class="builder-section"
-      >
+<button onclick="returnHome()">
+RETURN HOME
+</button>
 
-        <div class="section-header">
+</section>
 
-          <div>
+</div>
+</div>
 
-            <span class="eyebrow">
-              Training
-            </span>
-
-            <h2>
-              Skills & Proficiencies
-            </h2>
-
-            <p>
-              Select the skills your character is trained in.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div
-          id="skillChoices"
-          class="skill-grid"
-        >
-
-          <!-- Populated by JavaScript -->
-
-        </div>
-
-
-        <div class="proficiency-panels">
-
-          <div class="details-panel">
-
-            <h3>
-              Saving Throws
-            </h3>
-
-            <div
-              id="savingThrowDisplay"
-            ></div>
-
-          </div>
-
-
-          <div class="details-panel">
-
-            <h3>
-              Languages
-            </h3>
-
-            <div
-              id="languageDisplay"
-            ></div>
-
-          </div>
-
-
-          <div class="details-panel">
-
-            <h3>
-              Tool Proficiencies
-            </h3>
-
-            <div
-              id="toolDisplay"
-            ></div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- ================================================
-           EQUIPMENT
-           ================================================ -->
-
-      <section
-        id="equipmentSection"
-        class="builder-section"
-      >
-
-        <div class="section-header">
-
-          <div>
-
-            <span class="eyebrow">
-              Steel & Supplies
-            </span>
-
-            <h2>
-              Equipment
-            </h2>
-
-            <p>
-              Choose the weapons, armor, tools, and gear
-              that accompany your character.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div
-          id="equipmentChoices"
-          class="equipment-grid"
-        >
-
-          <!-- Populated by JavaScript -->
-
-        </div>
-
-
-        <div class="equipment-summary">
-
-          <div class="details-panel">
-
-            <h3>
-              Starting Equipment
-            </h3>
-
-            <div
-              id="selectedEquipment"
-            ></div>
-
-          </div>
-
-
-          <div class="details-panel">
-
-            <h3>
-              Inventory
-            </h3>
-
-            <div
-              id="inventoryDisplay"
-            ></div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- ================================================
-           SPELLS
-           ================================================ -->
-
-      <section
-        id="spellsSection"
-        class="builder-section"
-      >
-
-        <div class="section-header">
-
-          <div>
-
-            <span class="eyebrow">
-              Arcane Power
-            </span>
-
-            <h2>
-              Spells
-            </h2>
-
-            <p>
-              Choose and prepare spells available to your
-              character.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div class="spell-summary">
-
-          <div class="stat-card">
-
-            <span>
-              Spellcasting Ability
-            </span>
-
-            <strong id="spellcastingAbility">
-              —
-            </strong>
-
-          </div>
-
-
-          <div class="stat-card">
-
-            <span>
-              Spell Save DC
-            </span>
-
-            <strong id="spellSaveDC">
-              —
-            </strong>
-
-          </div>
-
-
-          <div class="stat-card">
-
-            <span>
-              Spell Attack Bonus
-            </span>
-
-            <strong id="spellAttackBonus">
-              —
-            </strong>
-
-          </div>
-
-        </div>
-
-
-        <div
-          id="spellDatabaseArea"
-          class="spell-database"
-        >
-
-          <!-- Populated by spells.js -->
-
-        </div>
-
-      </section>
-
-
-      <!-- ================================================
-           FEATURES
-           ================================================ -->
-
-      <section
-        id="featuresSection"
-        class="builder-section"
-      >
-
-        <div class="section-header">
-
-          <div>
-
-            <span class="eyebrow">
-              The Soul's Gifts
-            </span>
-
-            <h2>
-              Features & Traits
-            </h2>
-
-            <p>
-              Review your racial traits, class features,
-              subclass features, and background abilities.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div
-          id="featuresDisplay"
-          class="feature-list"
-        >
-
-          <!-- Populated by JavaScript -->
-
-        </div>
-
-      </section>
-
-
-      <!-- ================================================
-           CHARACTER SUMMARY
-           ================================================ -->
-
-      <section
-        id="reviewSection"
-        class="builder-section"
-      >
-
-        <div class="section-header">
-
-          <div>
-
-            <span class="eyebrow">
-              The Completed Soul
-            </span>
-
-            <h2>
-              Character Review
-            </h2>
-
-            <p>
-              Review your character before beginning your
-              adventure.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div
-          id="characterSummary"
-          class="character-sheet"
-        >
-
-          <!-- Populated by JavaScript -->
-
-        </div>
-
-
-        <div class="final-actions">
-
-          <button
-            id="saveFinalCharacterBtn"
-            class="btn btn-primary btn-large"
-            type="button"
-          >
-            Save Character
-          </button>
-
-          <button
-            id="exportCharacterBtn"
-            class="btn btn-secondary btn-large"
-            type="button"
-          >
-            Export Character
-          </button>
-
-          <button
-            id="printCharacterBtn"
-            class="btn btn-secondary btn-large"
-            type="button"
-          >
-            Print Character
-          </button>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           NAVIGATION
-           ================================================= -->
-
-      <nav
-        id="builderNavigation"
-        class="builder-navigation"
-      >
-
-        <button
-          id="previousBtn"
-          class="btn btn-secondary"
-          type="button"
-        >
-          ← Previous
-        </button>
-
-
-        <div
-          id="stepIndicator"
-          class="step-indicator"
-        >
-          Step 1 of 9
-        </div>
-
-
-        <button
-          id="nextBtn"
-          class="btn btn-primary"
-          type="button"
-        >
-          Next →
-        </button>
-
-      </nav>
-
-    </main>
-
-
-    <!-- ===================================================
-         CHARACTER SHEET SIDEBAR
-         =================================================== -->
-
-    <aside
-      id="characterSidebar"
-      class="character-sidebar"
-    >
-
-      <div class="sidebar-header">
-
-        <div>
-
-          <span class="eyebrow">
-            Character
-          </span>
-
-          <h2 id="sidebarCharacterName">
-            New Character
-          </h2>
-
-        </div>
-
-      </div>
-
-
-      <div class="sidebar-stats">
-
-        <div class="sidebar-stat">
-
-          <span>
-            Race
-          </span>
-
-          <strong id="sidebarRace">
-            —
-          </strong>
-
-        </div>
-
-
-        <div class="sidebar-stat">
-
-          <span>
-            Class
-          </span>
-
-          <strong id="sidebarClass">
-            —
-          </strong>
-
-        </div>
-
-
-        <div class="sidebar-stat">
-
-          <span>
-            Level
-          </span>
-
-          <strong id="sidebarLevel">
-            1
-          </strong>
-
-        </div>
-
-
-        <div class="sidebar-stat">
-
-          <span>
-            Armor Class
-          </span>
-
-          <strong id="sidebarAC">
-            —
-          </strong>
-
-        </div>
-
-
-        <div class="sidebar-stat">
-
-          <span>
-            Hit Points
-          </span>
-
-          <strong id="sidebarHP">
-            —
-          </strong>
-
-        </div>
-
-
-        <div class="sidebar-stat">
-
-          <span>
-            Speed
-          </span>
-
-          <strong id="sidebarSpeed">
-            —
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <div class="sidebar-abilities">
-
-        <h3>
-          Ability Scores
-        </h3>
-
-        <div class="mini-ability-grid">
-
-          <div>
-            <span>STR</span>
-            <strong id="sideSTR">10</strong>
-          </div>
-
-          <div>
-            <span>DEX</span>
-            <strong id="sideDEX">10</strong>
-          </div>
-
-          <div>
-            <span>CON</span>
-            <strong id="sideCON">10</strong>
-          </div>
-
-          <div>
-            <span>INT</span>
-            <strong id="sideINT">10</strong>
-          </div>
-
-          <div>
-            <span>WIS</span>
-            <strong id="sideWIS">10</strong>
-          </div>
-
-          <div>
-            <span>CHA</span>
-            <strong id="sideCHA">10</strong>
-          </div>
-
-        </div>
-
-      </div>
-
-    </aside>
-
-
-    <!-- ===================================================
-         NOTIFICATION
-         =================================================== -->
-
-    <div
-      id="notification"
-      class="notification"
-      role="status"
-      aria-live="polite"
-    >
-    </div>
-
-
-    <!-- ===================================================
-         MODAL
-         =================================================== -->
-
-    <div
-      id="modalOverlay"
-      class="modal-overlay"
-      aria-hidden="true"
-    >
-
-      <div
-        id="modal"
-        class="modal"
-        role="dialog"
-        aria-modal="true"
-      >
-
-        <button
-          id="closeModalBtn"
-          class="modal-close"
-          type="button"
-          aria-label="Close"
-        >
-          ×
-        </button>
-
-        <div id="modalContent">
-
-          <!-- Dynamic content -->
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- ===================================================
-         HIDDEN FILE INPUT
-         =================================================== -->
-
-    <input
-      id="characterFileInput"
-      type="file"
-      accept=".json,application/json"
-      hidden
-    >
-
-
-    <!-- ===================================================
-         FOOTER
-         =================================================== -->
-
-    <footer class="site-footer">
-
-      <p>
-        The Soul Trial
-      </p>
-
-      <p>
-        D&D 5th Edition Character Builder
-        · 2014 Rules
-      </p>
-
-    </footer>
-
-  </div>
-
-
-  <!-- =====================================================
-       JAVASCRIPT
-       ===================================================== -->
-
-  <script src="data.js"></script>
-
-  <script src="character.js"></script>
-
-  <script src="spells.js"></script>
-
-  <script src="app.js"></script>
-
+<script src="spells.js"></script>
+<script src="character.js"></script>
+<script src="app.js"></script>
 
 </body>
 </html>
