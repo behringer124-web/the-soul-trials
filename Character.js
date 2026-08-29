@@ -1,1564 +1,637 @@
-/* =========================================================
-   THE SOUL TRIAL
-   D&D 5E CHARACTER ENGINE
-   character.js
-   ========================================================= */
-
-"use strict";
-
-
-/* =========================================================
-   CHARACTER ENGINE
-   ========================================================= */
-
-const CharacterEngine = {
-
-
-  /* =======================================================
-     CREATE DEFAULT CHARACTER
-     ======================================================= */
-
-  create() {
-
-    return {
-
-      name: "",
-
-      race: "",
-
-      subrace: "",
-
-      class: "",
-
-      subclass: "",
-
-      background: "",
-
-      level: 1,
-
-      experience: 0,
-
-      alignment: "",
-
-      abilities: {
-
-        STR: 8,
-        DEX: 8,
-        CON: 8,
-        INT: 8,
-        WIS: 8,
-        CHA: 8
-
-      },
-
-      abilityMethod: "standard",
-
-      skills: [],
-
-      savingThrows: [],
-
-      languages: [],
-
-      tools: [],
-
-      equipment: [],
-
-      spells: {
-
-        cantrips: [],
-        known: [],
-        prepared: []
-
-      },
-
-      personality: {
-
-        traits: "",
-        ideals: "",
-        bonds: "",
-        flaws: "",
-        backstory: ""
-
-      },
-
-      deathSaves: {
-
-        successes: 0,
-        failures: 0
-
-      }
-
-    };
-
-  },
-
-
-  /* =======================================================
-     ABILITY MODIFIER
-     ======================================================= */
-
-  modifier(score) {
-
-    return Math.floor(
-      (Number(score) - 10) / 2
-    );
-
-  },
-
-
-  /* =======================================================
-     FORMATTED MODIFIER
-     ======================================================= */
-
-  modifierText(score) {
-
-    const modifier =
-      this.modifier(score);
-
-    return modifier >= 0
-      ? `+${modifier}`
-      : `${modifier}`;
-
-  },
-
-
-  /* =======================================================
-     PROFICIENCY BONUS
-     ======================================================= */
-
-  proficiency(level) {
-
-    level =
-      Math.max(
-        1,
-        Math.min(
-          20,
-          Number(level) || 1
-        )
-      );
-
-    return Math.ceil(
-      level / 4
-    ) + 1;
-
-  },
-
-
-  /* =======================================================
-     RACE
-     ======================================================= */
-
-  getRace(character) {
-
-    if (
-      typeof getRaceData ===
-      "function"
-    ) {
-
-      return getRaceData(
-        character.race
-      );
-
-    }
-
-    return null;
-
-  },
-
-
-  getSubrace(character) {
-
-    if (
-      typeof getSubraceData ===
-      "function"
-    ) {
-
-      return getSubraceData(
-        character.race,
-        character.subrace
-      );
-
-    }
-
-    return null;
-
-  },
-
-
-  /* =======================================================
-     CLASS
-     ======================================================= */
-
-  getClass(character) {
-
-    if (
-      typeof getClassData ===
-      "function"
-    ) {
-
-      return getClassData(
-        character.class
-      );
-
-    }
-
-    return null;
-
-  },
-
-
-  getSubclass(character) {
-
-    if (
-      typeof getSubclassData ===
-      "function"
-    ) {
-
-      return getSubclassData(
-        character.subclass
-      );
-
-    }
-
-    return null;
-
-  },
-
-
-  /* =======================================================
-     FINAL ABILITY SCORES
-     ======================================================= */
-
-  getFinalAbilities(character) {
-
-    const scores = {
-
-      STR: Number(
-        character.abilities.STR
-      ) || 0,
-
-      DEX: Number(
-        character.abilities.DEX
-      ) || 0,
-
-      CON: Number(
-        character.abilities.CON
-      ) || 0,
-
-      INT: Number(
-        character.abilities.INT
-      ) || 0,
-
-      WIS: Number(
-        character.abilities.WIS
-      ) || 0,
-
-      CHA: Number(
-        character.abilities.CHA
-      ) || 0
-
-    };
-
-
-    const race =
-      this.getRace(character);
-
-    const subrace =
-      this.getSubrace(character);
-
-
-    if (race?.abilityBonuses) {
-
-      Object.entries(
-        race.abilityBonuses
-      ).forEach(
-        ([ability, bonus]) => {
-
-          if (
-            scores[ability] !==
-            undefined
-          ) {
-
-            scores[ability] +=
-              Number(bonus);
-
-          }
-
-        }
-      );
-
-    }
-
-
-    if (subrace?.abilityBonuses) {
-
-      Object.entries(
-        subrace.abilityBonuses
-      ).forEach(
-        ([ability, bonus]) => {
-
-          if (
-            scores[ability] !==
-            undefined
-          ) {
-
-            scores[ability] +=
-              Number(bonus);
-
-          }
-
-        }
-      );
-
-    }
-
-
-    return scores;
-
-  },
-
-
-  /* =======================================================
-     ALL MODIFIERS
-     ======================================================= */
-
-  getModifiers(character) {
-
-    const scores =
-      this.getFinalAbilities(
-        character
-      );
-
-    const modifiers = {};
-
-    Object.entries(
-      scores
-    ).forEach(
-      ([ability, score]) => {
-
-        modifiers[ability] =
-          this.modifier(score);
-
-      }
-    );
-
-    return modifiers;
-
-  },
-
-
-  /* =======================================================
-     HIT POINTS
-     ======================================================= */
-
-  getHitPoints(character) {
-
-    const classData =
-      this.getClass(character);
-
-    if (!classData) {
-
-      return 0;
-
-    }
-
-    const level =
-      Math.max(
-        1,
-        Number(character.level) || 1
-      );
-
-    const conModifier =
-      this.modifier(
-        this.getFinalAbilities(
-          character
-        ).CON
-      );
-
-
-    /*
-     * First level:
-     * Full hit die + CON modifier
-     */
-
-    let hp =
-      classData.hitDie +
-      conModifier;
-
-
-    /*
-     * Every level after first:
-     * Average hit die + CON modifier
-     *
-     * D&D 5E fixed values:
-     * d6  = 4
-     * d8  = 5
-     * d10 = 6
-     * d12 = 7
-     */
-
-    const average = {
-
-      6: 4,
-      8: 5,
-      10: 6,
-      12: 7
-
-    };
-
-
-    const perLevel =
-      (
-        average[
-          classData.hitDie
-        ] ||
-        Math.floor(
-          classData.hitDie / 2
-        ) + 1
-      ) +
-      conModifier;
-
-
-    if (level > 1) {
-
-      hp +=
-        perLevel *
-        (level - 1);
-
-    }
-
-
-    /*
-     * Minimum of 1 HP per level.
-     */
-
-    return Math.max(
-      level,
-      hp
-    );
-
-  },
-
-
-  /* =======================================================
-     ARMOR CLASS
-     ======================================================= */
-
-  getArmorClass(character) {
-
-    const scores =
-      this.getFinalAbilities(
-        character
-      );
-
-    const dex =
-      this.modifier(
-        scores.DEX
-      );
-
-    const con =
-      this.modifier(
-        scores.CON
-      );
-
-    const wis =
-      this.modifier(
-        scores.WIS
-      );
-
-
-    /*
-     * Base AC.
-     */
-
-    let ac =
-      10 + dex;
-
-
-    /*
-     * Barbarian:
-     * 10 + DEX + CON
-     */
-
-    if (
-      character.class ===
-      "Barbarian"
-    ) {
-
-      ac =
-        10 +
-        dex +
-        con;
-
-    }
-
-
-    /*
-     * Monk:
-     * 10 + DEX + WIS
-     */
-
-    if (
-      character.class ===
-      "Monk"
-    ) {
-
-      ac =
-        10 +
-        dex +
-        wis;
-
-    }
-
-
-    return ac;
-
-  },
-
-
-  /* =======================================================
-     INITIATIVE
-     ======================================================= */
-
-  getInitiative(character) {
-
-    const scores =
-      this.getFinalAbilities(
-        character
-      );
-
-    return this.modifier(
-      scores.DEX
-    );
-
-  },
-
-
-  /* =======================================================
-     SPEED
-     ======================================================= */
-
-  getSpeed(character) {
-
-    const race =
-      this.getRace(character);
-
-    const subrace =
-      this.getSubrace(character);
-
-    return (
-      subrace?.speed ||
-      race?.speed ||
-      30
-    );
-
-  },
-
-
-  /* =======================================================
-     PROFICIENT SAVING THROWS
-     ======================================================= */
-
-  getSavingThrows(character) {
-
-    const classData =
-      this.getClass(character);
-
-    if (!classData) {
-
-      return [];
-
-    }
-
-    return [
-      ...(classData.savingThrows || [])
-    ];
-
-  },
-
-
-  /* =======================================================
-     SAVING THROW VALUE
-     ======================================================= */
-
-  getSavingThrow(
-    character,
-    ability
-  ) {
-
-    const scores =
-      this.getFinalAbilities(
-        character
-      );
-
-    const modifier =
-      this.modifier(
-        scores[ability]
-      );
-
-    const proficient =
-      this.getSavingThrows(
-        character
-      ).includes(
-        ability
-      );
-
-    return modifier +
-      (
-        proficient
-          ? this.proficiency(
-              character.level
-            )
-          : 0
-      );
-
-  },
-
-
-  /* =======================================================
-     SKILL PROFICIENCIES
-     ======================================================= */
-
-  getSkills(character) {
-
-    return [
-      ...new Set(
-        character.skills || []
-      )
-    ];
-
-  },
-
-
-  /* =======================================================
-     SKILL ABILITY
-     ======================================================= */
-
-  getSkillAbility(skill) {
-
-    const data =
-      SOUL_TRIAL_DATA
-        ?.skills?.[skill];
-
-    return data?.ability ||
-      null;
-
-  },
-
-
-  /* =======================================================
-     SKILL VALUE
-     ======================================================= */
-
-  getSkillValue(
-    character,
-    skill
-  ) {
-
-    const ability =
-      this.getSkillAbility(
-        skill
-      );
-
-    if (!ability) {
-
-      return 0;
-
-    }
-
-    const scores =
-      this.getFinalAbilities(
-        character
-      );
-
-    const modifier =
-      this.modifier(
-        scores[ability]
-      );
-
-    const proficient =
-      this.getSkills(
-        character
-      ).includes(
-        skill
-      );
-
-    return modifier +
-      (
-        proficient
-          ? this.proficiency(
-              character.level
-            )
-          : 0
-      );
-
-  },
-
-
-  /* =======================================================
-     PASSIVE PERCEPTION
-     ======================================================= */
-
-  getPassivePerception(character) {
-
-    return 10 +
-      this.getSkillValue(
-        character,
-        "Perception"
-      );
-
-  },
-
-
-  /* =======================================================
-     SPELLCASTING ABILITY
-     ======================================================= */
-
-  getSpellcastingAbility(character) {
-
-    const className =
-      character.class;
-
-    const abilities = {
-
-      Bard: "CHA",
-      Cleric: "WIS",
-      Druid: "WIS",
-      Paladin: "CHA",
-      Ranger: "WIS",
-      Sorcerer: "CHA",
-      Warlock: "CHA",
-      Wizard: "INT"
-
-    };
-
-    return abilities[
-      className
-    ] || null;
-
-  },
-
-
-  /* =======================================================
-     SPELLCASTING MODIFIER
-     ======================================================= */
-
-  getSpellcastingModifier(
-    character
-  ) {
-
-    const ability =
-      this.getSpellcastingAbility(
-        character
-      );
-
-    if (!ability) {
-
-      return 0;
-
-    }
-
-    const scores =
-      this.getFinalAbilities(
-        character
-      );
-
-    return this.modifier(
-      scores[ability]
-    );
-
-  },
-
-
-  /* =======================================================
-     SPELL SAVE DC
-     ======================================================= */
-
-  getSpellSaveDC(character) {
-
-    const ability =
-      this.getSpellcastingAbility(
-        character
-      );
-
-    if (!ability) {
-
-      return null;
-
-    }
-
-    return 8 +
-      this.proficiency(
-        character.level
-      ) +
-      this.getSpellcastingModifier(
-        character
-      );
-
-  },
-
-
-  /* =======================================================
-     SPELL ATTACK BONUS
-     ======================================================= */
-
-  getSpellAttackBonus(
-    character
-  ) {
-
-    if (
-      !this.getSpellcastingAbility(
-        character
-      )
-    ) {
-
-      return null;
-
-    }
-
-    return this.proficiency(
-      character.level
-    ) +
-    this.getSpellcastingModifier(
-      character
-    );
-
-  },
-
-
-  /* =======================================================
-     LANGUAGES
-     ======================================================= */
-
-  getLanguages(character) {
-
-    const race =
-      this.getRace(character);
-
-    if (!race) {
-
-      return [];
-
-    }
-
-    return [
-      ...(race.languages || [])
-    ];
-
-  },
-
-
-  /* =======================================================
-     TOOLS
-     ======================================================= */
-
-  getTools(character) {
-
-    const background =
-      typeof getBackgroundData ===
-      "function"
-        ? getBackgroundData(
-            character.background
-          )
-        : null;
-
-    const tools =
-      background?.tools || [];
-
-    return [
-      ...new Set(tools)
-    ];
-
-  },
-
-
-  /* =======================================================
-     CLASS FEATURES
-     ======================================================= */
-
-  getFeatures(character) {
-
-    if (
-      typeof getClassFeatures !==
-      "function"
-    ) {
-
-      return [];
-
-    }
-
-    return getClassFeatures(
-      character.class,
-      character.level
-    );
-
-  },
-
-
-  /* =======================================================
-     ASI LEVELS
-     ======================================================= */
-
-  getASILevels(character) {
-
-    const className =
-      character.class;
-
-    const asiLevels = {
-
-      Barbarian:
-        [4, 8, 12, 16, 19],
-
-      Bard:
-        [4, 8, 12, 16, 19],
-
-      Cleric:
-        [4, 8, 12, 16, 19],
-
-      Druid:
-        [4, 8, 12, 16, 19],
-
-      Fighter:
-        [4, 6, 8, 12, 14, 16, 19],
-
-      Monk:
-        [4, 8, 12, 16, 19],
-
-      Paladin:
-        [4, 8, 12, 16, 19],
-
-      Ranger:
-        [4, 8, 12, 16, 19],
-
-      Rogue:
-        [4, 8, 10, 12, 16, 19],
-
-      Sorcerer:
-        [4, 8, 12, 16, 19],
-
-      Warlock:
-        [4, 8, 12, 16, 19],
-
-      Wizard:
-        [4, 8, 12, 16, 19]
-
-    };
-
-    return asiLevels[
-      className
-    ] || [];
-
-  },
-
-
-  /* =======================================================
-     CHECK ASI AVAILABLE
-     ======================================================= */
-
-  hasASI(character) {
-
-    return this
-      .getASILevels(character)
-      .includes(
-        Number(character.level)
-      );
-
-  },
-
-
-  /* =======================================================
-     LEVEL VALIDATION
-     ======================================================= */
-
-  setLevel(
-    character,
-    level
-  ) {
-
-    level =
-      Number(level);
-
-    if (
-      Number.isNaN(level)
-    ) {
-
-      return false;
-
-    }
-
-    if (
-      level < 1 ||
-      level > 20
-    ) {
-
-      return false;
-
-    }
-
-    character.level =
-      level;
-
-    return true;
-
-  },
-
-
-  /* =======================================================
-     SUBCLASS AVAILABILITY
-     ======================================================= */
-
-  getSubclassLevel(
-    character
-  ) {
-
-    const subclass =
-      this.getSubclass(
-        character
-      );
-
-    if (!subclass) {
-
-      return null;
-
-    }
-
-    return subclass.level;
-
-  },
-
-
-  isSubclassAvailable(
-    character
-  ) {
-
-    const subclass =
-      this.getSubclass(
-        character
-      );
-
-    if (!subclass) {
-
-      return false;
-
-    }
-
-    return Number(
-      character.level
-    ) >=
-    Number(
-      subclass.level
-    );
-
-  },
-
-
-  /* =======================================================
-     CHARACTER SUMMARY
-     ======================================================= */
-
-  buildSummary(character) {
-
-    const abilities =
-      this.getFinalAbilities(
-        character
-      );
-
-    return {
-
-      name:
-        character.name || "Unnamed",
-
-      race:
-        character.race || "—",
-
-      subrace:
-        character.subrace || "—",
-
-      class:
-        character.class || "—",
-
-      subclass:
-        character.subclass || "—",
-
-      background:
-        character.background || "—",
-
-      level:
-        Number(
-          character.level
-        ) || 1,
-
-      proficiencyBonus:
-        this.proficiency(
-          character.level
-        ),
-
-      hitPoints:
-        this.getHitPoints(
-          character
-        ),
-
-      armorClass:
-        this.getArmorClass(
-          character
-        ),
-
-      initiative:
-        this.getInitiative(
-          character
-        ),
-
-      speed:
-        this.getSpeed(
-          character
-        ),
-
-      passivePerception:
-        this.getPassivePerception(
-          character
-        ),
-
-      abilities,
-
-      savingThrows:
-        this.getSavingThrows(
-          character
-        ),
-
-      skills:
-        this.getSkills(
-          character
-        ),
-
-      features:
-        this.getFeatures(
-          character
-        ),
-
-      spellcastingAbility:
-        this.getSpellcastingAbility(
-          character
-        ),
-
-      spellSaveDC:
-        this.getSpellSaveDC(
-          character
-        ),
-
-      spellAttackBonus:
-        this.getSpellAttackBonus(
-          character
-        ),
-
-      languages:
-        this.getLanguages(
-          character
-        ),
-
-      tools:
-        this.getTools(
-          character
-        ),
-
-      asiAvailable:
-        this.hasASI(
-          character
-        )
-
-    };
-
-  },
-
-
-  /* =======================================================
-     VALIDATION
-     ======================================================= */
-
-  validate(character) {
-
-    const errors = [];
-
-
-    if (
-      !character.name ||
-      !character.name.trim()
-    ) {
-
-      errors.push(
-        "Character name is required."
-      );
-
-    }
-
-
-    if (
-      !character.race
-    ) {
-
-      errors.push(
-        "Race is required."
-      );
-
-    }
-
-
-    if (
-      !character.class
-    ) {
-
-      errors.push(
-        "Class is required."
-      );
-
-    }
-
-
-    if (
-      !character.background
-    ) {
-
-      errors.push(
-        "Background is required."
-      );
-
-    }
-
-
-    const level =
-      Number(character.level);
-
-    if (
-      level < 1 ||
-      level > 20
-    ) {
-
-      errors.push(
-        "Character level must be between 1 and 20."
-      );
-
-    }
-
-
-    Object.entries(
-      character.abilities || {}
-    ).forEach(
-      ([ability, score]) => {
-
-        if (
-          Number(score) < 1 ||
-          Number(score) > 30
-        ) {
-
-          errors.push(
-            `${ability} must be between 1 and 30.`
-          );
-
-        }
-
-      }
-    );
-
-
-    return {
-
-      valid:
-        errors.length === 0,
-
-      errors
-
-    };
-
-  },
-
-
-  /* =======================================================
-     SERIALIZE
-     ======================================================= */
-
-  serialize(character) {
-
-    return JSON.stringify(
-      character,
-      null,
-      2
-    );
-
-  },
-
-
-  /* =======================================================
-     DESERIALIZE
-     ======================================================= */
-
-  deserialize(json) {
-
-    try {
-
-      const parsed =
-        typeof json === "string"
-          ? JSON.parse(json)
-          : json;
-
-      const base =
-        this.create();
-
-      return this.merge(
-        base,
-        parsed
-      );
-
-    } catch {
-
-      return this.create();
-
-    }
-
-  },
-
-
-  /* =======================================================
-     DEEP MERGE
-     ======================================================= */
-
-  merge(
-    original,
-    incoming
-  ) {
-
-    const result =
-      Array.isArray(original)
-        ? [...original]
-        : {
-            ...original
-          };
-
-
-    Object.keys(
-      incoming || {}
-    ).forEach(
-      key => {
-
-        if (
-          incoming[key] &&
-          typeof incoming[key] ===
-          "object" &&
-          !Array.isArray(
-            incoming[key]
-          ) &&
-          original[key] &&
-          typeof original[key] ===
-          "object"
-        ) {
-
-          result[key] =
-            this.merge(
-              original[key],
-              incoming[key]
-            );
-
-        } else {
-
-          result[key] =
-            incoming[key];
-
-        }
-
-      }
-    );
-
-
-    return result;
-
-  },
-
-
-  /* =======================================================
-     SAVE LOCAL CHARACTER
-     ======================================================= */
-
-  save(character) {
-
-    localStorage.setItem(
-      "soulTrialCharacter",
-      this.serialize(
-        character
-      )
-    );
-
-    return true;
-
-  },
-
-
-  /* =======================================================
-     LOAD LOCAL CHARACTER
-     ======================================================= */
-
-  load() {
-
-    const saved =
-      localStorage.getItem(
-        "soulTrialCharacter"
-      );
-
-    if (!saved) {
-
-      return null;
-
-    }
-
-    return this.deserialize(
-      saved
-    );
-
-  },
-
-
-  /* =======================================================
-     DELETE LOCAL CHARACTER
-     ======================================================= */
-
-  clearSaved() {
-
-    localStorage.removeItem(
-      "soulTrialCharacter"
-    );
-
-  },
-
-
-  /* =======================================================
-     DOWNLOAD JSON
-     ======================================================= */
-
-  download(character) {
-
-    const json =
-      this.serialize(
-        character
-      );
-
-    const blob =
-      new Blob(
-        [json],
-        {
-          type:
-            "application/json"
-        }
-      );
-
-    const url =
-      URL.createObjectURL(
-        blob
-      );
-
-    const link =
-      document.createElement(
-        "a"
-      );
-
-    const filename =
-      (
-        character.name ||
-        "Soul-Trial-Character"
-      )
-      .trim()
-      .replace(
-        /[^a-z0-9-_]+/gi,
-        "-"
-      );
-
-
-    link.href =
-      url;
-
-    link.download =
-      `${filename}.json`;
-
-    document.body.appendChild(
-      link
-    );
-
-    link.click();
-
-    link.remove();
-
-    URL.revokeObjectURL(
-      url
-    );
-
-  }
+/* =====================================================
+   THE SOUL'S TRIAL
+   CHARACTER DATA
+===================================================== */
+
+const classData = {
+
+Barbarian:{
+ability:"STR",
+hitDie:12,
+saves:["STR","CON"],
+skills:[
+"Animal Handling",
+"Athletics",
+"Intimidation",
+"Nature",
+"Perception",
+"Survival"
+],
+subclasses:[
+"Berserker",
+"Totem Warrior"
+],
+features:{
+1:["Rage","Unarmored Defense"],
+2:["Reckless Attack","Danger Sense"],
+3:["Primal Path"],
+5:["Extra Attack","Fast Movement"],
+7:["Feral Instinct"],
+9:["Brutal Critical"],
+11:["Relentless Rage"],
+15:["Persistent Rage"],
+20:["Primal Champion"]
+},
+awakening:{
+name:"Soul-Forged Fury",
+levels:{
+1:"Once per long rest, when you enter Rage, your first melee hit deals +1d6 psychic damage.",
+5:"The bonus becomes +2d6.",
+11:"The bonus becomes +3d6.",
+17:"The bonus becomes +4d6."
+}
+}
+},
+
+Bard:{
+ability:"CHA",
+hitDie:8,
+saves:["DEX","CHA"],
+skills:[
+"Acrobatics","Animal Handling","Arcana","Athletics",
+"History","Insight","Intimidation","Investigation",
+"Medicine","Nature","Perception","Performance",
+"Persuasion","Religion","Sleight of Hand",
+"Stealth","Survival"
+],
+subclasses:[
+"Lore",
+"Valor"
+],
+features:{
+1:["Spellcasting","Bardic Inspiration"],
+2:["Jack of All Trades","Song of Rest"],
+3:["Bard College","Expertise"],
+5:["Font of Inspiration"],
+6:["Countercharm"],
+10:["Expertise","Magical Secrets"],
+20:["Superior Inspiration"]
+},
+awakening:{
+name:"Resonance of the Soul",
+levels:{
+1:"When you grant Bardic Inspiration, that creature also gains temporary HP equal to your Charisma modifier once per long rest.",
+5:"You may use this twice per long rest.",
+11:"Temporary HP becomes Charisma modifier + proficiency bonus.",
+17:"You may use this three times per long rest."
+}
+}
+},
+
+Cleric:{
+ability:"WIS",
+hitDie:8,
+saves:["WIS","CHA"],
+skills:[
+"History",
+"Insight",
+"Medicine",
+"Persuasion",
+"Religion"
+],
+subclasses:[
+"Knowledge",
+"Life",
+"Light",
+"Nature",
+"Tempest",
+"Trickery",
+"War"
+],
+features:{
+1:["Spellcasting","Divine Domain"],
+2:["Channel Divinity"],
+5:["Destroy Undead"],
+8:["Divine Strike / Potent Spellcasting"],
+10:["Divine Intervention"],
+17:["Domain Feature"]
+},
+awakening:{
+name:"Divine Echo",
+levels:{
+1:"Once per long rest, healing another creature restores +Wisdom modifier HP.",
+5:"The bonus becomes 1d6 + Wisdom modifier.",
+11:"The bonus becomes 2d6 + Wisdom modifier.",
+17:"The bonus becomes 3d6 + Wisdom modifier."
+}
+}
+},
+
+Druid:{
+ability:"WIS",
+hitDie:8,
+saves:["INT","WIS"],
+skills:[
+"Arcana",
+"Animal Handling",
+"Insight",
+"Medicine",
+"Nature",
+"Perception",
+"Religion",
+"Survival"
+],
+subclasses:[
+"Land",
+"Moon"
+],
+features:{
+1:["Druidic","Spellcasting"],
+2:["Wild Shape","Druid Circle"],
+4:["Wild Shape Improvement"],
+5:["Wild Shape Improvement"],
+8:["Wild Shape Improvement"],
+18:["Timeless Body","Beast Spells"],
+20:["Archdruid"]
+},
+awakening:{
+name:"Primal Awakening",
+levels:{
+1:"Once per long rest, entering Wild Shape empowers your first successful attack for +Wisdom modifier damage.",
+5:"The bonus becomes +1d6.",
+11:"The bonus becomes +2d6.",
+17:"The bonus becomes +3d6."
+}
+}
+},
+
+Fighter:{
+ability:"STR",
+hitDie:10,
+saves:["STR","CON"],
+skills:[
+"Acrobatics",
+"Animal Handling",
+"Athletics",
+"History",
+"Insight",
+"Intimidation",
+"Perception",
+"Survival"
+],
+subclasses:[
+"Champion",
+"Battle Master",
+"Eldritch Knight"
+],
+features:{
+1:["Fighting Style","Second Wind"],
+2:["Action Surge"],
+3:["Martial Archetype"],
+5:["Extra Attack"],
+9:["Indomitable"],
+11:["Extra Attack"],
+20:["Extra Attack"]
+},
+awakening:{
+name:"War Soul",
+levels:{
+1:"Once per long rest, when you use Action Surge, your next weapon hit deals +2d6 force damage.",
+5:"The bonus becomes +3d6.",
+11:"The bonus becomes +4d6.",
+17:"The bonus becomes +5d6."
+}
+}
+},
+
+Monk:{
+ability:"DEX",
+hitDie:8,
+saves:["STR","DEX"],
+skills:[
+"Acrobatics",
+"Athletics",
+"History",
+"Insight",
+"Religion",
+"Stealth"
+],
+subclasses:[
+"Open Hand",
+"Shadow",
+"Four Elements"
+],
+features:{
+1:["Unarmored Defense","Martial Arts"],
+2:["Ki","Unarmored Movement"],
+3:["Monastic Tradition"],
+5:["Extra Attack","Stunning Strike"],
+7:["Evasion","Stillness of Mind"],
+10:["Purity of Body"],
+18:["Empty Body"],
+20:["Perfect Self"]
+},
+awakening:{
+name:"Soul Step",
+levels:{
+1:"Once per short rest after Flurry of Blows, teleport 15 feet.",
+5:"Teleport 20 feet.",
+11:"Teleport 30 feet.",
+17:"Teleport after any successful unarmed strike."
+}
+}
+},
+
+Paladin:{
+ability:"STR",
+hitDie:10,
+saves:["WIS","CHA"],
+skills:[
+"Athletics",
+"Insight",
+"Intimidation",
+"Medicine",
+"Persuasion",
+"Religion"
+],
+subclasses:[
+"Devotion",
+"Ancients",
+"Vengeance"
+],
+features:{
+1:["Divine Sense","Lay on Hands"],
+2:["Fighting Style","Divine Smite"],
+3:["Divine Health","Sacred Oath"],
+5:["Extra Attack"],
+6:["Aura of Protection"],
+10:["Aura of Courage"],
+11:["Improved Divine Smite"],
+18:["Aura Improvement"],
+20:["Sacred Oath Feature"]
+},
+awakening:{
+name:"Soul Smite",
+levels:{
+1:"Once per long rest, a melee hit deals +2d8 radiant damage.",
+5:"The bonus becomes +3d8.",
+11:"The bonus becomes +4d8.",
+17:"The bonus becomes +5d8."
+}
+}
+},
+
+Ranger:{
+ability:"DEX",
+hitDie:10,
+saves:["STR","DEX"],
+skills:[
+"Animal Handling",
+"Athletics",
+"Insight",
+"Investigation",
+"Nature",
+"Perception",
+"Stealth",
+"Survival"
+],
+subclasses:[
+"Hunter",
+"Beast Master"
+],
+features:{
+1:["Favored Enemy","Natural Explorer"],
+2:["Fighting Style","Spellcasting"],
+3:["Ranger Archetype"],
+5:["Extra Attack"],
+8:["Land's Stride"],
+10:["Hide in Plain Sight"],
+14:["Vanish"],
+18:["Feral Senses"],
+20:["Foe Slayer"]
+},
+awakening:{
+name:"Predator's Instinct",
+levels:{
+1:"Once per short rest, mark one creature as prey. Your next attack against it has advantage.",
+5:"The mark lasts 10 minutes.",
+11:"Your first two attacks each turn gain advantage.",
+17:"The mark lasts 1 hour."
+}
+}
+},
+
+Rogue:{
+ability:"DEX",
+hitDie:8,
+saves:["DEX","INT"],
+skills:[
+"Acrobatics",
+"Athletics",
+"Deception",
+"Insight",
+"Intimidation",
+"Investigation",
+"Perception",
+"Performance",
+"Persuasion",
+"Sleight of Hand",
+"Stealth"
+],
+subclasses:[
+"Thief",
+"Assassin",
+"Arcane Trickster"
+],
+features:{
+1:["Expertise","Sneak Attack","Thieves' Cant"],
+2:["Cunning Action"],
+3:["Roguish Archetype"],
+5:["Uncanny Dodge"],
+7:["Evasion"],
+11:["Reliable Talent"],
+14:["Blindsense"],
+18:["Elusive"],
+20:["Stroke of Luck"]
+},
+awakening:{
+name:"Phantom Strike",
+levels:{
+1:"Once per short rest after Sneak Attack, become invisible until the start of your next turn.",
+5:"Invisibility lasts until the end of your next turn.",
+11:"Teleport 15 feet when becoming invisible.",
+17:"Teleport 30 feet."
+}
+}
+},
+
+Sorcerer:{
+ability:"CHA",
+hitDie:6,
+saves:["CON","CHA"],
+skills:[
+"Arcana",
+"Deception",
+"Insight",
+"Intimidation",
+"Persuasion",
+"Religion"
+],
+subclasses:[
+"Draconic Bloodline",
+"Wild Magic"
+],
+features:{
+1:["Spellcasting","Sorcerous Origin"],
+2:["Font of Magic"],
+3:["Metamagic"],
+6:["Origin Feature"],
+10:["Metamagic"],
+18:["Origin Feature"],
+20:["Sorcerous Restoration"]
+},
+awakening:{
+name:"Soul Surge",
+levels:{
+1:"Once per long rest, add Charisma modifier to one spell damage or healing roll.",
+5:"Use twice per long rest.",
+11:"Add twice your Charisma modifier.",
+17:"Use three times per long rest."
+}
+}
+},
+
+Warlock:{
+ability:"CHA",
+hitDie:8,
+saves:["WIS","CHA"],
+skills:[
+"Arcana",
+"Deception",
+"History",
+"Intimidation",
+"Investigation",
+"Nature",
+"Religion"
+],
+subclasses:[
+"Archfey",
+"Fiend",
+"Great Old One"
+],
+features:{
+1:["Otherworldly Patron","Pact Magic"],
+2:["Eldritch Invocations"],
+3:["Pact Boon"],
+5:["Eldritch Invocation"],
+11:["Mystic Arcanum"],
+20:["Eldritch Master"]
+},
+awakening:{
+name:"Forbidden Resonance",
+levels:{
+1:"Once per long rest when you reduce a hostile creature to 0 HP, regain one Warlock spell slot.",
+5:"Use twice per long rest.",
+11:"Also gain temporary HP equal to Charisma modifier + proficiency bonus.",
+17:"Use three times per long rest."
+}
+}
+},
+
+Wizard:{
+ability:"INT",
+hitDie:6,
+saves:["INT","WIS"],
+skills:[
+"Arcana",
+"History",
+"Insight",
+"Investigation",
+"Medicine",
+"Religion"
+],
+subclasses:[
+"Abjuration",
+"Conjuration",
+"Divination",
+"Enchantment",
+"Evocation",
+"Illusion",
+"Necromancy",
+"Transmutation"
+],
+features:{
+1:["Spellcasting","Arcane Recovery"],
+2:["Arcane Tradition"],
+4:["Ability Score Improvement"],
+5:["3rd-level Spells"],
+10:["Arcane Tradition Feature"],
+18:["Spell Mastery"],
+20:["Signature Spells"]
+},
+awakening:{
+name:"Perfect Calculation",
+levels:{
+1:"Once per long rest after seeing a d20 result, add Intelligence modifier.",
+5:"Use twice per long rest.",
+11:"Add twice Intelligence modifier.",
+17:"Use three times per long rest."
+}
+}
+},
+
+Artificer:{
+ability:"INT",
+hitDie:8,
+saves:["CON","INT"],
+skills:[
+"Arcana",
+"History",
+"Investigation",
+"Medicine",
+"Nature",
+"Perception",
+"Sleight of Hand"
+],
+subclasses:[
+"Alchemist",
+"Artillerist",
+"Battle Smith"
+],
+features:{
+1:["Magical Tinkering","Spellcasting"],
+2:["Infuse Item"],
+3:["Artificer Specialist"],
+5:["Specialist Feature"],
+6:["Tool Expertise"],
+10:["Magic Item Adept"],
+14:["Magic Item Savant"],
+18:["Magic Item Master"],
+20:["Soul of Artifice"]
+},
+awakening:{
+name:"Soul Mechanism",
+levels:{
+1:"Once per long rest when an infused item would be destroyed, it instead survives with 1 HP.",
+5:"It survives with HP equal to Intelligence modifier + proficiency bonus.",
+11:"Use twice per long rest.",
+17:"Use three times per long rest."
+}
+}
+}
 
 };
 
 
-/* =========================================================
-   EXPOSE ENGINE
-   ========================================================= */
+/* =====================================================
+BACKGROUNDS
+===================================================== */
 
-window.CharacterEngine =
-  CharacterEngine;
+const backgrounds=[
+"Acolyte",
+"Charlatan",
+"Criminal",
+"Entertainer",
+"Folk Hero",
+"Guild Artisan",
+"Hermit",
+"Noble",
+"Outlander",
+"Sage",
+"Sailor",
+"Soldier",
+"Urchin"
+];
 
 
-/* =========================================================
-   COMPATIBILITY HELPERS
-   ========================================================= */
+/* =====================================================
+SKILL → ABILITY
+===================================================== */
 
-function buildCompleteCharacter(
-  character
-) {
+const skillAbility={
 
-  return CharacterEngine
-    .buildSummary(
-      character
-    );
+Athletics:"STR",
+
+Acrobatics:"DEX",
+"Sleight of Hand":"DEX",
+Stealth:"DEX",
+
+Arcana:"INT",
+History:"INT",
+Investigation:"INT",
+Nature:"INT",
+Religion:"INT",
+
+"Animal Handling":"WIS",
+Insight:"WIS",
+Medicine:"WIS",
+Perception:"WIS",
+Survival:"WIS",
+
+Deception:"CHA",
+Intimidation:"CHA",
+Performance:"CHA",
+Persuasion:"CHA"
+
+};
+
+
+/* =====================================================
+PROFICIENCY
+===================================================== */
+
+function proficiencyBonus(level){
+
+return Math.ceil(level / 4) + 1;
 
 }
 
 
-function getCharacterHitPoints(
-  character
-) {
+/* =====================================================
+ABILITY MODIFIER
+===================================================== */
 
-  return CharacterEngine
-    .getHitPoints(
-      character
-    );
+function modifier(score){
 
-}
-
-
-function getCharacterArmorClass(
-  character
-) {
-
-  return CharacterEngine
-    .getArmorClass(
-      character
-    );
+return Math.floor((Number(score) - 10) / 2);
 
 }
 
 
-function getCharacterInitiative(
-  character
-) {
+/* =====================================================
+FEATURES
+===================================================== */
 
-  return CharacterEngine
-    .getInitiative(
-      character
-    );
+function featuresFor(data,level){
+
+let output=[];
+
+Object.keys(data.features)
+.map(Number)
+.sort((a,b)=>a-b)
+.forEach(requiredLevel=>{
+
+if(requiredLevel<=level){
+
+data.features[requiredLevel].forEach(feature=>{
+
+output.push(
+`Level ${requiredLevel}: ${feature}`
+);
+
+});
+
+}
+
+});
+
+return output;
 
 }
 
 
-function getCharacterProficiency(
-  character
-) {
+/* =====================================================
+AWAKENING LEVEL
+===================================================== */
 
-  return CharacterEngine
-    .proficiency(
-      character.level
-    );
+function awakeningLevel(level){
+
+if(level>=17)return 17;
+
+if(level>=11)return 11;
+
+if(level>=5)return 5;
+
+return 1;
 
 }
