@@ -8,7 +8,6 @@
 
 <style>
 *{box-sizing:border-box}
-
 html{scroll-behavior:smooth}
 
 body{
@@ -35,9 +34,7 @@ padding:25px;
 box-shadow:0 15px 55px rgba(0,0,0,.55);
 }
 
-section{
-animation:fade .2s ease;
-}
+section{animation:fade .2s ease}
 
 @keyframes fade{
 from{opacity:0;transform:translateY(5px)}
@@ -67,10 +64,7 @@ color:#c7c7c7;
 .center{text-align:center}
 .muted{color:#999}
 
-button,
-input,
-select,
-textarea{
+button,input,select,textarea{
 width:100%;
 padding:13px;
 margin:6px 0;
@@ -120,9 +114,7 @@ border-color:#dfc47a;
 background:#282f41;
 }
 
-input,
-select,
-textarea{
+input,select,textarea{
 background:#0d121b;
 color:#fff;
 border:1px solid #484848;
@@ -200,18 +192,14 @@ padding:14px;
 margin:8px 0;
 }
 
-.card h3{
-margin-top:0;
-}
+.card h3{margin-top:0}
 
 .section-title{
 border-bottom:1px solid #3d3a34;
 padding-bottom:8px;
 }
 
-.small{
-font-size:.88rem;
-}
+.small{font-size:.88rem}
 
 .notice{
 border-left:4px solid #dfc47a;
@@ -220,13 +208,8 @@ background:#151923;
 margin:12px 0;
 }
 
-.success{
-border-left-color:#617d60;
-}
-
-.error{
-border-left-color:#8b4b4b;
-}
+.success{border-left-color:#617d60}
+.error{border-left-color:#8b4b4b}
 
 .nav{
 display:flex;
@@ -320,57 +303,11 @@ and the path your new life will take.
 BEGIN THE TRIAL
 </button>
 
-<button type="button" class="secondary" id="loginButton">
-PLAYER LOGIN
+<button type="button" class="secondary" id="campaignHomeButton">
+CAMPAIGNS
 </button>
 
 </section>
-
-
-<section id="login" class="hidden">
-
-<h1>Enter the Realm</h1>
-
-<p class="center">
-Sign in to save your character and connect it to campaigns.
-</p>
-
-<div class="info">
-
-<label>Email</label>
-
-<input
-id="loginEmail"
-type="email"
-autocomplete="email"
-placeholder="Email">
-
-<label>Password</label>
-
-<input
-id="loginPassword"
-type="password"
-autocomplete="current-password"
-placeholder="Password">
-
-<button type="button" id="signInButton">
-SIGN IN
-</button>
-
-<button type="button" class="secondary" id="signUpButton">
-CREATE ACCOUNT
-</button>
-
-<button type="button" class="secondary" id="backFromLogin">
-BACK
-</button>
-
-</div>
-
-<div id="authMessage" class="notice hidden"></div>
-
-</section>
-
 
 <section id="name" class="hidden">
 
@@ -396,7 +333,6 @@ BACK
 
 </section>
 
-
 <section id="quiz" class="hidden">
 
 <p id="questionNumber" class="muted"></p>
@@ -412,7 +348,6 @@ BACK
 <div id="answers"></div>
 
 </section>
-
 
 <section id="result" class="hidden">
 
@@ -479,45 +414,24 @@ CONTINUE TO CHARACTER CREATION
 
 </section>
 
-
 <section id="creator" class="hidden">
 
 <h1 id="characterName"></h1>
 
 <div class="notice">
-The Soul's Trial determines your character's core identity.
-Your race, class, subclass, background, level and ability
-scores are determined by the trial.
+Your Soul's Trial has determined your core identity.
+Your character can now be connected to a campaign without requiring a traditional account.
 </div>
 
 <div class="info">
 
 <h2>Identity</h2>
 
-<p>
-<strong>Race:</strong>
-<span id="creatorRace"></span>
-</p>
-
-<p>
-<strong>Class:</strong>
-<span id="creatorClass"></span>
-</p>
-
-<p>
-<strong>Subclass:</strong>
-<span id="creatorSubclass"></span>
-</p>
-
-<p>
-<strong>Background:</strong>
-<span id="creatorBackground"></span>
-</p>
-
-<p>
-<strong>Level:</strong>
-<span id="creatorLevel"></span>
-</p>
+<p><strong>Race:</strong> <span id="creatorRace"></span></p>
+<p><strong>Class:</strong> <span id="creatorClass"></span></p>
+<p><strong>Subclass:</strong> <span id="creatorSubclass"></span></p>
+<p><strong>Background:</strong> <span id="creatorBackground"></span></p>
+<p><strong>Level:</strong> <span id="creatorLevel"></span></p>
 
 </div>
 
@@ -549,36 +463,16 @@ Speed
 <h2>Equipment</h2>
 
 <div class="info">
-
-<p>
-Choose equipment from the options provided by your class.
-</p>
-
 <div id="equipmentOptions"></div>
-
 </div>
 
 <h2>Character Details</h2>
 
-<textarea
-id="personality"
-placeholder="Personality"></textarea>
-
-<textarea
-id="ideal"
-placeholder="Ideal"></textarea>
-
-<textarea
-id="bond"
-placeholder="Bond"></textarea>
-
-<textarea
-id="flaw"
-placeholder="Flaw"></textarea>
-
-<textarea
-id="backstory"
-placeholder="Backstory"></textarea>
+<textarea id="personality" placeholder="Personality"></textarea>
+<textarea id="ideal" placeholder="Ideal"></textarea>
+<textarea id="bond" placeholder="Bond"></textarea>
+<textarea id="flaw" placeholder="Flaw"></textarea>
+<textarea id="backstory" placeholder="Backstory"></textarea>
 
 <button type="button" id="saveCharacterButton">
 SAVE CHARACTER
@@ -589,7 +483,6 @@ VIEW CHARACTER SHEET
 </button>
 
 </section>
-
 
 <section id="sheet" class="hidden">
 
@@ -611,6 +504,10 @@ CAMPAIGNS
 HOME
 </button>
 
+</div>
+
+<div class="notice" id="syncStatus">
+Character is stored locally.
 </div>
 
 <div class="info">
@@ -650,7 +547,6 @@ Hit Dice
 </div>
 
 </div>
-
 </div>
 
 <h2>Ability Scores</h2>
@@ -666,11 +562,9 @@ Hit Dice
 <p id="sheetPathDescription"></p>
 
 <h3 id="sheetTrait"></h3>
-
 <p id="sheetTraitDescription"></p>
 
 <h3 id="sheetBlessing"></h3>
-
 <p id="sheetBlessingDescription"></p>
 
 </div>
@@ -702,12 +596,13 @@ Hit Dice
 
 </section>
 
-
 <section id="campaigns" class="hidden">
 
 <h1>Campaigns</h1>
 
-<div id="campaignAccountNotice" class="notice"></div>
+<div id="campaignAccountNotice" class="notice">
+Connecting you to the realm...
+</div>
 
 <div class="nav">
 
@@ -721,6 +616,10 @@ JOIN CAMPAIGN
 
 <button type="button" class="secondary" id="campaignCharacterButton">
 CHARACTER
+</button>
+
+<button type="button" class="secondary" id="campaignHomeButton2">
+HOME
 </button>
 
 </div>
@@ -757,13 +656,13 @@ CREATE CAMPAIGN
 <h2>Join Campaign</h2>
 
 <p>
-Enter the campaign ID provided by your DM.
+Enter the campaign ID or join code provided by your DM.
 </p>
 
 <input
 id="campaignCode"
-maxlength="30"
-placeholder="Campaign ID">
+maxlength="80"
+placeholder="Campaign ID or Join Code">
 
 <button type="button" id="confirmJoinCampaign">
 JOIN CAMPAIGN
@@ -776,7 +675,6 @@ JOIN CAMPAIGN
 <div id="campaignMessage" class="notice hidden"></div>
 
 </section>
-
 
 <section id="campaignDashboard" class="hidden">
 
@@ -806,23 +704,6 @@ BACK
 
 </div>
 </div>
-
-
-<!--
-=========================================================
-JAVASCRIPT FILES
-=========================================================
-
-IMPORTANT:
-DO NOT put the old large <script>...</script> block here.
-
-The files MUST load in this order:
-
-1. data.js
-2. supabase.js
-3. app.js
-=========================================================
--->
 
 <script src="data.js"></script>
 <script src="supabase.js"></script>
