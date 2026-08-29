@@ -205,11 +205,11 @@ margin:12px 0;
 }
 
 .success{
-border-color:#617d60;
+border-left-color:#617d60;
 }
 
 .error{
-border-color:#8b4b4b;
+border-left-color:#8b4b4b;
 }
 
 .nav{
@@ -236,6 +236,12 @@ color:#ddd;
 
 ul{
 line-height:1.8;
+}
+
+.loading{
+text-align:center;
+padding:25px;
+color:#aaa;
 }
 
 @media(max-width:650px){
@@ -307,15 +313,21 @@ Sign in to save your characters and connect them to campaigns.
 
 <div class="info">
 
-<input id="loginEmail"
+<input
+id="loginEmail"
 type="email"
+autocomplete="email"
 placeholder="Email">
 
-<input id="loginPassword"
+<input
+id="loginPassword"
 type="password"
+autocomplete="current-password"
 placeholder="Password">
 
-<button onclick="login()">SIGN IN</button>
+<button onclick="login()">
+SIGN IN
+</button>
 
 <button class="secondary" onclick="signup()">
 CREATE ACCOUNT
@@ -418,6 +430,7 @@ Your soul has spoken.
 <div class="info">
 
 <h2>Ability Scores</h2>
+
 <div id="resultStats" class="stats"></div>
 
 </div>
@@ -446,8 +459,8 @@ CONTINUE TO CHARACTER CREATION
 
 <div class="notice">
 Your Soul's Trial has determined the core of this character.
-You do not manually choose the class, subclass, background,
-level, or ability scores.
+Your race, class, subclass, background, level, and ability scores
+are determined by the Trial.
 </div>
 
 <div class="info">
@@ -455,17 +468,20 @@ level, or ability scores.
 <h2>Identity</h2>
 
 <p><strong>Race:</strong> <span id="creatorRace"></span></p>
+
 <p><strong>Class:</strong> <span id="creatorClass"></span></p>
+
 <p><strong>Subclass:</strong> <span id="creatorSubclass"></span></p>
+
 <p><strong>Background:</strong> <span id="creatorBackground"></span></p>
+
 <p><strong>Level:</strong> <span id="creatorLevel"></span></p>
 
 </div>
 
-
 <h2>Ability Scores</h2>
-<div id="abilityScores" class="stats"></div>
 
+<div id="abilityScores" class="stats"></div>
 
 <h2>Combat Statistics</h2>
 
@@ -488,37 +504,29 @@ Speed
 
 </div>
 
-
 <h2>Equipment</h2>
 
 <div class="info">
 
 <p>
-Choose the equipment you want your character to begin with.
+Choose from the equipment available to your class.
 </p>
 
 <div id="equipmentOptions"></div>
 
 </div>
 
-
 <h2>Character Details</h2>
 
-<textarea id="personality"
-placeholder="Personality"></textarea>
+<textarea id="personality" placeholder="Personality"></textarea>
 
-<textarea id="ideal"
-placeholder="Ideal"></textarea>
+<textarea id="ideal" placeholder="Ideal"></textarea>
 
-<textarea id="bond"
-placeholder="Bond"></textarea>
+<textarea id="bond" placeholder="Bond"></textarea>
 
-<textarea id="flaw"
-placeholder="Flaw"></textarea>
+<textarea id="flaw" placeholder="Flaw"></textarea>
 
-<textarea id="backstory"
-placeholder="Backstory"></textarea>
-
+<textarea id="backstory" placeholder="Backstory"></textarea>
 
 <button onclick="saveCharacter()">
 SAVE CHARACTER
@@ -548,12 +556,15 @@ EDIT
 CAMPAIGNS
 </button>
 
+<button class="secondary" onclick="logout()">
+LOG OUT
+</button>
+
 <button class="secondary" onclick="showScreen('home')">
 HOME
 </button>
 
 </div>
-
 
 <div class="info">
 
@@ -595,10 +606,9 @@ Hit Dice
 
 </div>
 
-
 <h2>Ability Scores</h2>
-<div id="sheetStats" class="stats"></div>
 
+<div id="sheetStats" class="stats"></div>
 
 <h2>Soul</h2>
 
@@ -609,17 +619,18 @@ Hit Dice
 <p id="sheetPathDescription"></p>
 
 <h3 id="sheetTrait"></h3>
+
 <p id="sheetTraitDescription"></p>
 
 <h3 id="sheetBlessing"></h3>
+
 <p id="sheetBlessingDescription"></p>
 
 </div>
 
-
 <h2>Equipment</h2>
-<div id="sheetEquipment"></div>
 
+<div id="sheetEquipment"></div>
 
 <h2>Character</h2>
 
@@ -700,7 +711,7 @@ CREATE
 <input
 id="campaignCode"
 maxlength="20"
-placeholder="Enter campaign code">
+placeholder="Enter campaign ID">
 
 <button onclick="joinCampaign()">
 JOIN
@@ -742,7 +753,6 @@ BACK
 
 </section>
 
-
 </div>
 </div>
 
@@ -750,7 +760,7 @@ BACK
 <script>
 
 /* ============================================================
-   SUPABASE
+   SUPABASE CONFIGURATION
 ============================================================ */
 
 const SUPABASE_URL =
@@ -760,38 +770,55 @@ const SUPABASE_KEY =
 "sb_publishable_5NMRF_b1yMCDPr4LwYa_Ow_cveLPlLI";
 
 let currentUser = null;
+let currentCampaign = null;
 
 
 /* ============================================================
-   SIMPLE SUPABASE REST CLIENT
+   SUPABASE REST CLIENT
 ============================================================ */
 
 async function supabaseRequest(
 table,
 method="GET",
 body=null,
-query="",
-extraHeaders={}
+query=""
 ){
 
-const options={
-method,
-headers:{
+const token =
+localStorage.getItem("soulTrialAccessToken");
+
+const headers={
 "apikey":SUPABASE_KEY,
-"Authorization":"Bearer "+(
-localStorage.getItem("soulTrialAccessToken") || SUPABASE_KEY
-),
 "Content-Type":"application/json",
-"Prefer":"return=representation",
-...extraHeaders
+"Prefer":"return=representation"
+};
+
+if(token){
+
+headers["Authorization"]=
+"Bearer "+token;
+
+}else{
+
+headers["Authorization"]=
+"Bearer "+SUPABASE_KEY;
+
 }
+
+const options={
+method:method,
+headers:headers
 };
 
 if(body!==null){
-options.body=JSON.stringify(body);
+
+options.body=
+JSON.stringify(body);
+
 }
 
-const response=await fetch(
+const response=
+await fetch(
 SUPABASE_URL+
 "/rest/v1/"+
 table+
@@ -799,409 +826,541 @@ query,
 options
 );
 
-const text=await response.text();
+const text=
+await response.text();
 
 let data=null;
 
 try{
-data=text?JSON.parse(text):null;
+
+data=
+text
+?JSON.parse(text)
+:null;
+
 }catch{
+
 data=text;
+
 }
 
 if(!response.ok){
+
 throw new Error(
 typeof data==="object"
-?data.message || data.hint || JSON.stringify(data)
-:data
+?
+(
+data.message||
+data.hint||
+data.details||
+data.error||
+JSON.stringify(data)
+)
+:
+data
 );
+
 }
 
 return data;
+
 }
 
 
 /* ============================================================
-   AUTH
+   AUTHENTICATION
 ============================================================ */
 
 async function signup(){
 
-    const email =
-        document.getElementById("loginEmail").value.trim();
+const email=
+document.getElementById("loginEmail")
+.value
+.trim();
 
-    const password =
-        document.getElementById("loginPassword").value;
+const password=
+document.getElementById("loginPassword")
+.value;
 
-    if(!email || !password){
-        showAuthMessage("Please enter an email and password.");
-        return;
-    }
+if(!email||!password){
 
-    if(password.length < 6){
-        showAuthMessage("Password must be at least 6 characters.");
-        return;
-    }
+showAuthMessage(
+"Please enter an email and password."
+);
 
-    try{
+return;
 
-        showAuthMessage("Creating your account...", true);
+}
 
-        const response = await fetch(
-            SUPABASE_URL + "/auth/v1/signup",
-            {
-                method:"POST",
-                headers:{
-                    "apikey":SUPABASE_KEY,
-                    "Content-Type":"application/json"
-                },
-                body:JSON.stringify({
-                    email:email,
-                    password:password
-                })
-            }
-        );
+if(password.length<6){
 
-        const data = await response.json();
+showAuthMessage(
+"Password must be at least 6 characters."
+);
 
-        if(!response.ok){
+return;
 
-            throw new Error(
-                data.error_description ||
-                data.msg ||
-                data.message ||
-                "Unable to create account."
-            );
+}
 
-        }
+try{
 
-        /*
-         Supabase may require email confirmation.
-         If it does, there will be no access token yet.
-        */
+showAuthMessage(
+"Creating your account...",
+true
+);
 
-        if(data.access_token){
+const response=
+await fetch(
+SUPABASE_URL+
+"/auth/v1/signup",
+{
+method:"POST",
+headers:{
+"apikey":SUPABASE_KEY,
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email:email,
+password:password
+})
+}
+);
 
-            localStorage.setItem(
-                "soulTrialAccessToken",
-                data.access_token
-            );
+const data=
+await response.json();
 
-            currentUser = data.user;
+if(!response.ok){
 
-            await ensureProfile();
+throw new Error(
+data.error_description||
+data.msg||
+data.message||
+data.error||
+"Unable to create account."
+);
 
-            showAuthMessage(
-                "Account created and signed in successfully.",
-                true
-            );
+}
 
-            showScreen("home");
+if(data.access_token){
 
-        }else{
+localStorage.setItem(
+"soulTrialAccessToken",
+data.access_token
+);
 
-            showAuthMessage(
-                "Account created! Check your email to confirm your account, then return here and sign in.",
-                true
-            );
+if(data.refresh_token){
 
-        }
+localStorage.setItem(
+"soulTrialRefreshToken",
+data.refresh_token
+);
 
-    }catch(error){
+}
 
-        console.error("Signup error:",error);
+currentUser=data.user;
 
-        showAuthMessage(
-            getAuthErrorMessage(error.message)
-        );
+await ensureProfile();
 
-    }
+showAuthMessage(
+"Account created successfully.",
+true
+);
+
+setTimeout(
+()=>{
+showScreen("home");
+},
+500
+);
+
+}else{
+
+showAuthMessage(
+"Account created. Check your email to confirm your account, then return here and sign in.",
+true
+);
+
+}
+
+}catch(error){
+
+console.error(
+"Signup error:",
+error
+);
+
+showAuthMessage(
+getAuthErrorMessage(error.message)
+);
+
+}
 
 }
 
 
 async function login(){
 
-    const email =
-        document.getElementById("loginEmail").value.trim();
+const email=
+document.getElementById("loginEmail")
+.value
+.trim();
 
-    const password =
-        document.getElementById("loginPassword").value;
+const password=
+document.getElementById("loginPassword")
+.value;
 
-    if(!email || !password){
+if(!email||!password){
 
-        showAuthMessage(
-            "Please enter your email and password."
-        );
+showAuthMessage(
+"Please enter your email and password."
+);
 
-        return;
+return;
 
-    }
+}
 
-    try{
+try{
 
-        showAuthMessage(
-            "Signing in...",
-            true
-        );
+showAuthMessage(
+"Signing in...",
+true
+);
 
-        const response = await fetch(
-            SUPABASE_URL +
-            "/auth/v1/token?grant_type=password",
-            {
-                method:"POST",
-                headers:{
-                    "apikey":SUPABASE_KEY,
-                    "Content-Type":"application/json"
-                },
-                body:JSON.stringify({
-                    email:email,
-                    password:password
-                })
-            }
-        );
+const response=
+await fetch(
+SUPABASE_URL+
+"/auth/v1/token?grant_type=password",
+{
+method:"POST",
+headers:{
+"apikey":SUPABASE_KEY,
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email:email,
+password:password
+})
+}
+);
 
-        const data = await response.json();
+const data=
+await response.json();
 
-        if(!response.ok){
+if(!response.ok){
 
-            throw new Error(
-                data.error_description ||
-                data.msg ||
-                data.message ||
-                data.error ||
-                "Login failed."
-            );
+throw new Error(
+data.error_description||
+data.msg||
+data.message||
+data.error||
+"Login failed."
+);
 
-        }
+}
 
-        if(!data.access_token){
+if(!data.access_token){
 
-            throw new Error(
-                "Supabase did not return a login session."
-            );
+throw new Error(
+"Supabase did not return a login session."
+);
 
-        }
+}
 
-        /*
-         Save the session locally so the player
-         remains logged in when they return.
-        */
+localStorage.setItem(
+"soulTrialAccessToken",
+data.access_token
+);
 
-        localStorage.setItem(
-            "soulTrialAccessToken",
-            data.access_token
-        );
+if(data.refresh_token){
 
-        if(data.refresh_token){
+localStorage.setItem(
+"soulTrialRefreshToken",
+data.refresh_token
+);
 
-            localStorage.setItem(
-                "soulTrialRefreshToken",
-                data.refresh_token
-            );
+}
 
-        }
+currentUser=data.user;
 
-        currentUser = data.user;
+await ensureProfile();
 
-        await ensureProfile();
+showAuthMessage(
+"Signed in successfully.",
+true
+);
 
-        showAuthMessage(
-            "Welcome back, " +
-            (
-                currentUser.email ||
-                "Traveler"
-            ) +
-            ".",
-            true
-        );
+setTimeout(
+()=>{
+if(character){
 
-        /*
-         If they already have a character,
-         send them directly to their sheet.
-        */
+viewSheet();
 
-        if(character){
+}else{
 
-            setTimeout(()=>{
-                viewSheet();
-            },300);
+showScreen("home");
 
-        }else{
+}
+},
+400
+);
 
-            setTimeout(()=>{
-                showScreen("home");
-            },300);
+}catch(error){
 
-        }
+console.error(
+"Login error:",
+error
+);
 
-    }catch(error){
+showAuthMessage(
+getAuthErrorMessage(error.message)
+);
 
-        console.error(
-            "Login error:",
-            error
-        );
-
-        showAuthMessage(
-            getAuthErrorMessage(error.message)
-        );
-
-    }
+}
 
 }
 
 
 async function ensureProfile(){
 
-    if(!currentUser)return;
+if(!currentUser)return;
 
-    try{
+try{
 
-        const existing =
-            await supabaseRequest(
-                "profiles",
-                "GET",
-                null,
-                "?id=eq." +
-                encodeURIComponent(currentUser.id) +
-                "&select=*"
-            );
+const existing=
+await supabaseRequest(
+"profiles",
+"GET",
+null,
+"?id=eq."+
+encodeURIComponent(
+currentUser.id
+)+
+"&select=*"
+);
 
-        if(!existing || !existing.length){
+if(
+!existing||
+!existing.length
+){
 
-            const username =
-                (
-                    currentUser.email ||
-                    "player"
-                )
-                .split("@")[0];
+const username=
+(
+currentUser.email||
+"player"
+)
+.split("@")[0];
 
-            await supabaseRequest(
-                "profiles",
-                "POST",
-                {
-                    id:currentUser.id,
-                    username:username,
-                    display_name:username
-                }
-            );
+await supabaseRequest(
+"profiles",
+"POST",
+{
+id:currentUser.id,
+username:username,
+display_name:username
+}
+);
 
-        }
+}
 
-    }catch(error){
+}catch(error){
 
-        /*
-         Profile creation should never prevent
-         the player from logging in.
-        */
+console.warn(
+"Profile setup warning:",
+error.message
+);
 
-        console.warn(
-            "Profile setup warning:",
-            error.message
-        );
+}
 
-    }
+}
+
+
+async function restoreSession(){
+
+const token=
+localStorage.getItem(
+"soulTrialAccessToken"
+);
+
+if(!token){
+
+currentUser=null;
+
+return;
+
+}
+
+try{
+
+const response=
+await fetch(
+SUPABASE_URL+
+"/auth/v1/user",
+{
+method:"GET",
+headers:{
+"apikey":SUPABASE_KEY,
+"Authorization":
+"Bearer "+token
+}
+}
+);
+
+if(!response.ok){
+
+localStorage.removeItem(
+"soulTrialAccessToken"
+);
+
+localStorage.removeItem(
+"soulTrialRefreshToken"
+);
+
+currentUser=null;
+
+return;
+
+}
+
+currentUser=
+await response.json();
+
+await ensureProfile();
+
+console.log(
+"Soul Trial session restored."
+);
+
+}catch(error){
+
+console.warn(
+"Session restore failed:",
+error.message
+);
+
+localStorage.removeItem(
+"soulTrialAccessToken"
+);
+
+currentUser=null;
+
+}
+
+}
+
+
+function logout(){
+
+localStorage.removeItem(
+"soulTrialAccessToken"
+);
+
+localStorage.removeItem(
+"soulTrialRefreshToken"
+);
+
+currentUser=null;
+
+currentCampaign=null;
+
+showScreen("home");
 
 }
 
 
 function getAuthErrorMessage(message){
 
-    const error =
-        String(message || "").toLowerCase();
+const error=
+String(message||"")
+.toLowerCase();
 
-    if(
-        error.includes("email not confirmed") ||
-        error.includes("email_not_confirmed")
-    ){
+if(
+error.includes("email not confirmed")||
+error.includes("email_not_confirmed")
+){
 
-        return "Your email has not been confirmed yet. Check your email for the Supabase confirmation message.";
+return "Your email has not been confirmed yet. Check your email for the confirmation message.";
 
-    }
+}
 
-    if(
-        error.includes("invalid login credentials") ||
-        error.includes("invalid credentials")
-    ){
+if(
+error.includes("invalid login credentials")||
+error.includes("invalid credentials")
+){
 
-        return "Incorrect email or password.";
+return "Incorrect email or password.";
 
-    }
+}
 
-    if(
-        error.includes("user already registered") ||
-        error.includes("already registered")
-    ){
+if(
+error.includes("user already registered")||
+error.includes("already registered")
+){
 
-        return "An account with this email already exists. Try signing in instead.";
+return "An account with this email already exists. Try signing in instead.";
 
-    }
+}
 
-    if(
-        error.includes("password") &&
-        error.includes("weak")
-    ){
+if(
+error.includes("rate limit")||
+error.includes("too many")
+){
 
-        return "That password is too weak. Please choose a stronger password.";
+return "Too many attempts. Please wait a moment and try again.";
 
-    }
+}
 
-    if(
-        error.includes("rate limit") ||
-        error.includes("too many")
-    ){
-
-        return "Too many attempts. Please wait a moment and try again.";
-
-    }
-
-    return message || "Authentication failed. Please try again.";
+return message||
+"Authentication failed. Please try again.";
 
 }
 
 
 function showLogin(){
 
-    showScreen("login");
+showScreen("login");
 
-    const message =
-        document.getElementById("authMessage");
+const message=
+document.getElementById(
+"authMessage"
+);
 
-    if(message){
+message.classList.add(
+"hidden"
+);
 
-        message.classList.add("hidden");
-        message.textContent="";
-
-    }
+message.textContent="";
 
 }
 
 
 function showAuthMessage(
-    message,
-    success=false
+message,
+success=false
 ){
 
-    const box =
-        document.getElementById("authMessage");
+const box=
+document.getElementById(
+"authMessage"
+);
 
-    if(!box)return;
+box.classList.remove(
+"hidden"
+);
 
-    box.classList.remove("hidden");
+box.classList.toggle(
+"success",
+success
+);
 
-    box.classList.toggle(
-        "success",
-        success
-    );
+box.classList.toggle(
+"error",
+!success
+);
 
-    box.classList.toggle(
-        "error",
-        !success
-    );
-
-    box.textContent = message;
+box.textContent=message;
 
 }
+
 
 /* ============================================================
    SCREEN CONTROL
@@ -1209,15 +1368,30 @@ function showAuthMessage(
 
 function showScreen(id){
 
-document.querySelectorAll("section")
-.forEach(section=>
+document
+.querySelectorAll("section")
+.forEach(
+section=>
 section.classList.add("hidden")
 );
 
-document.getElementById(id)
-.classList.remove("hidden");
+const screen=
+document.getElementById(id);
 
-window.scrollTo(0,0);
+if(screen){
+
+screen.classList.remove(
+"hidden"
+);
+
+}
+
+window.scrollTo(
+{
+top:0,
+behavior:"smooth"
+}
+);
 
 }
 
@@ -1503,8 +1677,7 @@ const soulPaths={
 
 STR:{
 name:"The Vanguard",
-description:
-"Your soul responds to adversity with strength, courage, and decisive action. You are most alive when something stands between you and victory.",
+description:"Your soul responds to adversity with strength, courage, and decisive action. You are most alive when something stands between you and victory.",
 classes:["Fighter","Barbarian","Paladin"],
 subclass:{
 Fighter:"Champion",
@@ -1513,17 +1686,14 @@ Paladin:"Oath of Devotion"
 },
 background:"Soldier",
 trait:"Unyielding",
-traitDescription:
-"You refuse to back down when others would surrender.",
+traitDescription:"You refuse to back down when others would surrender.",
 blessing:"Titan's Resolve",
-blessingDescription:
-"Once per long rest, when reduced to 0 HP, you may remain at 1 HP instead."
+blessingDescription:"Once per long rest, when reduced to 0 HP, you may remain at 1 HP instead."
 },
 
 DEX:{
 name:"The Shadow",
-description:
-"Your soul favors speed, precision, awareness, and adaptability. You survive by recognizing the opening others overlook.",
+description:"Your soul favors speed, precision, awareness, and adaptability. You survive by recognizing the opening others overlook.",
 classes:["Rogue","Ranger","Monk"],
 subclass:{
 Rogue:"Thief",
@@ -1532,17 +1702,14 @@ Monk:"Way of the Open Hand"
 },
 background:"Criminal",
 trait:"Quickstep",
-traitDescription:
-"You instinctively recognize openings and react quickly.",
+traitDescription:"You instinctively recognize openings and react quickly.",
 blessing:"Veilstep",
-blessingDescription:
-"Once per short rest, you may move 10 feet as a reaction when targeted by an attack."
+blessingDescription:"Once per short rest, you may move 10 feet as a reaction when targeted by an attack."
 },
 
 CON:{
 name:"The Unbroken",
-description:
-"Your defining strength is endurance. You keep moving when others fall and refuse to let hardship decide your fate.",
+description:"Your defining strength is endurance. You keep moving when others fall and refuse to let hardship decide your fate.",
 classes:["Barbarian","Fighter"],
 subclass:{
 Barbarian:"Berserker",
@@ -1550,17 +1717,14 @@ Fighter:"Champion"
 },
 background:"Outlander",
 trait:"Iron Will",
-traitDescription:
-"Pain and exhaustion rarely convince you to surrender.",
+traitDescription:"Pain and exhaustion rarely convince you to surrender.",
 blessing:"Last Stand",
-blessingDescription:
-"Once per long rest, gain temporary hit points equal to your level when you fall below half your maximum HP."
+blessingDescription:"Once per long rest, gain temporary hit points equal to your level when you fall below half your maximum HP."
 },
 
 INT:{
 name:"The Arcanist",
-description:
-"Your mind is your greatest weapon. Knowledge, patterns, magic, and understanding come naturally to you.",
+description:"Your mind is your greatest weapon. Knowledge, patterns, magic, and understanding come naturally to you.",
 classes:["Wizard","Artificer"],
 subclass:{
 Wizard:"School of Evocation",
@@ -1568,17 +1732,14 @@ Artificer:"Alchemist"
 },
 background:"Sage",
 trait:"Analytical Mind",
-traitDescription:
-"You instinctively break complicated problems into patterns.",
+traitDescription:"You instinctively break complicated problems into patterns.",
 blessing:"Arcane Insight",
-blessingDescription:
-"Once per long rest, gain advantage on an Intelligence check involving magic, history, or arcana."
+blessingDescription:"Once per long rest, gain advantage on an Intelligence check involving magic, history, or arcana."
 },
 
 WIS:{
 name:"The Seer",
-description:
-"You notice what others miss and trust instinct, patience, and judgment. You understand that knowledge is more than information.",
+description:"You notice what others miss and trust instinct, patience, and judgment. You understand that knowledge is more than information.",
 classes:["Cleric","Druid","Monk","Ranger"],
 subclass:{
 Cleric:"Life Domain",
@@ -1588,17 +1749,14 @@ Ranger:"Hunter"
 },
 background:"Hermit",
 trait:"Instinctive Awareness",
-traitDescription:
-"Your instincts often notice danger before your conscious mind does.",
+traitDescription:"Your instincts often notice danger before your conscious mind does.",
 blessing:"Foresight",
-blessingDescription:
-"Once per long rest, after seeing a d20 result, add your Wisdom modifier to the roll."
+blessingDescription:"Once per long rest, after seeing a d20 result, add your Wisdom modifier to the roll."
 },
 
 CHA:{
 name:"The Sovereign",
-description:
-"Your presence carries weight. People naturally notice, follow, remember, or believe you.",
+description:"Your presence carries weight. People naturally notice, follow, remember, or believe you.",
 classes:["Bard","Sorcerer","Warlock","Paladin"],
 subclass:{
 Bard:"College of Lore",
@@ -1608,11 +1766,9 @@ Paladin:"Oath of Devotion"
 },
 background:"Noble",
 trait:"Commanding Presence",
-traitDescription:
-"You possess a presence that is difficult for others to ignore.",
+traitDescription:"You possess a presence that is difficult for others to ignore.",
 blessing:"Voice of the Soul",
-blessingDescription:
-"Once per long rest, gain advantage on a Charisma check made to influence another creature."
+blessingDescription:"Once per long rest, gain advantage on a Charisma check made to influence another creature."
 }
 
 };
@@ -1823,7 +1979,9 @@ CHA:0
 };
 
 let questionIndex=0;
+
 let character=null;
+
 let selectedEquipment=[];
 
 
@@ -1843,9 +2001,14 @@ CHA:0
 };
 
 questionIndex=0;
+
 character=null;
 
-document.getElementById("playerName").value="";
+selectedEquipment=[];
+
+document.getElementById(
+"playerName"
+).value="";
 
 showScreen("name");
 
@@ -1855,12 +2018,18 @@ showScreen("name");
 function startQuestions(){
 
 const name=
-document.getElementById("playerName")
-.value.trim();
+document.getElementById(
+"playerName"
+)
+.value
+.trim();
 
 if(!name){
 
-alert("Your soul must have a name.");
+alert(
+"Your soul must have a name."
+);
+
 return;
 
 }
@@ -1880,40 +2049,63 @@ displayQuestion();
 
 function displayQuestion(){
 
-const current=questions[questionIndex];
+const current=
+questions[questionIndex];
 
-document.getElementById("questionNumber").textContent=
+document.getElementById(
+"questionNumber"
+)
+.textContent=
 "Question "+
 (questionIndex+1)+
 " of "+
 questions.length;
 
-document.getElementById("progressBar").style.width=
-((questionIndex/questions.length)*100)+"%";
+document.getElementById(
+"progressBar"
+)
+.style.width=
+(
+(questionIndex/questions.length)*100
+)+"%";
 
-document.getElementById("question").textContent=
-current[0];
+document.getElementById(
+"question"
+)
+.textContent=current[0];
 
-document.getElementById("questionFlavor").textContent=
-current[1];
+document.getElementById(
+"questionFlavor"
+)
+.textContent=current[1];
 
 const answers=
-document.getElementById("answers");
+document.getElementById(
+"answers"
+);
 
 answers.innerHTML="";
 
-current[2].forEach(option=>{
+current[2].forEach(
+option=>{
 
 const button=
-document.createElement("button");
+document.createElement(
+"button"
+);
 
-button.className="choice";
+button.className=
+"choice";
 
-button.textContent=option[0];
+button.textContent=
+option[0];
 
 button.onclick=()=>{
 
-Object.entries(option[1]).forEach(
+Object.entries(
+option[1]
+)
+.forEach(
 ([stat,value])=>{
 scores[stat]+=value;
 }
@@ -1921,7 +2113,10 @@ scores[stat]+=value;
 
 questionIndex++;
 
-if(questionIndex<questions.length){
+if(
+questionIndex<
+questions.length
+){
 
 displayQuestion();
 
@@ -1933,9 +2128,12 @@ calculateSoul();
 
 };
 
-answers.appendChild(button);
+answers.appendChild(
+button
+);
 
-});
+}
+);
 
 }
 
@@ -1943,17 +2141,21 @@ answers.appendChild(button);
 function calculateSoul(){
 
 let highest=
-Object.keys(scores).sort(
-(a,b)=>scores[b]-scores[a]
+Object.keys(scores)
+.sort(
+(a,b)=>
+scores[b]-scores[a]
 )[0];
 
-const path=soulPaths[highest];
+const path=
+soulPaths[highest];
 
 const sorted=
 Object.entries(scores)
-.sort((a,b)=>b[1]-a[1]);
-
-/* Give the soul a meaningful ability spread */
+.sort(
+(a,b)=>
+b[1]-a[1]
+);
 
 const finalScores={
 STR:10,
@@ -1965,12 +2167,18 @@ CHA:10
 };
 
 const standard=[
-16,14,13,12,10,8
+16,
+14,
+13,
+12,
+10,
+8
 ];
 
 sorted.forEach(
 ([stat],index)=>{
-finalScores[stat]=standard[index];
+finalScores[stat]=
+standard[index];
 }
 );
 
@@ -1978,26 +2186,54 @@ const chosenClass=
 path.classes[0];
 
 const subclass=
-path.subclass[chosenClass];
+path.subclass[
+chosenClass
+];
 
 const background=
 path.background;
 
-character.race="Human";
-character.dominantStat=highest;
-character.soulPath=path.name;
-character.soulDescription=path.description;
-character.classes=path.classes;
-character.class=chosenClass;
-character.subclass=subclass;
-character.background=background;
-character.soulTrait=path.trait;
-character.traitDescription=path.traitDescription;
-character.blessing=path.blessing;
-character.blessingDescription=path.blessingDescription;
-character.scores=finalScores;
+character.race=
+"Human";
 
-const data=classData[chosenClass];
+character.dominantStat=
+highest;
+
+character.soulPath=
+path.name;
+
+character.soulDescription=
+path.description;
+
+character.availableClasses=
+path.classes;
+
+character.class=
+chosenClass;
+
+character.subclass=
+subclass;
+
+character.background=
+background;
+
+character.soulTrait=
+path.trait;
+
+character.traitDescription=
+path.traitDescription;
+
+character.blessing=
+path.blessing;
+
+character.blessingDescription=
+path.blessingDescription;
+
+character.scores=
+finalScores;
+
+const data=
+classData[chosenClass];
 
 character.max_hp=
 data.hp+
@@ -2010,7 +2246,8 @@ character.speed=
 data.speed;
 
 character.hit_dice=
-"1d"+data.hitDie;
+"1d"+
+data.hitDie;
 
 character.proficiency_bonus=2;
 
@@ -2021,41 +2258,79 @@ renderResult(path);
 
 function renderResult(path){
 
-document.getElementById("resultName")
-.textContent=character.name;
+document.getElementById(
+"resultName"
+)
+.textContent=
+character.name;
 
-document.getElementById("soulPath")
-.textContent=path.name;
+document.getElementById(
+"soulPath"
+)
+.textContent=
+path.name;
 
-document.getElementById("soulDescription")
-.textContent=path.description;
+document.getElementById(
+"soulDescription"
+)
+.textContent=
+path.description;
 
-document.getElementById("resultRace")
-.textContent=character.race;
+document.getElementById(
+"resultRace"
+)
+.textContent=
+character.race;
 
-document.getElementById("resultClass")
-.textContent=character.class;
+document.getElementById(
+"resultClass"
+)
+.textContent=
+character.class;
 
-document.getElementById("resultSubclass")
-.textContent=character.subclass;
+document.getElementById(
+"resultSubclass"
+)
+.textContent=
+character.subclass;
 
-document.getElementById("resultBackground")
-.textContent=character.background;
+document.getElementById(
+"resultBackground"
+)
+.textContent=
+character.background;
 
-document.getElementById("resultStats").innerHTML=
-renderStats(character.scores);
+document.getElementById(
+"resultStats"
+)
+.innerHTML=
+renderStats(
+character.scores
+);
 
-document.getElementById("soulTrait")
-.textContent=path.trait;
+document.getElementById(
+"soulTrait"
+)
+.textContent=
+path.trait;
 
-document.getElementById("traitDescription")
-.textContent=path.traitDescription;
+document.getElementById(
+"traitDescription"
+)
+.textContent=
+path.traitDescription;
 
-document.getElementById("awakeningBlessing")
-.textContent=path.blessing;
+document.getElementById(
+"awakeningBlessing"
+)
+.textContent=
+path.blessing;
 
-document.getElementById("blessingDescription")
-.textContent=path.blessingDescription;
+document.getElementById(
+"blessingDescription"
+)
+.textContent=
+path.blessingDescription;
 
 showScreen("result");
 
@@ -2070,58 +2345,108 @@ function openCharacterCreator(){
 
 if(!character){
 
-alert("No character exists yet.");
+alert(
+"No character exists yet."
+);
+
 return;
 
 }
 
-document.getElementById("characterName")
-.textContent=character.name;
-
-document.getElementById("creatorRace")
-.textContent=character.race;
-
-document.getElementById("creatorClass")
-.textContent=character.class;
-
-document.getElementById("creatorSubclass")
-.textContent=character.subclass;
-
-document.getElementById("creatorBackground")
-.textContent=character.background;
-
-document.getElementById("creatorLevel")
-.textContent=character.level;
-
-document.getElementById("abilityScores")
-.innerHTML=renderStats(character.scores);
-
-document.getElementById("creatorHP")
-.textContent=character.max_hp;
-
-document.getElementById("creatorAC")
-.textContent=character.armor_class;
-
-document.getElementById("creatorSpeed")
+document.getElementById(
+"characterName"
+)
 .textContent=
-character.speed+" ft";
+character.name;
+
+document.getElementById(
+"creatorRace"
+)
+.textContent=
+character.race;
+
+document.getElementById(
+"creatorClass"
+)
+.textContent=
+character.class;
+
+document.getElementById(
+"creatorSubclass"
+)
+.textContent=
+character.subclass;
+
+document.getElementById(
+"creatorBackground"
+)
+.textContent=
+character.background;
+
+document.getElementById(
+"creatorLevel"
+)
+.textContent=
+character.level;
+
+document.getElementById(
+"abilityScores"
+)
+.innerHTML=
+renderStats(
+character.scores
+);
+
+document.getElementById(
+"creatorHP"
+)
+.textContent=
+character.max_hp;
+
+document.getElementById(
+"creatorAC"
+)
+.textContent=
+character.armor_class;
+
+document.getElementById(
+"creatorSpeed"
+)
+.textContent=
+character.speed+
+" ft";
 
 renderEquipmentOptions();
 
-document.getElementById("personality")
-.value=character.personality||"";
+document.getElementById(
+"personality"
+)
+.value=
+character.personality||"";
 
-document.getElementById("ideal")
-.value=character.ideal||"";
+document.getElementById(
+"ideal"
+)
+.value=
+character.ideal||"";
 
-document.getElementById("bond")
-.value=character.bond||"";
+document.getElementById(
+"bond"
+)
+.value=
+character.bond||"";
 
-document.getElementById("flaw")
-.value=character.flaw||"";
+document.getElementById(
+"flaw"
+)
+.value=
+character.flaw||"";
 
-document.getElementById("backstory")
-.value=character.backstory||"";
+document.getElementById(
+"backstory"
+)
+.value=
+character.backstory||"";
 
 showScreen("creator");
 
@@ -2130,29 +2455,41 @@ showScreen("creator");
 
 function renderEquipmentOptions(){
 
-const data=classData[character.class];
+const data=
+classData[
+character.class
+];
 
 const container=
-document.getElementById("equipmentOptions");
+document.getElementById(
+"equipmentOptions"
+);
 
 container.innerHTML="";
 
-data.equipment.forEach((item,index)=>{
-
-const id="equip_"+index;
+data.equipment.forEach(
+(item,index)=>{
 
 const wrapper=
-document.createElement("label");
+document.createElement(
+"label"
+);
 
 wrapper.className="card";
 
-wrapper.style.cursor="pointer";
+wrapper.style.cursor=
+"pointer";
 
 const checked=
-selectedEquipment.includes(item)
+(
+selectedEquipment
+.includes(item)
 ||
-(character.equipment||[])
-.includes(item);
+(
+character.equipment||
+[]
+).includes(item)
+);
 
 wrapper.innerHTML=`
 <input
@@ -2163,26 +2500,43 @@ style="width:auto;margin-right:8px">
 ${escapeHtml(item)}
 `;
 
-wrapper.querySelector("input")
-.addEventListener("change",function(){
+wrapper
+.querySelector("input")
+.addEventListener(
+"change",
+function(){
 
 if(this.checked){
 
-if(!selectedEquipment.includes(item))
-selectedEquipment.push(item);
+if(
+!selectedEquipment
+.includes(item)
+){
+
+selectedEquipment.push(
+item
+);
+
+}
 
 }else{
 
 selectedEquipment=
-selectedEquipment.filter(x=>x!==item);
+selectedEquipment.filter(
+x=>x!==item
+);
 
 }
 
-});
+}
+);
 
-container.appendChild(wrapper);
+container.appendChild(
+wrapper
+);
 
-});
+}
+);
 
 }
 
@@ -2192,41 +2546,60 @@ function saveCharacter(){
 if(!character)return;
 
 character.personality=
-document.getElementById("personality").value.trim();
+document.getElementById(
+"personality"
+).value.trim();
 
 character.ideal=
-document.getElementById("ideal").value.trim();
+document.getElementById(
+"ideal"
+).value.trim();
 
 character.bond=
-document.getElementById("bond").value.trim();
+document.getElementById(
+"bond"
+).value.trim();
 
 character.flaw=
-document.getElementById("flaw").value.trim();
+document.getElementById(
+"flaw"
+).value.trim();
 
 character.backstory=
-document.getElementById("backstory").value.trim();
+document.getElementById(
+"backstory"
+).value.trim();
 
 character.equipment=
-[...new Set(selectedEquipment)];
+[
+...new Set(
+selectedEquipment
+)
+];
 
 localStorage.setItem(
 "soulTrialCharacter",
-JSON.stringify(character)
+JSON.stringify(
+character
+)
 );
 
 saveCharacterToSupabase();
 
 alert(
-"Character saved on this device."+
-(
 currentUser
-?" It will also be saved to your account."
-:" Sign in to sync it with your account."
-)
+?
+"Character saved to your account."
+:
+"Character saved on this device. Sign in to sync it with your account."
 );
 
 }
 
+
+/* ============================================================
+   SUPABASE CHARACTER SAVE
+============================================================ */
 
 async function saveCharacterToSupabase(){
 
@@ -2262,22 +2635,30 @@ flaw:character.flaw,
 backstory:character.backstory
 };
 
-let existing=
+const existing=
 await supabaseRequest(
 "characters",
 "GET",
 null,
-"?player_id=eq."+encodeURIComponent(currentUser.id)+
-"&campaign_id=is.null&select=id"
+"?player_id=eq."+
+encodeURIComponent(
+currentUser.id
+)+
+"&campaign_id=is.null"+
+"&select=id"
 );
 
-if(existing&&existing.length){
+if(
+existing&&
+existing.length
+){
 
 await supabaseRequest(
 "characters",
 "PATCH",
 payload,
-"?id=eq."+existing[0].id
+"?id=eq."+
+existing[0].id
 );
 
 }else{
@@ -2293,7 +2674,7 @@ payload
 }catch(error){
 
 console.error(
-"Supabase character save failed:",
+"Character save failed:",
 error
 );
 
@@ -2310,17 +2691,25 @@ function viewSheet(){
 
 if(!character){
 
-alert("Create a character first.");
+alert(
+"Create a character first."
+);
+
 return;
 
 }
 
 saveCharacter();
 
-document.getElementById("sheetName")
-.textContent=character.name;
+document.getElementById(
+"sheetName"
+)
+.textContent=
+character.name;
 
-document.getElementById("sheetIdentity")
+document.getElementById(
+"sheetIdentity"
+)
 .textContent=
 character.race+
 " • "+
@@ -2332,62 +2721,117 @@ character.level+
 " • "+
 character.background;
 
-document.getElementById("sheetHP")
-.textContent=character.max_hp;
-
-document.getElementById("sheetAC")
-.textContent=character.armor_class;
-
-document.getElementById("sheetSpeed")
+document.getElementById(
+"sheetHP"
+)
 .textContent=
-character.speed+" ft";
+character.max_hp;
 
-document.getElementById("sheetLevel")
-.textContent=character.level;
-
-document.getElementById("sheetProficiency")
+document.getElementById(
+"sheetAC"
+)
 .textContent=
-"+"+character.proficiency_bonus;
+character.armor_class;
 
-document.getElementById("sheetHitDice")
-.textContent=character.hit_dice;
+document.getElementById(
+"sheetSpeed"
+)
+.textContent=
+character.speed+
+" ft";
 
-document.getElementById("sheetStats")
+document.getElementById(
+"sheetLevel"
+)
+.textContent=
+character.level;
+
+document.getElementById(
+"sheetProficiency"
+)
+.textContent=
+"+"+
+character.proficiency_bonus;
+
+document.getElementById(
+"sheetHitDice"
+)
+.textContent=
+character.hit_dice;
+
+document.getElementById(
+"sheetStats"
+)
 .innerHTML=
-renderStats(character.scores);
+renderStats(
+character.scores
+);
 
-document.getElementById("sheetPath")
-.textContent=character.soulPath;
+document.getElementById(
+"sheetPath"
+)
+.textContent=
+character.soulPath;
 
-document.getElementById("sheetPathDescription")
-.textContent=character.soulDescription;
+document.getElementById(
+"sheetPathDescription"
+)
+.textContent=
+character.soulDescription;
 
-document.getElementById("sheetTrait")
-.textContent=character.soulTrait;
+document.getElementById(
+"sheetTrait"
+)
+.textContent=
+character.soulTrait;
 
-document.getElementById("sheetTraitDescription")
-.textContent=character.traitDescription;
+document.getElementById(
+"sheetTraitDescription"
+)
+.textContent=
+character.traitDescription;
 
-document.getElementById("sheetBlessing")
-.textContent=character.blessing;
+document.getElementById(
+"sheetBlessing"
+)
+.textContent=
+character.blessing;
 
-document.getElementById("sheetBlessingDescription")
-.textContent=character.blessingDescription;
+document.getElementById(
+"sheetBlessingDescription"
+)
+.textContent=
+character.blessingDescription;
 
-document.getElementById("sheetPersonality")
-.textContent=character.personality||"—";
+document.getElementById(
+"sheetPersonality"
+)
+.textContent=
+character.personality||"—";
 
-document.getElementById("sheetIdeal")
-.textContent=character.ideal||"—";
+document.getElementById(
+"sheetIdeal"
+)
+.textContent=
+character.ideal||"—";
 
-document.getElementById("sheetBond")
-.textContent=character.bond||"—";
+document.getElementById(
+"sheetBond"
+)
+.textContent=
+character.bond||"—";
 
-document.getElementById("sheetFlaw")
-.textContent=character.flaw||"—";
+document.getElementById(
+"sheetFlaw"
+)
+.textContent=
+character.flaw||"—";
 
-document.getElementById("sheetBackstory")
-.textContent=character.backstory||"—";
+document.getElementById(
+"sheetBackstory"
+)
+.textContent=
+character.backstory||"—";
 
 renderSheetEquipment();
 
@@ -2399,7 +2843,9 @@ showScreen("sheet");
 function renderSheetEquipment(){
 
 const container=
-document.getElementById("sheetEquipment");
+document.getElementById(
+"sheetEquipment"
+);
 
 const equipment=
 character.equipment||[];
@@ -2414,9 +2860,11 @@ return;
 }
 
 container.innerHTML=
-equipment.map(item=>
+equipment.map(
+item=>
 `<span class="tag">${escapeHtml(item)}</span>`
-).join("");
+)
+.join("");
 
 }
 
@@ -2448,62 +2896,108 @@ await loadCampaigns();
 
 function showCreateCampaign(){
 
-document.getElementById("campaignCreate")
-.classList.remove("hidden");
+document.getElementById(
+"campaignCreate"
+)
+.classList.remove(
+"hidden"
+);
 
-document.getElementById("campaignJoin")
-.classList.add("hidden");
+document.getElementById(
+"campaignJoin"
+)
+.classList.add(
+"hidden"
+);
 
 }
 
 
 function showJoinCampaign(){
 
-document.getElementById("campaignJoin")
-.classList.remove("hidden");
+document.getElementById(
+"campaignJoin"
+)
+.classList.remove(
+"hidden"
+);
 
-document.getElementById("campaignCreate")
-.classList.add("hidden");
+document.getElementById(
+"campaignCreate"
+)
+.classList.add(
+"hidden"
+);
 
 }
 
 
-function campaignMessage(message,success=false){
+function campaignMessage(
+message,
+success=false
+){
 
 const box=
-document.getElementById("campaignMessage");
+document.getElementById(
+"campaignMessage"
+);
 
-box.classList.remove("hidden");
+box.classList.remove(
+"hidden"
+);
 
-box.classList.toggle("success",success);
+box.classList.toggle(
+"success",
+success
+);
 
-box.classList.toggle("error",!success);
+box.classList.toggle(
+"error",
+!success
+);
 
-box.textContent=message;
+box.textContent=
+message;
 
 }
 
+
+/* ============================================================
+   CREATE CAMPAIGN
+============================================================ */
 
 async function createCampaign(){
 
 if(!currentUser){
 
-campaignMessage("Please sign in first.");
+campaignMessage(
+"Please sign in first."
+);
+
 return;
 
 }
 
 const name=
-document.getElementById("campaignName")
-.value.trim();
+document.getElementById(
+"campaignName"
+)
+.value
+.trim();
 
 const description=
-document.getElementById("campaignDescription")
-.value.trim();
+document.getElementById(
+"campaignDescription"
+)
+.value
+.trim();
 
 if(!name){
 
-campaignMessage("Enter a campaign name.");
+campaignMessage(
+"Enter a campaign name."
+);
+
 return;
 
 }
@@ -2515,37 +3009,85 @@ await supabaseRequest(
 "campaigns",
 "POST",
 {
-name,
-description
+name:name,
+description:description
 }
 );
+
+const campaign=
+Array.isArray(created)
+?created[0]
+:created;
+
+if(campaign&&campaign.id){
+
+try{
+
+await supabaseRequest(
+"campaign_members",
+"POST",
+{
+player_id:currentUser.id,
+campaign_id:campaign.id,
+role:"dm"
+}
+);
+
+}catch(memberError){
+
+console.warn(
+"Campaign owner membership could not be created:",
+memberError.message
+);
+
+}
+
+}
 
 campaignMessage(
 "Campaign created successfully.",
 true
 );
 
-document.getElementById("campaignName").value="";
-document.getElementById("campaignDescription").value="";
+document.getElementById(
+"campaignName"
+).value="";
+
+document.getElementById(
+"campaignDescription"
+).value="";
 
 await loadCampaigns();
 
 }catch(error){
 
-campaignMessage(error.message);
+console.error(
+"Campaign creation error:",
+error
+);
+
+campaignMessage(
+error.message
+);
 
 }
 
 }
 
+
+/* ============================================================
+   LOAD CAMPAIGNS
+============================================================ */
 
 async function loadCampaigns(){
 
 const container=
-document.getElementById("campaignList");
+document.getElementById(
+"campaignList"
+);
 
 container.innerHTML=
-'<div class="card">Loading campaigns...</div>';
+'<div class="loading">Loading campaigns...</div>';
 
 try{
 
@@ -2557,15 +3099,20 @@ null,
 "?select=*&order=id.desc"
 );
 
-if(!campaigns||!campaigns.length){
+if(
+!campaigns||
+!campaigns.length
+){
 
-container.innerHTML=
-`
+container.innerHTML=`
 <div class="info">
+
 <h2>No Campaigns Yet</h2>
+
 <p>
-Create a campaign as a DM or join one using a campaign code.
+Create a campaign as a DM or join one using its campaign ID.
 </p>
+
 </div>
 `;
 
@@ -2575,32 +3122,62 @@ return;
 
 container.innerHTML="";
 
-campaigns.forEach(campaign=>{
+campaigns.forEach(
+campaign=>{
 
 const card=
-document.createElement("div");
+document.createElement(
+"div"
+);
 
 card.className="card";
 
 card.innerHTML=`
 <h3>${escapeHtml(campaign.name)}</h3>
-<p>${escapeHtml(campaign.description||"No description.")}</p>
-<button>OPEN CAMPAIGN</button>
+
+<p>
+${escapeHtml(
+campaign.description||
+"No description."
+)}
+</p>
+
+<p class="small">
+Campaign ID:
+<strong>
+${escapeHtml(campaign.id)}
+</strong>
+</p>
+
+<button>
+OPEN CAMPAIGN
+</button>
 `;
 
-card.querySelector("button")
-.onclick=()=>openCampaign(campaign);
+card
+.querySelector("button")
+.onclick=()=>{
+openCampaign(campaign);
+};
 
-container.appendChild(card);
+container.appendChild(
+card
+);
 
-});
+}
+);
 
 }catch(error){
 
-container.innerHTML=
-`
+console.error(
+"Campaign loading error:",
+error
+);
+
+container.innerHTML=`
 <div class="notice error">
 Unable to load campaigns:
+<br>
 ${escapeHtml(error.message)}
 </div>
 `;
@@ -2610,56 +3187,72 @@ ${escapeHtml(error.message)}
 }
 
 
+/* ============================================================
+   JOIN CAMPAIGN
+============================================================ */
+
 async function joinCampaign(){
 
-if(!currentUser)return;
+if(!currentUser){
+
+campaignMessage(
+"Please sign in first."
+);
+
+return;
+
+}
 
 const code=
-document.getElementById("campaignCode")
-.value.trim();
+document.getElementById(
+"campaignCode"
+)
+.value
+.trim();
 
 if(!code){
 
 campaignMessage(
-"Enter a campaign code."
+"Enter a campaign ID."
 );
 
 return;
 
 }
-
-/*
-Campaign codes are supported by the frontend design.
-Your current campaigns table only contains id, name,
-and description, so we temporarily use the campaign ID
-as the join identifier.
-*/
-
-try{
 
 const campaignId=
 Number(code);
 
-if(!Number.isInteger(campaignId)){
+if(
+!Number.isInteger(
+campaignId
+)
+){
 
 campaignMessage(
-"Your current campaign table uses the campaign ID as the join code. Enter the campaign ID for now."
+"Enter the numeric campaign ID."
 );
 
 return;
 
 }
+
+try{
 
 const campaigns=
 await supabaseRequest(
 "campaigns",
 "GET",
 null,
-"?id=eq."+campaignId+
+"?id=eq."+
+campaignId+
 "&select=*"
 );
 
-if(!campaigns.length){
+if(
+!campaigns||
+!campaigns.length
+){
 
 campaignMessage(
 "Campaign not found."
@@ -2669,7 +3262,32 @@ return;
 
 }
 
-const campaign=campaigns[0];
+const campaign=
+campaigns[0];
+
+/*
+Check whether the player is already
+a member before inserting.
+*/
+
+const existing=
+await supabaseRequest(
+"campaign_members",
+"GET",
+null,
+"?player_id=eq."+
+encodeURIComponent(
+currentUser.id
+)+
+"&campaign_id=eq."+
+campaign.id+
+"&select=id"
+);
+
+if(
+!existing||
+!existing.length
+){
 
 await supabaseRequest(
 "campaign_members",
@@ -2681,6 +3299,8 @@ role:"player"
 }
 );
 
+}
+
 if(character){
 
 await attachCharacterToCampaign(
@@ -2690,24 +3310,44 @@ campaign.id
 }
 
 campaignMessage(
-"You joined "+campaign.name+".",
+"You joined "+
+campaign.name+
+".",
 true
 );
 
-await openCampaign(campaign);
+await openCampaign(
+campaign
+);
 
 }catch(error){
 
-campaignMessage(error.message);
+console.error(
+"Join campaign error:",
+error
+);
+
+campaignMessage(
+error.message
+);
 
 }
 
 }
 
 
-async function attachCharacterToCampaign(campaignId){
+/* ============================================================
+   ATTACH CHARACTER TO CAMPAIGN
+============================================================ */
 
-if(!currentUser||!character)return;
+async function attachCharacterToCampaign(
+campaignId
+){
+
+if(
+!currentUser||
+!character
+)return;
 
 try{
 
@@ -2716,11 +3356,18 @@ await supabaseRequest(
 "characters",
 "GET",
 null,
-"?player_id=eq."+encodeURIComponent(currentUser.id)+
-"&campaign_id=is.null&select=id"
+"?player_id=eq."+
+encodeURIComponent(
+currentUser.id
+)+
+"&campaign_id=is.null"+
+"&select=id"
 );
 
-if(rows&&rows.length){
+if(
+rows&&
+rows.length
+){
 
 await supabaseRequest(
 "characters",
@@ -2728,7 +3375,8 @@ await supabaseRequest(
 {
 campaign_id:campaignId
 },
-"?id=eq."+rows[0].id
+"?id=eq."+
+rows[0].id
 );
 
 }
@@ -2745,26 +3393,46 @@ error
 }
 
 
-async function openCampaign(campaign){
+/* ============================================================
+   OPEN CAMPAIGN
+============================================================ */
 
-window.currentCampaign=campaign;
+async function openCampaign(
+campaign
+){
 
-document.getElementById("campaignTitle")
-.textContent=campaign.name;
+currentCampaign=
+campaign;
 
-document.getElementById("campaignDescription")
+document.getElementById(
+"campaignTitle"
+)
+.textContent=
+campaign.name;
+
+document.getElementById(
+"campaignDescription"
+)
 .textContent=
 campaign.description||
 "No campaign description.";
 
-showScreen("campaignDashboard");
+showScreen(
+"campaignDashboard"
+);
 
 await loadCampaignMembers();
 
 }
 
 
+/* ============================================================
+   CAMPAIGN MEMBERS
+============================================================ */
+
 async function loadCampaignMembers(){
+
+if(!currentCampaign)return;
 
 const container=
 document.getElementById(
@@ -2772,7 +3440,7 @@ document.getElementById(
 );
 
 container.innerHTML=
-'<div class="card">Loading players...</div>';
+'<div class="loading">Loading players...</div>';
 
 try{
 
@@ -2782,19 +3450,24 @@ await supabaseRequest(
 "GET",
 null,
 "?campaign_id=eq."+
-window.currentCampaign.id+
+currentCampaign.id+
 "&select=*"
 );
 
-if(!members||!members.length){
+if(
+!members||
+!members.length
+){
 
-container.innerHTML=
-`
+container.innerHTML=`
 <div class="info">
+
 <h2>No Players Yet</h2>
+
 <p>
-Share the campaign ID with your players so they can join.
+Share the Campaign ID with your players.
 </p>
+
 </div>
 `;
 
@@ -2803,47 +3476,181 @@ return;
 }
 
 container.innerHTML=`
+
 <div class="info">
+
 <h2>Campaign Roster</h2>
+
 <p>
 <strong>Campaign ID:</strong>
-${window.currentCampaign.id}
+${escapeHtml(
+currentCampaign.id
+)}
 </p>
+
 </div>
+
 `;
 
-members.forEach(member=>{
+for(
+const member of members
+){
 
-const card=
-document.createElement("div");
+let characterInfo=null;
 
-card.className="card";
+try{
 
-card.innerHTML=`
-<h3>Campaign Member</h3>
-<p>
-<strong>Player ID:</strong>
-<span class="small">
-${escapeHtml(member.player_id)}
-</span>
-</p>
-<p>
-<strong>Role:</strong>
-${escapeHtml(member.role||"player")}
-</p>
-`;
+const chars=
+await supabaseRequest(
+"characters",
+"GET",
+null,
+"?player_id=eq."+
+encodeURIComponent(
+member.player_id
+)+
+"&campaign_id=eq."+
+currentCampaign.id+
+"&select=*"
+);
 
-container.appendChild(card);
+if(
+chars&&
+chars.length
+){
 
-});
+characterInfo=
+chars[0];
+
+}
 
 }catch(error){
 
-container.innerHTML=
-`
+console.warn(
+"Character lookup failed:",
+error.message
+);
+
+}
+
+const card=
+document.createElement(
+"div"
+);
+
+card.className="card";
+
+if(characterInfo){
+
+card.innerHTML=`
+
+<h3>
+${escapeHtml(
+characterInfo.name
+)}
+</h3>
+
+<p>
+<strong>
+${escapeHtml(
+characterInfo.race
+)}
+</strong>
+•
+${escapeHtml(
+characterInfo.class
+)}
+•
+${escapeHtml(
+characterInfo.subclass
+)}
+</p>
+
+<p>
+Level ${escapeHtml(
+characterInfo.level
+)}
+•
+HP ${escapeHtml(
+characterInfo.max_hp
+)}
+•
+AC ${escapeHtml(
+characterInfo.armor_class
+)}
+</p>
+
+<p>
+Background:
+${escapeHtml(
+characterInfo.background
+)}
+</p>
+
+<p>
+Soul:
+${escapeHtml(
+characterInfo.soul_path||
+"Unknown"
+)}
+</p>
+
+<span class="badge">
+${escapeHtml(
+member.role||
+"player"
+)}
+</span>
+
+`;
+
+}else{
+
+card.innerHTML=`
+
+<h3>
+Campaign Member
+</h3>
+
+<p>
+This player has joined the campaign
+but has not attached a character yet.
+</p>
+
+<span class="badge">
+${escapeHtml(
+member.role||
+"player"
+)}
+</span>
+
+`;
+
+}
+
+container.appendChild(
+card
+);
+
+}
+
+}catch(error){
+
+console.error(
+"Member loading error:",
+error
+);
+
+container.innerHTML=`
+
 <div class="notice error">
-${escapeHtml(error.message)}
+
+${escapeHtml(
+error.message
+)}
+
 </div>
+
 `;
 
 }
@@ -2851,7 +3658,13 @@ ${escapeHtml(error.message)}
 }
 
 
+/* ============================================================
+   CAMPAIGN INFO
+============================================================ */
+
 function showCampaignInfo(){
+
+if(!currentCampaign)return;
 
 const container=
 document.getElementById(
@@ -2859,23 +3672,38 @@ document.getElementById(
 );
 
 container.innerHTML=`
+
 <div class="info">
-<h2>${escapeHtml(window.currentCampaign.name)}</h2>
+
+<h2>
+${escapeHtml(
+currentCampaign.name
+)}
+</h2>
 
 <p>
 ${escapeHtml(
-window.currentCampaign.description||
+currentCampaign.description||
 "No description."
 )}
 </p>
 
 <div class="notice">
+
 <strong>Campaign ID:</strong>
-${window.currentCampaign.id}
-<br>
-Share this ID with players for now.
+
+${escapeHtml(
+currentCampaign.id
+)}
+
+<br><br>
+
+Give this ID to your players so they can join.
+
 </div>
+
 </div>
+
 `;
 
 }
@@ -2887,24 +3715,32 @@ Share this ID with players for now.
 
 function modifier(score){
 
-return Math.floor((score-10)/2);
+return Math.floor(
+(score-10)/2
+);
 
 }
 
 
 function renderStats(scores){
 
-return Object.entries(scores).map(
+return Object.entries(
+scores
+)
+.map(
 ([stat,value])=>{
 
-const mod=modifier(value);
+const mod=
+modifier(value);
 
 return `
 <div class="stat">
 
-<strong>${value}</strong>
+<strong>
+${escapeHtml(value)}
+</strong>
 
-${stat}
+${escapeHtml(stat)}
 
 <br>
 
@@ -2916,25 +3752,43 @@ ${mod>=0?"+":""}${mod}
 `;
 
 }
-).join("");
+)
+.join("");
 
 }
 
 
 function escapeHtml(value){
 
-return String(value??"")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+return String(
+value??""
+)
+.replace(
+/&/g,
+"&amp;"
+)
+.replace(
+/</g,
+"&lt;"
+)
+.replace(
+/>/g,
+"&gt;"
+)
+.replace(
+/"/g,
+"&quot;"
+)
+.replace(
+/'/g,
+"&#039;"
+);
 
 }
 
 
 /* ============================================================
-   LOCAL SAVE / LOAD
+   LOAD LOCAL CHARACTER
 ============================================================ */
 
 const savedCharacter=
@@ -2947,9 +3801,15 @@ if(savedCharacter){
 try{
 
 character=
-JSON.parse(savedCharacter);
+JSON.parse(
+savedCharacter
+);
 
 }catch(error){
+
+console.warn(
+"Saved character could not be loaded."
+);
 
 character=null;
 
@@ -2959,74 +3819,12 @@ character=null;
 
 
 /* ============================================================
-   AUTO SESSION CHECK
+   START SESSION RESTORATION
 ============================================================ */
 
-async function restoreSession(){
-
-    const token =
-        localStorage.getItem(
-            "soulTrialAccessToken"
-        );
-
-    if(!token){
-
-        currentUser = null;
-        return;
-
-    }
-
-    try{
-
-        const response =
-            await fetch(
-                SUPABASE_URL + "/auth/v1/user",
-                {
-                    method:"GET",
-                    headers:{
-                        "apikey":SUPABASE_KEY,
-                        "Authorization":"Bearer " + token
-                    }
-                }
-            );
-
-        if(!response.ok){
-
-            localStorage.removeItem(
-                "soulTrialAccessToken"
-            );
-
-            localStorage.removeItem(
-                "soulTrialRefreshToken"
-            );
-
-            currentUser = null;
-
-            return;
-
-        }
-
-        currentUser =
-            await response.json();
-
-        await ensureProfile();
-
-        console.log(
-            "Soul Trial session restored:",
-            currentUser.email
-        );
-
-    }catch(error){
-
-        console.warn(
-            "Session restore failed:",
-            error.message
-        );
-
-        currentUser = null;
-
-    }
-
-}
-
 restoreSession();
+
+</script>
+
+</body>
+</html>
