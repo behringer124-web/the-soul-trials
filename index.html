@@ -67,7 +67,9 @@ font-weight:bold;
 cursor:pointer
 }
 
-button:hover{background:#8b7038}
+button:hover{
+background:#8b7038
+}
 
 .choice{
 background:#202737;
@@ -75,7 +77,9 @@ border-color:#514d43;
 text-align:left
 }
 
-.choice:hover{border-color:#dfc47a}
+.choice:hover{
+border-color:#dfc47a
+}
 
 input,select,textarea{
 background:#0e131d;
@@ -88,7 +92,9 @@ min-height:100px;
 resize:vertical
 }
 
-.hidden{display:none}
+.hidden{
+display:none
+}
 
 .progress{
 height:8px;
@@ -171,9 +177,11 @@ text-transform:uppercase;
 color:#999
 }
 
-.warning{
+.level-badge{
+text-align:center;
 color:#dfc47a;
-font-size:.9rem
+font-weight:bold;
+margin-bottom:10px
 }
 
 @media(max-width:600px){
@@ -399,30 +407,15 @@ onchange="updateCombatDisplay()"
 
 <h2>Character Information</h2>
 
-<textarea
-id="personality"
-placeholder="Personality"
-></textarea>
+<textarea id="personality" placeholder="Personality"></textarea>
 
-<textarea
-id="ideal"
-placeholder="Ideal"
-></textarea>
+<textarea id="ideal" placeholder="Ideal"></textarea>
 
-<textarea
-id="bond"
-placeholder="Bond"
-></textarea>
+<textarea id="bond" placeholder="Bond"></textarea>
 
-<textarea
-id="flaw"
-placeholder="Flaw"
-></textarea>
+<textarea id="flaw" placeholder="Flaw"></textarea>
 
-<textarea
-id="backstory"
-placeholder="Backstory"
-></textarea>
+<textarea id="backstory" placeholder="Backstory"></textarea>
 
 
 <button onclick="createCharacter()">
@@ -491,17 +484,19 @@ VIEW CHARACTER SHEET
 </div>
 
 
-<!-- HIDDEN UNTIL CHARACTER CREATION -->
+<!-- UNIQUE AWAKENING -->
 
 <div id="awakeningReveal" class="awakening hidden">
 
 <div class="awakening-type">
-Unique Soul Ability Awakened
+Unique Soul Ability
 </div>
 
 <h2>Your Soul Has Awakened</h2>
 
 <div id="sheetAwakeningName" class="awakening-name"></div>
+
+<div id="sheetAwakeningLevel" class="level-badge"></div>
 
 <p id="sheetAwakeningDescription"></p>
 
@@ -569,7 +564,7 @@ RETURN HOME
 <script>
 
 /* =====================================================
-   SOUL TRIAL QUESTIONS
+SOUL TRIAL QUESTIONS
 ===================================================== */
 
 const questions=[
@@ -768,7 +763,7 @@ const questions=[
 
 
 /* =====================================================
-   SOUL PATHS
+SOUL PATHS
 ===================================================== */
 
 const soulPaths={
@@ -837,7 +832,7 @@ blessingDescription:"Once per long rest, you may gain advantage on one Charisma 
 
 
 /* =====================================================
-   CLASS DATA + UNIQUE AWAKENING ABILITIES
+CLASS DATA
 ===================================================== */
 
 const classData={
@@ -851,7 +846,12 @@ subclasses:[
 ],
 awakening:{
 name:"Soul-Forged Fury",
-description:"Once per long rest, when you enter a rage, your soul erupts with power. Until the rage ends, the first time you hit with a melee weapon attack on each of your turns, the attack deals extra psychic damage equal to your proficiency bonus."
+levels:{
+1:"Once per long rest, when you enter a rage, the first time you hit with a melee weapon attack during that rage, deal extra psychic damage equal to your proficiency bonus.",
+5:"The extra psychic damage becomes 1d6 + your proficiency bonus.",
+11:"The extra psychic damage becomes 2d6 + your proficiency bonus.",
+17:"The extra psychic damage becomes 3d6 + your proficiency bonus."
+}
 }
 },
 
@@ -864,7 +864,12 @@ subclasses:[
 ],
 awakening:{
 name:"Resonance of the Soul",
-description:"Once per long rest, when you grant a creature Bardic Inspiration, you may awaken their spirit. That creature gains temporary hit points equal to your Charisma modifier and may immediately move up to 10 feet without provoking opportunity attacks."
+levels:{
+1:"Once per long rest, when you grant a creature Bardic Inspiration, it gains temporary hit points equal to your Charisma modifier and may move 10 feet without provoking opportunity attacks.",
+5:"You may use this ability twice per long rest.",
+11:"The temporary hit points become your Charisma modifier + your proficiency bonus.",
+17:"The ability may be used three times per long rest."
+}
 }
 },
 
@@ -882,7 +887,12 @@ subclasses:[
 ],
 awakening:{
 name:"Divine Echo",
-description:"Once per long rest, when you cast a spell that restores hit points to another creature, you may cause a faint echo of divine power to restore additional hit points equal to your Wisdom modifier."
+levels:{
+1:"Once per long rest, when you restore hit points to another creature with a spell, restore additional hit points equal to your Wisdom modifier.",
+5:"The additional healing becomes 1d6 + your Wisdom modifier.",
+11:"The additional healing becomes 2d6 + your Wisdom modifier.",
+17:"The additional healing becomes 3d6 + your Wisdom modifier."
+}
 }
 },
 
@@ -895,7 +905,12 @@ subclasses:[
 ],
 awakening:{
 name:"Primal Awakening",
-description:"Once per long rest, when you enter Wild Shape, you awaken an ancient instinct. Your first successful attack while transformed deals additional damage equal to your Wisdom modifier."
+levels:{
+1:"Once per long rest, when you enter Wild Shape, your first successful attack while transformed deals additional damage equal to your Wisdom modifier.",
+5:"The additional damage becomes 1d6 + your Wisdom modifier.",
+11:"The additional damage becomes 2d6 + your Wisdom modifier.",
+17:"The additional damage becomes 3d6 + your Wisdom modifier."
+}
 }
 },
 
@@ -909,7 +924,12 @@ subclasses:[
 ],
 awakening:{
 name:"War Soul",
-description:"Once per long rest, when you use Action Surge, your next successful weapon attack before the end of your turn deals an additional 2d6 force damage."
+levels:{
+1:"Once per long rest, when you use Action Surge, your next successful weapon attack before the end of your turn deals an additional 2d6 force damage.",
+5:"The bonus damage becomes 3d6.",
+11:"The bonus damage becomes 4d6.",
+17:"The ability may be used twice per long rest."
+}
 }
 },
 
@@ -923,7 +943,12 @@ subclasses:[
 ],
 awakening:{
 name:"Soul Step",
-description:"Once per short rest, immediately after using Flurry of Blows, you may teleport up to 15 feet to an unoccupied space you can see."
+levels:{
+1:"Once per short rest, immediately after using Flurry of Blows, teleport up to 15 feet to an unoccupied space you can see.",
+5:"The teleport distance becomes 20 feet.",
+11:"The teleport distance becomes 30 feet.",
+17:"The ability may be used after any successful unarmed strike instead of only Flurry of Blows."
+}
 }
 },
 
@@ -937,7 +962,12 @@ subclasses:[
 ],
 awakening:{
 name:"Soul Smite",
-description:"Once per long rest, when you hit a creature with a melee weapon attack, you may unleash your awakened soul to deal an additional 2d8 radiant damage."
+levels:{
+1:"Once per long rest, when you hit with a melee weapon attack, deal an additional 2d8 radiant damage.",
+5:"The damage becomes 3d8.",
+11:"The damage becomes 4d8.",
+17:"The damage becomes 5d8."
+}
 }
 },
 
@@ -950,7 +980,12 @@ subclasses:[
 ],
 awakening:{
 name:"Predator's Instinct",
-description:"Once per short rest, when you hit a creature with a weapon attack, you may mark it as your prey. For the next minute, you have advantage on your next attack against that creature each turn."
+levels:{
+1:"Once per short rest, when you hit a creature with a weapon attack, mark it as your prey for 1 minute. Once per turn, your next attack against it has advantage.",
+5:"The mark lasts 10 minutes.",
+11:"Your first two attacks against the marked creature each turn gain advantage.",
+17:"The mark lasts 1 hour."
+}
 }
 },
 
@@ -964,7 +999,12 @@ subclasses:[
 ],
 awakening:{
 name:"Phantom Strike",
-description:"Once per short rest, when you successfully deal Sneak Attack damage, you may immediately become invisible until the start of your next turn or until you make another attack."
+levels:{
+1:"Once per short rest, when you deal Sneak Attack damage, you may become invisible until the start of your next turn or until you make another attack.",
+5:"The invisibility lasts until the end of your next turn.",
+11:"After becoming invisible, you may teleport up to 15 feet.",
+17:"The teleport distance becomes 30 feet."
+}
 }
 },
 
@@ -977,7 +1017,12 @@ subclasses:[
 ],
 awakening:{
 name:"Soul Surge",
-description:"Once per long rest, when you cast a spell of 1st level or higher, you may empower it with your awakened soul. Add your Charisma modifier to one damage roll or one healing roll of the spell."
+levels:{
+1:"Once per long rest, when you cast a spell of 1st level or higher, add your Charisma modifier to one damage or healing roll.",
+5:"You may use the ability twice per long rest.",
+11:"You may add twice your Charisma modifier instead.",
+17:"You may use the ability three times per long rest."
+}
 }
 },
 
@@ -991,7 +1036,12 @@ subclasses:[
 ],
 awakening:{
 name:"Forbidden Resonance",
-description:"Once per long rest, when you reduce a hostile creature to 0 hit points, your patron's power surges through you. You regain an expended spell slot of 1st level."
+levels:{
+1:"Once per long rest, when you reduce a hostile creature to 0 hit points, regain one expended Warlock spell slot.",
+5:"The ability may be used twice per long rest.",
+11:"When activated, gain temporary hit points equal to your Charisma modifier + proficiency bonus.",
+17:"The ability may be used three times per long rest."
+}
 }
 },
 
@@ -1010,7 +1060,12 @@ subclasses:[
 ],
 awakening:{
 name:"Perfect Calculation",
-description:"Once per long rest, after seeing the result of a spell attack roll or Intelligence-based ability check, you may add your Intelligence modifier to the roll."
+levels:{
+1:"Once per long rest, after seeing the result of a spell attack roll or Intelligence check, add your Intelligence modifier.",
+5:"You may use the ability twice per long rest.",
+11:"You may add twice your Intelligence modifier.",
+17:"You may use the ability three times per long rest."
+}
 }
 },
 
@@ -1024,7 +1079,12 @@ subclasses:[
 ],
 awakening:{
 name:"Soul Mechanism",
-description:"Once per long rest, when one of your artificer creations or infusions would be destroyed, you may cause it to survive with 1 hit point instead."
+levels:{
+1:"Once per long rest, when one of your artificer creations or infused items would be destroyed, it instead survives with 1 hit point.",
+5:"The protected creation instead survives with hit points equal to your Intelligence modifier + proficiency bonus.",
+11:"You may use the ability twice per long rest.",
+17:"You may use the ability three times per long rest."
+}
 }
 }
 
@@ -1032,7 +1092,7 @@ description:"Once per long rest, when one of your artificer creations or infusio
 
 
 /* =====================================================
-   BACKGROUNDS
+BACKGROUNDS
 ===================================================== */
 
 const backgrounds=[
@@ -1053,7 +1113,7 @@ const backgrounds=[
 
 
 /* =====================================================
-   VARIABLES
+VARIABLES
 ===================================================== */
 
 let scores={
@@ -1070,7 +1130,7 @@ let character=null;
 
 
 /* =====================================================
-   SCREEN CONTROL
+SCREEN CONTROL
 ===================================================== */
 
 function showScreen(id){
@@ -1087,7 +1147,7 @@ window.scrollTo(0,0);
 
 
 /* =====================================================
-   START
+START
 ===================================================== */
 
 function beginTrial(){
@@ -1102,7 +1162,6 @@ CHA:0
 };
 
 questionIndex=0;
-
 character=null;
 
 showScreen("name");
@@ -1136,7 +1195,7 @@ displayQuestion();
 
 
 /* =====================================================
-   QUESTIONS
+QUESTIONS
 ===================================================== */
 
 function displayQuestion(){
@@ -1197,7 +1256,7 @@ answers.appendChild(button);
 
 
 /* =====================================================
-   CALCULATE SOUL
+CALCULATE SOUL
 ===================================================== */
 
 function calculateSoul(){
@@ -1267,7 +1326,7 @@ showScreen("result");
 
 
 /* =====================================================
-   CHARACTER CREATOR
+CHARACTER CREATOR
 ===================================================== */
 
 function openCharacterCreator(){
@@ -1357,7 +1416,7 @@ showScreen("creator");
 
 
 /* =====================================================
-   CLASS INFORMATION
+CLASS INFORMATION
 ===================================================== */
 
 function updateClassInfo(){
@@ -1405,7 +1464,7 @@ updateCharacterStats();
 
 
 /* =====================================================
-   CHARACTER STATS
+CHARACTER STATS
 ===================================================== */
 
 function updateCharacterStats(){
@@ -1491,7 +1550,7 @@ ac;
 
 
 /* =====================================================
-   CREATE CHARACTER
+CREATE CHARACTER
 ===================================================== */
 
 function createCharacter(){
@@ -1511,7 +1570,7 @@ viewSheet();
 
 
 /* =====================================================
-   SAVE CHARACTER
+SAVE
 ===================================================== */
 
 function saveCharacter(showMessage=true){
@@ -1564,7 +1623,21 @@ alert("Character saved on this device.");
 
 
 /* =====================================================
-   CHARACTER SHEET
+GET LEVEL ABILITY
+===================================================== */
+
+function getAwakeningLevel(level){
+
+if(level>=17)return 17;
+if(level>=11)return 11;
+if(level>=5)return 5;
+return 1;
+
+}
+
+
+/* =====================================================
+CHARACTER SHEET
 ===================================================== */
 
 function viewSheet(){
@@ -1652,13 +1725,16 @@ character.backstory||"—";
 
 
 /* =====================================================
-   AWAKENING REVEAL
+AWAKENING REVEAL
 ===================================================== */
 
 const awakening=
 classData[character.class];
 
 if(character.created && awakening){
+
+const abilityLevel=
+getAwakeningLevel(character.level);
 
 document.getElementById("awakeningReveal")
 .classList.remove("hidden");
@@ -1667,9 +1743,14 @@ document.getElementById("sheetAwakeningName")
 .textContent=
 awakening.awakening.name;
 
+document.getElementById("sheetAwakeningLevel")
+.textContent=
+"Awakened Power • Level "+
+character.level;
+
 document.getElementById("sheetAwakeningDescription")
 .textContent=
-awakening.awakening.description;
+awakening.awakening.levels[abilityLevel];
 
 }else{
 
@@ -1678,14 +1759,13 @@ document.getElementById("awakeningReveal")
 
 }
 
-
 showScreen("sheet");
 
 }
 
 
 /* =====================================================
-   RETURN HOME
+RETURN HOME
 ===================================================== */
 
 function returnHome(){
@@ -1696,7 +1776,7 @@ showScreen("home");
 
 
 /* =====================================================
-   LOAD SAVED CHARACTER
+LOAD SAVED CHARACTER
 ===================================================== */
 
 const savedCharacter=
