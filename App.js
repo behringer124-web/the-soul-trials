@@ -1384,9 +1384,8 @@ document.getElementById("spellSlots")
 }
 
 
-document.getElementById("spells")
-.textContent=
-"Spell management will be available here as the Soul's Trial expands.";
+document.getElementById("spells").textContent =
+"Add spells to your character sheet when known or prepared.";
 
 
 /* =====================================================
