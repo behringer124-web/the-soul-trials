@@ -827,206 +827,381 @@ return data;
 
 async function signup(){
 
-const email=
-document.getElementById("loginEmail").value.trim();
+    const email =
+        document.getElementById("loginEmail").value.trim();
 
-const password=
-document.getElementById("loginPassword").value;
+    const password =
+        document.getElementById("loginPassword").value;
 
-if(!email||!password){
-showAuthMessage("Enter an email and password.");
-return;
-}
+    if(!email || !password){
+        showAuthMessage("Please enter an email and password.");
+        return;
+    }
 
-try{
+    if(password.length < 6){
+        showAuthMessage("Password must be at least 6 characters.");
+        return;
+    }
 
-const response=await fetch(
-SUPABASE_URL+"/auth/v1/signup",
-{
-method:"POST",
-headers:{
-"apikey":SUPABASE_KEY,
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-email,
-password
-})
-}
-);
+    try{
 
-const data=await response.json();
+        showAuthMessage("Creating your account...", true);
 
-if(!response.ok)
-throw new Error(data.msg||data.message||"Unable to create account.");
+        const response = await fetch(
+            SUPABASE_URL + "/auth/v1/signup",
+            {
+                method:"POST",
+                headers:{
+                    "apikey":SUPABASE_KEY,
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    email:email,
+                    password:password
+                })
+            }
+        );
 
-if(data.access_token){
+        const data = await response.json();
 
-localStorage.setItem(
-"soulTrialAccessToken",
-data.access_token
-);
+        if(!response.ok){
 
-currentUser=data.user;
+            throw new Error(
+                data.error_description ||
+                data.msg ||
+                data.message ||
+                "Unable to create account."
+            );
 
-await ensureProfile();
+        }
 
-showAuthMessage(
-"Account created successfully.",
-true
-);
+        /*
+         Supabase may require email confirmation.
+         If it does, there will be no access token yet.
+        */
 
-}else{
+        if(data.access_token){
 
-showAuthMessage(
-"Account created. Check your email if confirmation is required.",
-true
-);
+            localStorage.setItem(
+                "soulTrialAccessToken",
+                data.access_token
+            );
 
-}
+            currentUser = data.user;
 
-}catch(error){
+            await ensureProfile();
 
-showAuthMessage(error.message);
+            showAuthMessage(
+                "Account created and signed in successfully.",
+                true
+            );
 
-}
+            showScreen("home");
+
+        }else{
+
+            showAuthMessage(
+                "Account created! Check your email to confirm your account, then return here and sign in.",
+                true
+            );
+
+        }
+
+    }catch(error){
+
+        console.error("Signup error:",error);
+
+        showAuthMessage(
+            getAuthErrorMessage(error.message)
+        );
+
+    }
 
 }
 
 
 async function login(){
 
-const email=
-document.getElementById("loginEmail").value.trim();
+    const email =
+        document.getElementById("loginEmail").value.trim();
 
-const password=
-document.getElementById("loginPassword").value;
+    const password =
+        document.getElementById("loginPassword").value;
 
-if(!email||!password){
-showAuthMessage("Enter an email and password.");
-return;
-}
+    if(!email || !password){
 
-try{
+        showAuthMessage(
+            "Please enter your email and password."
+        );
 
-const response=await fetch(
-SUPABASE_URL+"/auth/v1/token?grant_type=password",
-{
-method:"POST",
-headers:{
-"apikey":SUPABASE_KEY,
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-email,
-password
-})
-}
-);
+        return;
 
-const data=await response.json();
+    }
 
-if(!response.ok)
-throw new Error(
-data.error_description ||
-data.msg ||
-data.message ||
-"Login failed."
-);
+    try{
 
-localStorage.setItem(
-"soulTrialAccessToken",
-data.access_token
-);
+        showAuthMessage(
+            "Signing in...",
+            true
+        );
 
-currentUser=data.user;
+        const response = await fetch(
+            SUPABASE_URL +
+            "/auth/v1/token?grant_type=password",
+            {
+                method:"POST",
+                headers:{
+                    "apikey":SUPABASE_KEY,
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    email:email,
+                    password:password
+                })
+            }
+        );
 
-await ensureProfile();
+        const data = await response.json();
 
-showAuthMessage(
-"Signed in successfully.",
-true
-);
+        if(!response.ok){
 
-if(character){
-showScreen("sheet");
-}else{
-showScreen("home");
-}
+            throw new Error(
+                data.error_description ||
+                data.msg ||
+                data.message ||
+                data.error ||
+                "Login failed."
+            );
 
-}catch(error){
+        }
 
-showAuthMessage(error.message);
+        if(!data.access_token){
 
-}
+            throw new Error(
+                "Supabase did not return a login session."
+            );
+
+        }
+
+        /*
+         Save the session locally so the player
+         remains logged in when they return.
+        */
+
+        localStorage.setItem(
+            "soulTrialAccessToken",
+            data.access_token
+        );
+
+        if(data.refresh_token){
+
+            localStorage.setItem(
+                "soulTrialRefreshToken",
+                data.refresh_token
+            );
+
+        }
+
+        currentUser = data.user;
+
+        await ensureProfile();
+
+        showAuthMessage(
+            "Welcome back, " +
+            (
+                currentUser.email ||
+                "Traveler"
+            ) +
+            ".",
+            true
+        );
+
+        /*
+         If they already have a character,
+         send them directly to their sheet.
+        */
+
+        if(character){
+
+            setTimeout(()=>{
+                viewSheet();
+            },300);
+
+        }else{
+
+            setTimeout(()=>{
+                showScreen("home");
+            },300);
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "Login error:",
+            error
+        );
+
+        showAuthMessage(
+            getAuthErrorMessage(error.message)
+        );
+
+    }
 
 }
 
 
 async function ensureProfile(){
 
-if(!currentUser)return;
+    if(!currentUser)return;
 
-try{
+    try{
 
-const existing=
-await supabaseRequest(
-"profiles",
-"GET",
-null,
-"?id=eq."+encodeURIComponent(currentUser.id)+
-"&select=*"
-);
+        const existing =
+            await supabaseRequest(
+                "profiles",
+                "GET",
+                null,
+                "?id=eq." +
+                encodeURIComponent(currentUser.id) +
+                "&select=*"
+            );
 
-if(!existing||!existing.length){
+        if(!existing || !existing.length){
 
-await supabaseRequest(
-"profiles",
-"POST",
-{
-id:currentUser.id,
-username:
-(currentUser.email||"player")
-.split("@")[0],
-display_name:
-(currentUser.email||"Player")
-.split("@")[0]
+            const username =
+                (
+                    currentUser.email ||
+                    "player"
+                )
+                .split("@")[0];
+
+            await supabaseRequest(
+                "profiles",
+                "POST",
+                {
+                    id:currentUser.id,
+                    username:username,
+                    display_name:username
+                }
+            );
+
+        }
+
+    }catch(error){
+
+        /*
+         Profile creation should never prevent
+         the player from logging in.
+        */
+
+        console.warn(
+            "Profile setup warning:",
+            error.message
+        );
+
+    }
+
 }
-);
 
-}
 
-}catch(error){
+function getAuthErrorMessage(message){
 
-console.log("Profile check:",error.message);
+    const error =
+        String(message || "").toLowerCase();
 
-}
+    if(
+        error.includes("email not confirmed") ||
+        error.includes("email_not_confirmed")
+    ){
+
+        return "Your email has not been confirmed yet. Check your email for the Supabase confirmation message.";
+
+    }
+
+    if(
+        error.includes("invalid login credentials") ||
+        error.includes("invalid credentials")
+    ){
+
+        return "Incorrect email or password.";
+
+    }
+
+    if(
+        error.includes("user already registered") ||
+        error.includes("already registered")
+    ){
+
+        return "An account with this email already exists. Try signing in instead.";
+
+    }
+
+    if(
+        error.includes("password") &&
+        error.includes("weak")
+    ){
+
+        return "That password is too weak. Please choose a stronger password.";
+
+    }
+
+    if(
+        error.includes("rate limit") ||
+        error.includes("too many")
+    ){
+
+        return "Too many attempts. Please wait a moment and try again.";
+
+    }
+
+    return message || "Authentication failed. Please try again.";
 
 }
 
 
 function showLogin(){
 
-showScreen("login");
+    showScreen("login");
+
+    const message =
+        document.getElementById("authMessage");
+
+    if(message){
+
+        message.classList.add("hidden");
+        message.textContent="";
+
+    }
 
 }
 
 
-function showAuthMessage(message,success=false){
+function showAuthMessage(
+    message,
+    success=false
+){
 
-const box=
-document.getElementById("authMessage");
+    const box =
+        document.getElementById("authMessage");
 
-box.classList.remove("hidden");
+    if(!box)return;
 
-box.classList.toggle("success",success);
+    box.classList.remove("hidden");
 
-box.classList.toggle("error",!success);
+    box.classList.toggle(
+        "success",
+        success
+    );
 
-box.textContent=message;
+    box.classList.toggle(
+        "error",
+        !success
+    );
+
+    box.textContent = message;
 
 }
-
 
 /* ============================================================
    SCREEN CONTROL
