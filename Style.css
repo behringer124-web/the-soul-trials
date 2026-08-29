@@ -1,792 +1,311 @@
-/* =========================================================
-   THE SOUL TRIAL
-   style.css
-   Isekai D&D Character Awakening
-   ========================================================= */
-
-* {
-    box-sizing: border-box;
+*{
+box-sizing:border-box
 }
 
-:root {
-    --bg: #08090d;
-    --bg2: #10121a;
-    --panel: rgba(18, 20, 30, 0.92);
-    --panel-light: rgba(29, 32, 45, 0.9);
-    --border: rgba(190, 170, 120, 0.25);
-    --border-bright: rgba(220, 190, 120, 0.55);
-    --gold: #d8b86a;
-    --gold-light: #f0d99b;
-    --text: #eeeae1;
-    --muted: #9d9aa0;
-    --danger: #a94949;
-    --shadow: rgba(0, 0, 0, 0.55);
+body{
+margin:0;
+background:radial-gradient(
+circle at top,
+#252033,
+#090a10 65%
+);
+color:#eee;
+font-family:system-ui,sans-serif;
+min-height:100vh
 }
 
-html {
-    min-height: 100%;
-    background: var(--bg);
+.container{
+max-width:1050px;
+margin:auto;
+padding:10px
 }
 
-body {
-    margin: 0;
-    min-height: 100vh;
-    background:
-        radial-gradient(
-            circle at 50% 15%,
-            rgba(95, 78, 125, 0.18),
-            transparent 35%
-        ),
-        radial-gradient(
-            circle at 20% 80%,
-            rgba(100, 75, 45, 0.08),
-            transparent 35%
-        ),
-        linear-gradient(
-            135deg,
-            #06070a,
-            #10111a 50%,
-            #07080b
-        );
-    color: var(--text);
-    font-family:
-        Georgia,
-        "Times New Roman",
-        serif;
-    min-width: 320px;
+.panel{
+background:rgba(20,24,36,.98);
+border:1px solid #625a48;
+border-radius:18px;
+padding:20px;
+box-shadow:0 15px 50px rgba(0,0,0,.5)
+}
+
+h1,h2,h3{
+font-family:Georgia,serif;
+color:#dfc47a
+}
+
+h1{
+text-align:center;
+font-size:clamp(2.2rem,8vw,4.5rem)
+}
+
+p{
+line-height:1.55;
+color:#ccc
+}
+
+.center{
+text-align:center
+}
+
+.muted{
+color:#999
 }
 
 button,
-input {
-    font: inherit;
+input,
+select,
+textarea{
+width:100%;
+padding:13px;
+margin:6px 0;
+border-radius:9px;
+font:inherit
 }
 
-button {
-    cursor: pointer;
+button{
+background:#70582a;
+border:1px solid #dfc47a;
+color:white;
+font-weight:bold;
+cursor:pointer;
+transition:.15s
 }
 
-#app {
-    min-height: 100vh;
+button:hover{
+background:#8b7038;
+transform:translateY(-1px)
 }
 
-
-/* =========================================================
-   GLOBAL SCREEN
-   ========================================================= */
-
-.soul-trial-screen,
-.status-screen,
-.character-sheet-page {
-    width: 100%;
-    min-height: 100vh;
-    padding: 30px 18px;
-}
-
-.soul-trial-content {
-    width: min(850px, 100%);
-    min-height: calc(100vh - 60px);
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-
-/* =========================================================
-   OPENING
-   ========================================================= */
-
-.opening-screen {
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(117, 95, 145, 0.14),
-            transparent 45%
-        );
-}
-
-.opening-screen h1 {
-    font-size: clamp(42px, 8vw, 82px);
-    line-height: 0.95;
-    margin: 15px 0;
-    letter-spacing: 0.02em;
-    color: var(--gold-light);
-    text-shadow:
-        0 0 20px rgba(216, 184, 106, 0.2),
-        0 5px 30px rgba(0, 0, 0, 0.8);
-}
-
-.opening-screen h2 {
-    margin: 0 0 30px;
-    font-size: clamp(20px, 4vw, 32px);
-    font-weight: normal;
-    color: #c8c1b4;
-}
-
-.opening-screen p {
-    max-width: 650px;
-    color: var(--muted);
-    line-height: 1.8;
-    font-size: 17px;
-}
-
-
-/* =========================================================
-   TYPOGRAPHY
-   ========================================================= */
-
-.eyebrow {
-    display: block;
-    color: var(--gold);
-    font-size: 12px;
-    font-weight: bold;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-}
-
-.trial-question {
-    max-width: 800px;
-    margin: 30px auto 35px;
-    font-size: clamp(30px, 5vw, 52px);
-    line-height: 1.15;
-    font-weight: normal;
-    color: var(--text);
-}
-
-.awakening-title {
-    font-size: clamp(38px, 7vw, 76px);
-    color: var(--gold-light);
-    margin: 15px 0;
-}
-
-.awakening-subtitle {
-    font-size: clamp(22px, 4vw, 34px);
-    font-weight: normal;
-    color: #c9c0af;
-    margin: 0 0 15px;
-}
-
-.awakening-text {
-    max-width: 650px;
-    color: var(--muted);
-    line-height: 1.7;
-}
-
-
-/* =========================================================
-   PROGRESS BAR
-   ========================================================= */
-
-.soul-progress {
-    width: min(650px, 100%);
-    height: 3px;
-    margin: 0 auto;
-    background: rgba(255,255,255,0.08);
-    overflow: hidden;
-}
-
-.soul-progress-bar {
-    height: 100%;
-    background: var(--gold);
-    box-shadow:
-        0 0 12px rgba(216,184,106,0.55);
-    transition: width 0.4s ease;
-}
-
-
-/* =========================================================
-   ANSWERS
-   ========================================================= */
-
-.trial-answers {
-    width: min(700px, 100%);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-}
-
-.trial-answer {
-    position: relative;
-    min-height: 78px;
-    padding: 18px 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    text-align: left;
-    color: var(--text);
-    background:
-        linear-gradient(
-            145deg,
-            rgba(31,34,46,0.96),
-            rgba(15,17,25,0.96)
-        );
-    border: 1px solid var(--border);
-    transition:
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        background 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.trial-answer:hover {
-    transform: translateY(-3px);
-    border-color: var(--border-bright);
-    background:
-        linear-gradient(
-            145deg,
-            rgba(48,43,54,0.98),
-            rgba(20,21,30,0.98)
-        );
-    box-shadow:
-        0 10px 30px rgba(0,0,0,0.35),
-        0 0 20px rgba(216,184,106,0.06);
-}
-
-.trial-answer:active {
-    transform: translateY(0);
-}
-
-.trial-letter {
-    width: 34px;
-    height: 34px;
-    flex: 0 0 34px;
-    display: grid;
-    place-items: center;
-    border: 1px solid var(--border);
-    color: var(--gold);
-    font-size: 14px;
-}
-
-.trial-answer-text {
-    line-height: 1.45;
-}
-
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
-
-.btn {
-    border: 1px solid var(--border);
-    background: rgba(25,27,37,0.95);
-    color: var(--text);
-    padding: 13px 22px;
-    margin: 7px;
-    transition:
-        background 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.2s ease;
-}
-
-.btn:hover {
-    background: rgba(45,43,51,1);
-    border-color: var(--border-bright);
-    transform: translateY(-2px);
-}
-
-.btn-primary {
-    background:
-        linear-gradient(
-            135deg,
-            #b9974d,
-            #d8b86a
-        );
-    color: #15130e;
-    border-color: #e3c77e;
-    font-weight: bold;
-}
-
-.btn-primary:hover {
-    background:
-        linear-gradient(
-            135deg,
-            #d0ae61,
-            #f0d99b
-        );
-    color: #11100c;
-}
-
-.btn-secondary {
-    background: transparent;
-}
-
-.btn-large {
-    padding: 16px 32px;
-    font-size: 16px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-
-/* =========================================================
-   AWAKENING
-   ========================================================= */
-
-.awakening-screen {
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(153,120,66,0.13),
-            transparent 38%
-        );
-}
-
-.awakening-result {
-    width: min(650px, 100%);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin: 30px 0 20px;
-}
-
-.awakening-card {
-    padding: 20px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-}
-
-.awakening-card span {
-    display: block;
-    color: var(--muted);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    margin-bottom: 8px;
-}
-
-.awakening-card strong {
-    color: var(--gold-light);
-    font-size: 19px;
-}
-
-.soul-skill-description {
-    max-width: 600px;
-    padding: 20px;
-    border-left: 2px solid var(--gold);
-    background: rgba(216,184,106,0.04);
-    color: #b9b3a8;
-    line-height: 1.65;
-}
-
-
-/* =========================================================
-   STATUS SCREEN
-   ========================================================= */
-
-.status-screen {
-    width: min(1100px, 100%);
-    margin: auto;
+.choice{
+background:#202737;
+border-color:#514d43;
+text-align:left
 }
 
-.status-header {
-    text-align: center;
-    margin-bottom: 25px;
+.choice:hover{
+border-color:#dfc47a;
+background:#292f40
 }
 
-.status-header h1 {
-    color: var(--gold);
-    letter-spacing: 0.2em;
-    font-size: 15px;
+input,
+select,
+textarea{
+background:#0e131d;
+color:white;
+border:1px solid #4a4a4a
 }
 
-.status-header h2 {
-    font-size: clamp(35px, 7vw, 60px);
-    margin: 10px 0;
-    color: var(--gold-light);
+input:focus,
+select:focus,
+textarea:focus{
+outline:none;
+border-color:#dfc47a
 }
 
-.status-identity {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+textarea{
+min-height:90px;
+resize:vertical
 }
 
-.status-card,
-.ability-card {
-    background: var(--panel);
-    border: 1px solid var(--border);
+.hidden{
+display:none!important
 }
 
-.status-card {
-    padding: 18px;
+.progress{
+height:8px;
+background:#292e38;
+border-radius:10px;
+margin:15px 0 25px;
+overflow:hidden
 }
 
-.status-card span {
-    display: block;
-    color: var(--muted);
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    margin-bottom: 7px;
+.progress-bar{
+height:100%;
+width:0;
+background:#dfc47a;
+border-radius:10px;
+transition:width .25s
 }
 
-.status-card strong {
-    color: var(--text);
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px
 }
 
-
-/* =========================================================
-   ABILITIES
-   ========================================================= */
-
-.status-section {
-    margin-top: 25px;
-}
-
-.status-section h3 {
-    color: var(--gold);
-    font-size: 13px;
-    letter-spacing: 0.18em;
-}
-
-.ability-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
-}
-
-.ability-card {
-    padding: 15px 10px;
-    text-align: center;
-}
-
-.ability-card span {
-    display: block;
-    color: var(--muted);
-    font-size: 11px;
-    letter-spacing: 0.15em;
-}
-
-.ability-card strong {
-    display: block;
-    font-size: 32px;
-    color: var(--gold-light);
-    margin: 5px 0;
-}
-
-.ability-card small {
-    color: var(--gold);
-}
-
-
-/* =========================================================
-   SOUL SKILL PANEL
-   ========================================================= */
-
-.soul-skill-panel {
-    margin-top: 25px;
-    padding: 28px;
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(111,82,140,0.12),
-            transparent 70%
-        ),
-        var(--panel);
-    border: 1px solid var(--border-bright);
-    text-align: center;
-}
-
-.soul-skill-panel h3 {
-    color: var(--gold);
-    letter-spacing: 0.2em;
-    font-size: 12px;
+.grid3{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px
 }
 
-.soul-skill-panel h2 {
-    color: var(--gold-light);
-    font-size: 28px;
+.grid6{
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:7px
 }
 
-.soul-skill-panel p {
-    max-width: 700px;
-    margin: auto;
-    color: var(--muted);
-    line-height: 1.65;
+.stat{
+background:#0d121c;
+border:1px solid #403d35;
+border-radius:10px;
+padding:10px;
+text-align:center
 }
 
-
-/* =========================================================
-   SKILLS
-   ========================================================= */
-
-.skill-list,
-.sheet-skill-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.skill-tag {
-    padding: 8px 12px;
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,0.025);
-    color: #c7c0b4;
-    font-size: 13px;
+.stat strong{
+display:block;
+color:#dfc47a;
+font-size:1.4rem
 }
-
 
-/* =========================================================
-   CHARACTER SHEET
-   ========================================================= */
-
-.character-sheet-page {
-    width: min(1100px, 100%);
-    margin: auto;
+.info{
+background:#101520;
+border:1px solid #454238;
+border-radius:12px;
+padding:15px;
+margin:12px 0
 }
 
-.sheet-header {
-    padding: 25px;
-    margin-bottom: 15px;
-    text-align: center;
-    background: var(--panel);
-    border: 1px solid var(--border);
+.tag{
+display:inline-block;
+padding:6px 9px;
+margin:3px;
+border-radius:20px;
+border:1px solid #625a48;
+color:#dfc47a
 }
 
-.character-name-input {
-    display: block;
-    width: min(600px, 100%);
-    margin: 10px auto;
-    padding: 10px;
-    border: 0;
-    border-bottom: 1px solid var(--border-bright);
-    outline: none;
-    background: transparent;
-    color: var(--gold-light);
-    text-align: center;
-    font-size: clamp(30px, 6vw, 50px);
+.section{
+margin-top:22px;
+border-top:1px solid #625a48;
+padding-top:8px
 }
 
-.character-name-input:focus {
-    border-color: var(--gold);
+.sectionTitle{
+font-family:Georgia,serif;
+font-size:1.3rem;
+color:#dfc47a
 }
 
-.sheet-header p {
-    color: var(--muted);
+.row{
+display:flex;
+justify-content:space-between;
+padding:7px 3px;
+border-bottom:1px solid #282d38
 }
 
-.sheet-section {
-    margin-bottom: 15px;
-    padding: 22px;
-    background: var(--panel);
-    border: 1px solid var(--border);
+.awakening{
+background:linear-gradient(
+135deg,
+#17131f,
+#252033
+);
+border:1px solid #8b7038;
+border-radius:14px;
+padding:18px;
+margin-top:15px
 }
 
-.sheet-section h2 {
-    margin-top: 0;
-    color: var(--gold);
-    font-size: 15px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
+.awakening h2{
+text-align:center;
+margin-top:0
 }
 
-.sheet-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+.awakeningName{
+font-family:Georgia,serif;
+font-size:1.5rem;
+color:#dfc47a;
+text-align:center
 }
 
-.sheet-grid > div {
-    padding: 15px;
-    background: rgba(255,255,255,0.025);
-    border: 1px solid rgba(255,255,255,0.05);
+.small{
+font-size:.82rem;
+color:#999
 }
 
-.sheet-grid span {
-    display: block;
-    color: var(--muted);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    margin-bottom: 5px;
+label{
+display:block;
+font-size:.9rem;
+color:#bbb;
+margin-top:5px
 }
 
-.sheet-grid strong {
-    color: var(--text);
+.ability-input{
+text-align:center;
+font-size:1.15rem;
+font-weight:bold
 }
-
 
-/* =========================================================
-   SHEET ABILITIES
-   ========================================================= */
+@media(max-width:650px){
 
-.sheet-ability-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
+.grid6{
+grid-template-columns:repeat(3,1fr)
 }
 
-.sheet-ability {
-    text-align: center;
-    padding: 15px 5px;
-    background: rgba(255,255,255,0.025);
-    border: 1px solid var(--border);
+.grid3{
+grid-template-columns:repeat(2,1fr)
 }
 
-.sheet-ability span {
-    display: block;
-    color: var(--muted);
-    font-size: 11px;
+.grid{
+grid-template-columns:1fr
 }
 
-.sheet-ability strong {
-    display: block;
-    font-size: 27px;
-    color: var(--gold-light);
+.panel{
+padding:14px
 }
 
-.sheet-ability small {
-    color: var(--gold);
 }
 
+@media print{
 
-/* =========================================================
-   SOUL SKILL FINAL
-   ========================================================= */
-
-.soul-skill-final {
-    padding: 30px;
-    margin-bottom: 20px;
-    text-align: center;
-    border: 1px solid var(--border-bright);
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(120,85,145,0.12),
-            transparent 65%
-        ),
-        var(--panel);
-}
-
-.soul-skill-final h2 {
-    color: var(--gold-light);
-    font-size: 30px;
+body{
+background:white;
+color:black
 }
 
-.soul-skill-final p {
-    max-width: 750px;
-    margin: auto;
-    color: var(--muted);
-    line-height: 1.7;
+.panel{
+background:white;
+border:0;
+box-shadow:none
 }
 
-
-/* =========================================================
-   SHEET ACTIONS
-   ========================================================= */
-
-.sheet-actions {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    padding-bottom: 30px;
+#home,
+#name,
+#quiz,
+#result,
+#creator{
+display:none!important
 }
-
-
-/* =========================================================
-   ANIMATIONS
-   ========================================================= */
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+#sheet{
+display:block!important
 }
 
-.soul-trial-content,
-.status-screen,
-.character-sheet-page {
-    animation: fadeIn 0.55s ease;
+.info,
+.stat,
+.awakening{
+background:white;
+color:black;
+border:1px solid #777
 }
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 750px) {
-
-    .soul-trial-screen,
-    .status-screen,
-    .character-sheet-page {
-        padding: 18px 12px;
-    }
-
-    .soul-trial-content {
-        min-height: calc(100vh - 36px);
-    }
-
-    .trial-answers {
-        grid-template-columns: 1fr;
-    }
 
-    .trial-answer {
-        min-height: 65px;
-    }
-
-    .awakening-result {
-        grid-template-columns: 1fr;
-    }
-
-    .status-identity {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .ability-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .sheet-ability-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .sheet-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-
+h1,
+h2,
+h3,
+.sectionTitle,
+.awakeningName{
+color:black
 }
-
-@media (max-width: 450px) {
 
-    .status-identity {
-        grid-template-columns: 1fr;
-    }
-
-    .ability-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .sheet-ability-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .sheet-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .opening-screen h1 {
-        font-size: 42px;
-    }
-
+p,
+.small,
+.muted{
+color:#222
 }
-
-
-/* =========================================================
-   ACCESSIBILITY
-   ========================================================= */
 
-button:focus-visible,
-input:focus-visible {
-    outline: 2px solid var(--gold);
-    outline-offset: 3px;
+button{
+display:none
 }
 
-::selection {
-    background: rgba(216,184,106,0.3);
-    color: white;
 }
